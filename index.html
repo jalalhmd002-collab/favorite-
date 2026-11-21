@@ -349,6 +349,34 @@
     .toast.success { background: #065F46; }
     .toast.error { background: #9F1239; }
     .toast.info { background: #171717; }
+
+    /* Apple-style Site Card */
+    .apple-site-card {
+      background-color: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 18px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .apple-site-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    .apple-site-card:active {
+      transform: scale(0.98);
+    }
+    [data-theme="dark"] .apple-site-card {
+      background-color: rgba(20, 23, 32, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    }
+    [data-theme="dark"] .apple-site-card:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.38);
+    }
   </style>
 </head>
 <body class="min-h-screen flex justify-center selection:bg-amber-500 selection:text-white">
@@ -494,7 +522,7 @@
 
     <!-- Responsive Compact Grid Cards -->
     <main class="px-4 py-2 flex flex-col gap-3 flex-1">
-      <div id="sitesGrid" class="flex flex-wrap justify-center gap-2.5 w-full"></div>
+      <div id="sitesGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full"></div>
 
       <!-- Storage Status & Footer -->
       <div class="mt-auto pt-4 flex flex-col items-center gap-2">
@@ -1752,7 +1780,7 @@
 
       if (filteredSites.length === 0) {
         const empty = document.createElement('div');
-        empty.className = 'w-full surface-card rounded-2xl p-8 border border-dashed text-center flex flex-col items-center gap-3';
+        empty.className = 'col-span-full w-full surface-card rounded-2xl p-8 border border-dashed text-center flex flex-col items-center gap-3';
         empty.style.borderColor = 'var(--accent-border)';
 
         if (savedSearchQuery) {
@@ -1800,7 +1828,7 @@
 
       filteredSites.forEach(site => {
         const card = document.createElement('article');
-        card.className = `ios-pressable surface-card rounded-2xl p-3.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-2 relative w-[calc(50%-5px)] sm:w-[225px] md:w-[235px] ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
+        card.className = `apple-site-card p-3.5 flex flex-col justify-between gap-2.5 relative w-full h-auto ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
         card.id = 'card_' + site.id;
 
         const siteTitle = (site.name && site.name.trim()) ? site.name.trim() : 'رابط';
@@ -1821,13 +1849,13 @@
         textWrap.className = 'min-w-0 w-full text-right';
 
         const titleEl = document.createElement('h2');
-        titleEl.className = 'text-sm text-main leading-snug break-words w-full';
+        titleEl.className = 'text-sm font-normal text-main leading-snug break-words w-full';
         titleEl.textContent = siteTitle;
 
         textWrap.appendChild(titleEl);
         if (siteDesc) {
           const descEl = document.createElement('p');
-          descEl.className = 'text-xs text-muted truncate w-full mt-0.5';
+          descEl.className = 'text-xs font-normal text-muted leading-snug break-words w-full mt-0.5';
           descEl.textContent = siteDesc;
           textWrap.appendChild(descEl);
         }
@@ -1835,9 +1863,9 @@
 
         const starBtn = document.createElement('button');
         starBtn.type = 'button';
-        starBtn.className = `p-0.5 rounded-lg cursor-pointer transition-colors shrink-0 ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
+        starBtn.className = `w-7 h-7 rounded-full flex items-center justify-center cursor-pointer transition-colors shrink-0 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
         starBtn.setAttribute('aria-label', site.isFavorite ? 'إزالة من المفضلة' : 'أضف للمفضلة');
-        starBtn.innerHTML = SVG_ICONS.star(14, Boolean(site.isFavorite));
+        starBtn.innerHTML = SVG_ICONS.star(15, Boolean(site.isFavorite));
         starBtn.onclick = (e) => {
           e.stopPropagation();
           toggleFavoriteDirect(site.id);
@@ -1847,28 +1875,25 @@
         topRow.appendChild(starBtn);
         card.appendChild(topRow);
 
-        // Bottom row: Visits & Hidden badge on bottom-right, Favicon in bottom-center, Dots on bottom-left
+        // Bottom row: Hidden eye icon on bottom-right, Favicon in bottom-center, Dots on bottom-left
         const bottomRow = document.createElement('div');
         bottomRow.className = 'grid grid-cols-3 items-center gap-1 pt-1 w-full';
 
         const bottomRight = document.createElement('div');
-        bottomRight.className = 'flex items-center flex-wrap gap-1 justify-self-start';
-
-        const visitsPill = document.createElement('span');
-        visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[11px] leading-none shrink-0';
-        visitsPill.innerHTML = `${formatEnNumber(site.visits || 0)} <svg class="w-2 h-2 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
-        bottomRight.appendChild(visitsPill);
+        bottomRight.className = 'flex items-center gap-1 justify-self-start';
 
         if (isAdminMode && site.isHidden) {
           const hiddenBadge = document.createElement('span');
-          hiddenBadge.className = 'inline-flex items-center gap-0.5 text-[10px] text-neutral-600 bg-neutral-200/80 border border-neutral-300 px-1.5 py-0.5 rounded leading-none';
-          hiddenBadge.innerHTML = `<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg><span>مخفي</span>`;
+          hiddenBadge.className = 'inline-flex items-center justify-center w-6 h-6 rounded-full text-neutral-500 bg-neutral-100/90 dark:bg-neutral-800/80 border border-black/[0.05] dark:border-white/10';
+          hiddenBadge.title = 'مخفي عن المستخدمين';
+          hiddenBadge.setAttribute('aria-label', 'مخفي عن المستخدمين');
+          hiddenBadge.innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
           bottomRight.appendChild(hiddenBadge);
         }
 
         if (site.translate) {
           const trBadge = document.createElement('span');
-          trBadge.className = 'text-[10px] text-sky-600 bg-sky-50 border border-sky-200/60 px-1 py-0.5 rounded leading-none';
+          trBadge.className = 'text-[10px] font-normal text-sky-600 bg-sky-50/90 border border-sky-200/60 px-1.5 py-0.5 rounded-full leading-none';
           trBadge.textContent = 'مترجم';
           bottomRight.appendChild(trBadge);
         }
@@ -1880,7 +1905,7 @@
         iconBtn.onclick = () => openSite(site);
 
         const iconBox = document.createElement('div');
-        iconBox.className = 'w-9 h-9 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center text-amber-700 text-sm overflow-hidden shrink-0';
+        iconBox.className = 'w-10 h-10 rounded-[12px] bg-neutral-100/80 dark:bg-white/[0.06] border border-black/[0.05] dark:border-white/10 flex items-center justify-center text-amber-700 text-sm font-normal overflow-hidden shrink-0';
 
         const img = document.createElement('img');
         img.className = 'w-5 h-5 object-contain rounded';
@@ -1897,9 +1922,9 @@
 
         const dotsBtn = document.createElement('button');
         dotsBtn.type = 'button';
-        dotsBtn.className = 'admin-only justify-self-end p-0.5 rounded-lg text-neutral-400 hover:text-neutral-700 cursor-pointer';
+        dotsBtn.className = 'admin-only justify-self-end w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] cursor-pointer transition-colors';
         dotsBtn.setAttribute('aria-label', 'خيارات');
-        dotsBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>`;
+        dotsBtn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>`;
         dotsBtn.onclick = (e) => {
           e.stopPropagation();
           openManageModal(site);
