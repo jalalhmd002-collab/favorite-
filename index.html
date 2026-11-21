@@ -1031,6 +1031,7 @@
 
     const STORAGE_KEY_SITES = 'news_app_empty_sites_v7';
     const STORAGE_KEY_CATS = 'news_app_empty_cats_v7';
+    const STORAGE_KEY_DELETED_CATS = 'news_app_deleted_builtin_cats_v7';
     const STORAGE_KEY_CURRENT_CAT = 'news_app_empty_current_cat_v7';
     const THEME_STORAGE_KEY = 'news_app_theme_v7';
     const STORAGE_KEY_QR_URL = 'news_app_qr_custom_url_v7';
@@ -1082,9 +1083,27 @@
       return core ? core.charAt(0).toUpperCase() + core.slice(1) : 'رابط جديد';
     }
 
+    let deletedBuiltinCatIds = [];
+
+    function loadDeletedBuiltinCats() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DELETED_CATS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveDeletedBuiltinCats() {
+      try { localStorage.setItem(STORAGE_KEY_DELETED_CATS, JSON.stringify(deletedBuiltinCatIds)); } catch (e) {}
+    }
+
     // Custom categories always appear FIRST (right after All & Favorites)
     function getAllCategories() {
-      return [...customCategories, ...BUILTIN_CATEGORIES];
+      const activeBuiltins = BUILTIN_CATEGORIES.filter(c => !deletedBuiltinCatIds.includes(c.id));
+      return [...customCategories, ...activeBuiltins];
     }
 
     function saveCurrentCategory(catId) {
@@ -1289,6 +1308,7 @@
 
     async function loadActiveSites() {
       customCategories = loadCustomCategories();
+      deletedBuiltinCatIds = loadDeletedBuiltinCats();
       let loaded = null;
 
       try {
@@ -1411,10 +1431,33 @@
       const counts = getCategoryCounts();
       const fragment = document.createDocumentFragment();
 
-      function createCatCard(id, name, icon, count) {
+      function deleteCategoryById(catId) {
+        const linkedCount = activeSites.filter(s => (s.category || 'general') === catId).length;
+        if (linkedCount > 0) {
+          showToast('عذراً، لا يمكن حذف هذا التصنيف لأنه يحتوي على روابط. انقل الروابط أو احذفها أولاً', 'error');
+          return;
+        }
+        customCategories = customCategories.filter(c => c.id !== catId);
+        if (BUILTIN_CATEGORIES.some(c => c.id === catId) && !deletedBuiltinCatIds.includes(catId)) {
+          deletedBuiltinCatIds.push(catId);
+          saveDeletedBuiltinCats();
+        }
+        if (currentCategory === catId) {
+          saveCurrentCategory('all');
+        }
+        persistActiveSites();
+        populateCategoryDropdowns();
+        renderCurtainCategories();
+        updateTriggerBar();
+        renderSites();
+        showToast('تم حذف التصنيف بنجاح', 'success');
+      }
+
+      function createCatCard(id, name, icon, count, isDeletable = false) {
         const isActive = currentCategory === id;
-        const card = document.createElement('button');
-        card.type = 'button';
+        const card = document.createElement('div');
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
         card.className = `ios-pressable w-full rounded-xl px-3 py-2.5 border text-right flex items-center justify-between gap-2 cursor-pointer ${
           isActive
             ? 'surface-card border-neutral-900/30 text-main ring-1 ring-black/10'
@@ -1433,6 +1476,21 @@
           </span>
         `;
 
+        if (isDeletable) {
+          const endGroup = card.querySelector('span:last-child');
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'w-5 h-5 rounded-full surface-card border text-muted hover:text-rose-600 hover:border-rose-400 flex items-center justify-center text-xs font-black leading-none cursor-pointer transition-colors';
+          delBtn.setAttribute('aria-label', `حذف تصنيف ${name}`);
+          delBtn.title = 'حذف التصنيف';
+          delBtn.textContent = '×';
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteCategoryById(id);
+          };
+          endGroup.appendChild(delBtn);
+        }
+
         card.onclick = () => {
           saveCurrentCategory(id);
           updateTriggerBar();
@@ -1447,7 +1505,7 @@
       fragment.appendChild(createCatCard('favorites', 'المفضلة', 'star', counts.favorites));
 
       getAllCategories().forEach(cat => {
-        fragment.appendChild(createCatCard(cat.id, cat.name, cat.icon, counts[cat.id] || 0));
+        fragment.appendChild(createCatCard(cat.id, cat.name, cat.icon, counts[cat.id] || 0, true));
       });
 
       grid.appendChild(fragment);
@@ -2737,6 +2795,8 @@
       document.getElementById('resetDefaultsBtn').addEventListener('click', () => {
         activeSites = [];
         customCategories = [];
+        deletedBuiltinCatIds = [];
+        saveDeletedBuiltinCats();
         saveCurrentCategory('all');
         populateCategoryDropdowns();
         persistActiveSites();
