@@ -1807,12 +1807,77 @@
         const domain = cleanDomain(site.domain || site.url);
         const siteDesc = (site.description && site.description.trim()) ? site.description.trim() : '';
 
-        // Main row: Favicon on the right, Title to the left of icon
+        // Top row: Site title across the top (right-to-left) + Favorite star on top-left
+        const topRow = document.createElement('div');
+        topRow.className = 'flex items-start justify-between gap-2 w-full';
+
         const launchBtn = document.createElement('button');
         launchBtn.type = 'button';
-        launchBtn.className = 'flex items-center gap-2.5 w-full bg-transparent border-0 p-0 cursor-pointer text-right';
+        launchBtn.className = 'flex-1 min-w-0 bg-transparent border-0 p-0 cursor-pointer text-right';
         launchBtn.title = `فتح ${siteTitle}`;
         launchBtn.onclick = () => openSite(site);
+
+        const textWrap = document.createElement('div');
+        textWrap.className = 'min-w-0 w-full text-right';
+
+        const titleEl = document.createElement('h2');
+        titleEl.className = 'text-sm text-main leading-snug break-words w-full';
+        titleEl.textContent = siteTitle;
+
+        textWrap.appendChild(titleEl);
+        if (siteDesc) {
+          const descEl = document.createElement('p');
+          descEl.className = 'text-xs text-muted truncate w-full mt-0.5';
+          descEl.textContent = siteDesc;
+          textWrap.appendChild(descEl);
+        }
+        launchBtn.appendChild(textWrap);
+
+        const starBtn = document.createElement('button');
+        starBtn.type = 'button';
+        starBtn.className = `p-0.5 rounded-lg cursor-pointer transition-colors shrink-0 ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
+        starBtn.setAttribute('aria-label', site.isFavorite ? 'إزالة من المفضلة' : 'أضف للمفضلة');
+        starBtn.innerHTML = SVG_ICONS.star(14, Boolean(site.isFavorite));
+        starBtn.onclick = (e) => {
+          e.stopPropagation();
+          toggleFavoriteDirect(site.id);
+        };
+
+        topRow.appendChild(launchBtn);
+        topRow.appendChild(starBtn);
+        card.appendChild(topRow);
+
+        // Bottom row: Visits & Hidden badge on bottom-right, Favicon in bottom-center, Dots on bottom-left
+        const bottomRow = document.createElement('div');
+        bottomRow.className = 'grid grid-cols-3 items-center gap-1 pt-1 w-full';
+
+        const bottomRight = document.createElement('div');
+        bottomRight.className = 'flex items-center flex-wrap gap-1 justify-self-start';
+
+        const visitsPill = document.createElement('span');
+        visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[11px] leading-none shrink-0';
+        visitsPill.innerHTML = `${formatEnNumber(site.visits || 0)} <svg class="w-2 h-2 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+        bottomRight.appendChild(visitsPill);
+
+        if (isAdminMode && site.isHidden) {
+          const hiddenBadge = document.createElement('span');
+          hiddenBadge.className = 'inline-flex items-center gap-0.5 text-[10px] text-neutral-600 bg-neutral-200/80 border border-neutral-300 px-1.5 py-0.5 rounded leading-none';
+          hiddenBadge.innerHTML = `<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg><span>مخفي</span>`;
+          bottomRight.appendChild(hiddenBadge);
+        }
+
+        if (site.translate) {
+          const trBadge = document.createElement('span');
+          trBadge.className = 'text-[10px] text-sky-600 bg-sky-50 border border-sky-200/60 px-1 py-0.5 rounded leading-none';
+          trBadge.textContent = 'مترجم';
+          bottomRight.appendChild(trBadge);
+        }
+
+        const iconBtn = document.createElement('button');
+        iconBtn.type = 'button';
+        iconBtn.className = 'justify-self-center bg-transparent border-0 p-0 cursor-pointer';
+        iconBtn.title = `فتح ${siteTitle}`;
+        iconBtn.onclick = () => openSite(site);
 
         const iconBox = document.createElement('div');
         iconBox.className = 'w-9 h-9 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center text-amber-700 text-sm overflow-hidden shrink-0';
@@ -1828,74 +1893,21 @@
           iconBox.textContent = siteTitle.trim().slice(0, 2) || '🔗';
         };
         iconBox.appendChild(img);
-
-        const textWrap = document.createElement('div');
-        textWrap.className = 'min-w-0 flex-1 text-right';
-
-        const titleEl = document.createElement('h2');
-        titleEl.className = 'text-sm text-main leading-tight line-clamp-1 w-full';
-        titleEl.textContent = siteTitle;
-
-        textWrap.appendChild(titleEl);
-        if (siteDesc) {
-          const descEl = document.createElement('p');
-          descEl.className = 'text-xs text-muted truncate w-full mt-0.5';
-          descEl.textContent = siteDesc;
-          textWrap.appendChild(descEl);
-        }
-        launchBtn.appendChild(iconBox);
-        launchBtn.appendChild(textWrap);
-        card.appendChild(launchBtn);
-
-        // Bottom row: Actions/badges on right, Visits counter at bottom-left
-        const bottomRow = document.createElement('div');
-        bottomRow.className = 'flex items-center justify-between gap-1 pt-1 w-full';
-
-        const rightActions = document.createElement('div');
-        rightActions.className = 'flex items-center gap-1 min-w-0';
-
-        const starBtn = document.createElement('button');
-        starBtn.type = 'button';
-        starBtn.className = `p-0.5 rounded-lg cursor-pointer transition-colors ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
-        starBtn.setAttribute('aria-label', site.isFavorite ? 'إزالة من المفضلة' : 'أضف للمفضلة');
-        starBtn.innerHTML = SVG_ICONS.star(14, Boolean(site.isFavorite));
-        starBtn.onclick = (e) => {
-          e.stopPropagation();
-          toggleFavoriteDirect(site.id);
-        };
-        rightActions.appendChild(starBtn);
+        iconBtn.appendChild(iconBox);
 
         const dotsBtn = document.createElement('button');
         dotsBtn.type = 'button';
-        dotsBtn.className = 'admin-only p-0.5 rounded-lg text-neutral-400 hover:text-neutral-700 cursor-pointer';
+        dotsBtn.className = 'admin-only justify-self-end p-0.5 rounded-lg text-neutral-400 hover:text-neutral-700 cursor-pointer';
         dotsBtn.setAttribute('aria-label', 'خيارات');
         dotsBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>`;
         dotsBtn.onclick = (e) => {
           e.stopPropagation();
           openManageModal(site);
         };
-        rightActions.appendChild(dotsBtn);
 
-        if (site.translate) {
-          const trBadge = document.createElement('span');
-          trBadge.className = 'text-[10px] text-sky-600 bg-sky-50 border border-sky-200/60 px-1 py-0.5 rounded leading-none';
-          trBadge.textContent = 'مترجم';
-          rightActions.appendChild(trBadge);
-        }
-
-        if (isAdminMode && site.isHidden) {
-          const hiddenBadge = document.createElement('span');
-          hiddenBadge.className = 'inline-flex items-center gap-0.5 text-[10px] text-neutral-600 bg-neutral-200/80 border border-neutral-300 px-1.5 py-0.5 rounded leading-none';
-          hiddenBadge.innerHTML = `<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg><span>مخفي</span>`;
-          rightActions.appendChild(hiddenBadge);
-        }
-
-        const visitsPill = document.createElement('span');
-        visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[11px] leading-none shrink-0';
-        visitsPill.innerHTML = `${formatEnNumber(site.visits || 0)} <svg class="w-2 h-2 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
-
-        bottomRow.appendChild(rightActions);
-        bottomRow.appendChild(visitsPill);
+        bottomRow.appendChild(bottomRight);
+        bottomRow.appendChild(iconBtn);
+        bottomRow.appendChild(dotsBtn);
         card.appendChild(bottomRow);
         fragment.appendChild(card);
       });
