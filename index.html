@@ -1826,23 +1826,33 @@
 
       const fragment = document.createDocumentFragment();
 
-      filteredSites.forEach(site => {
+      const cardBorderPalette = [
+        { card: 'border-blue-500 shadow-[0_3px_0_0_#3b82f6]', icon: 'border-blue-500' },
+        { card: 'border-emerald-500 shadow-[0_3px_0_0_#10b981]', icon: 'border-emerald-500' },
+        { card: 'border-violet-500 shadow-[0_3px_0_0_#8b5cf6]', icon: 'border-violet-500' },
+        { card: 'border-orange-500 shadow-[0_3px_0_0_#f97316]', icon: 'border-orange-500' },
+        { card: 'border-rose-500 shadow-[0_3px_0_0_#f43f5e]', icon: 'border-rose-500' },
+        { card: 'border-sky-500 shadow-[0_3px_0_0_#0ea5e9]', icon: 'border-sky-500' }
+      ];
+
+      filteredSites.forEach((site, idx) => {
+        const palette = cardBorderPalette[idx % cardBorderPalette.length];
         const siteTitle = (site.name && site.name.trim()) ? site.name.trim() : 'رابط';
         const domain = cleanDomain(site.domain || site.url);
         const siteDesc = (site.description && site.description.trim()) ? site.description.trim() : '';
 
         const card = document.createElement('article');
-        card.className = `ios-pressable surface-card rounded-2xl px-3.5 py-3 border-[1.5px] border-neutral-900 dark:border-white/20 shadow-[0_3px_0_0_#171717] dark:shadow-[0_3px_0_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 transition-all flex items-center justify-between gap-3 relative w-full cursor-pointer ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
+        card.className = `ios-pressable surface-card rounded-2xl px-3.5 py-3 border-[1.5px] ${palette.card} hover:-translate-y-0.5 transition-all flex items-center justify-between gap-3 relative w-full cursor-pointer ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
         card.id = 'card_' + site.id;
         card.title = `فتح ${siteTitle}`;
         card.onclick = () => openSite(site);
 
-        // Right side: Favicon in square rounded box with prominent black border + Title (& optional description)
+        // Right side: Favicon in square rounded box matching card border color + Title (& optional description)
         const rightContent = document.createElement('div');
         rightContent.className = 'flex items-center gap-3 min-w-0 flex-1';
 
         const iconBox = document.createElement('div');
-        iconBox.className = 'w-11 h-11 rounded-xl border-[1.5px] border-neutral-900 dark:border-white/30 bg-white flex items-center justify-center text-amber-700 text-sm font-bold overflow-hidden shrink-0';
+        iconBox.className = `w-11 h-11 rounded-xl border-[1.5px] ${palette.icon} bg-white flex items-center justify-center text-amber-700 text-sm font-bold overflow-hidden shrink-0`;
 
         const img = document.createElement('img');
         img.className = 'w-6 h-6 object-contain rounded';
@@ -1937,7 +1947,7 @@
     function openSite(site) {
       site.visits = (Number(site.visits) || 0) + 1;
       site.lastVisited = Date.now();
-      persistActiveSites();
+      persistActiveSites(true);
       setTimeout(() => renderSites(), 300);
 
       const targetUrl = formatUrl(site.url);
