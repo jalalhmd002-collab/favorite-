@@ -629,6 +629,11 @@
           <input type="checkbox" id="quickTranslateInput" class="w-4 h-4 rounded accent-amber-500">
           <span>فتح الرابط مترجماً عبر ترجمة جوجل تلقائياً</span>
         </label>
+
+        <label class="admin-only flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="quickHiddenInput">
+          <input type="checkbox" id="quickHiddenInput" class="w-4 h-4 rounded accent-amber-500">
+          <span>إخفاء عن المستخدمين (للمدير فقط)</span>
+        </label>
       </div>
 
       <!-- 4. Unified Footer: Cancel & Save on left -->
@@ -710,6 +715,17 @@
           <input type="checkbox" id="manageSiteTranslate" class="w-4 h-4 rounded accent-amber-500">
           <span>فتح الرابط مترجماً عبر ترجمة جوجل تلقائياً</span>
         </label>
+
+        <label class="admin-only flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="manageSiteHidden">
+          <input type="checkbox" id="manageSiteHidden" class="w-4 h-4 rounded accent-amber-500">
+          <span>إخفاء عن المستخدمين (للمدير فقط)</span>
+        </label>
+
+        <button type="button" id="manageHiddenToggleBtn"
+          class="admin-only ios-pressable w-full py-2 px-3 rounded-xl surface-sub border text-xs font-extrabold text-main flex items-center justify-center gap-2 cursor-pointer">
+          <span id="manageHiddenToggleIcon"></span>
+          <span id="manageHiddenToggleText">إخفاء عن المستخدمين</span>
+        </button>
 
         <div class="surface-sub border rounded-xl px-3 py-2 flex justify-between items-center text-xs">
           <span class="text-muted font-semibold">عدد الزيارات:</span>
@@ -1389,7 +1405,8 @@
             visits: Number(item.visits) || 0,
             lastVisited: Number(item.lastVisited) || Date.now(),
             isUserAdded: true,
-            isFavorite: Boolean(item.isFavorite)
+            isFavorite: Boolean(item.isFavorite),
+            isHidden: Boolean(item.isHidden)
           }));
           sortActiveSites();
         }
@@ -1448,7 +1465,8 @@
           visits: Number(item.visits) || 0,
           lastVisited: Number(item.lastVisited) || Date.now(),
           isUserAdded: true,
-          isFavorite: Boolean(item.isFavorite)
+          isFavorite: Boolean(item.isFavorite),
+            isHidden: Boolean(item.isHidden)
         }));
       } else {
         activeSites = [];
@@ -1478,7 +1496,9 @@
     function getCategoryCounts() {
       const counts = { all: activeSites.length, favorites: 0 };
       getAllCategories().forEach(c => { counts[c.id] = 0; });
-      activeSites.forEach(s => {
+      const visibleSites = isAdminMode ? activeSites : activeSites.filter(s => !s.isHidden);
+      counts.all = visibleSites.length;
+      visibleSites.forEach(s => {
         if (s.isFavorite) counts.favorites++;
         const cat = s.category || 'general';
         counts[cat] = (counts[cat] || 0) + 1;
@@ -1721,6 +1741,7 @@
       updateTriggerBar();
 
       const filteredSites = activeSites.filter(s => {
+        if (!isAdminMode && s.isHidden) return false;
         if (currentCategory === 'favorites') {
           if (!s.isFavorite) return false;
         } else if (currentCategory !== 'all') {
@@ -1785,7 +1806,7 @@
 
       filteredSites.forEach(site => {
         const card = document.createElement('article');
-        card.className = 'ios-pressable surface-card rounded-2xl p-2 sm:p-2.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-1 relative w-[calc(50%-5px)] sm:w-[175px] md:w-[180px]';
+        card.className = `ios-pressable surface-card rounded-2xl p-2 sm:p-2.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-1 relative w-[calc(50%-5px)] sm:w-[175px] md:w-[180px] ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
         card.id = 'card_' + site.id;
 
         const siteTitle = (site.name && site.name.trim()) ? site.name.trim() : 'رابط';
@@ -1860,6 +1881,13 @@
           bottomRow.appendChild(trBadge);
         }
 
+        if (isAdminMode && site.isHidden) {
+          const hiddenBadge = document.createElement('span');
+          hiddenBadge.className = 'inline-flex items-center gap-0.5 text-[8.5px] font-bold text-neutral-600 bg-neutral-200/80 border border-neutral-300 px-1.5 py-0.5 rounded leading-none';
+          hiddenBadge.innerHTML = `<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg><span>مخفي</span>`;
+          bottomRow.appendChild(hiddenBadge);
+        }
+
         const visitsPill = document.createElement('span');
         visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[9.5px] font-black leading-none';
         visitsPill.innerHTML = `${formatEnNumber(site.visits || 0)} <svg class="w-2 h-2 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
@@ -1922,6 +1950,8 @@
       closeAllCustomSelects();
       document.getElementById('addModalOverlay').classList.add('active');
       pushOverlayToStack('addModalOverlay');
+      const qHidden = document.getElementById('quickHiddenInput');
+      if (qHidden) qHidden.checked = false;
       document.getElementById('quickUrlInput').focus();
     }
 
@@ -1936,6 +1966,7 @@
       const nameInput = document.getElementById('quickNameInput');
       const descInput = document.getElementById('quickDescInput');
       const translateInput = document.getElementById('quickTranslateInput');
+      const hiddenInput = document.getElementById('quickHiddenInput');
       const catInput = document.getElementById('quickCategorySelect');
 
       const urlVal = urlInput.value.trim();
@@ -1964,6 +1995,7 @@
         existing.category = catVal;
         existing.translate = Boolean(translateInput.checked);
         existing.isFavorite = addModalFavorite;
+        existing.isHidden = isAdminMode && hiddenInput ? Boolean(hiddenInput.checked) : Boolean(existing.isHidden);
         sortActiveSites();
         persistActiveSites();
         saveCurrentCategory(catVal);
@@ -1984,7 +2016,8 @@
         visits: 0,
         lastVisited: Date.now(),
         isUserAdded: true,
-        isFavorite: addModalFavorite
+        isFavorite: addModalFavorite,
+        isHidden: isAdminMode && hiddenInput ? Boolean(hiddenInput.checked) : false
       };
 
       activeSites.unshift(newSite);
@@ -2000,6 +2033,7 @@
       nameInput.value = '';
       descInput.value = '';
       translateInput.checked = false;
+      if (hiddenInput) hiddenInput.checked = false;
       addModalFavorite = false;
       closeAddModal();
 
@@ -2060,6 +2094,9 @@
       document.getElementById('manageSiteDesc').value = site.description || '';
       document.getElementById('manageSiteUrl').value = site.url || '';
       document.getElementById('manageSiteTranslate').checked = Boolean(site.translate);
+      const mHidden = document.getElementById('manageSiteHidden');
+      if (mHidden) mHidden.checked = Boolean(site.isHidden);
+      updateManageHiddenButton(Boolean(site.isHidden));
       populateCategoryDropdowns(site.category || 'general');
       closeAllCustomSelects();
 
@@ -2069,6 +2106,35 @@
 
       document.getElementById('manageModalOverlay').classList.add('active');
       pushOverlayToStack('manageModalOverlay');
+    }
+
+    function updateManageHiddenButton(isHidden) {
+      const btn = document.getElementById('manageHiddenToggleBtn');
+      const icon = document.getElementById('manageHiddenToggleIcon');
+      const text = document.getElementById('manageHiddenToggleText');
+      if (!btn || !icon || !text) return;
+      if (isHidden) {
+        btn.classList.add('border-neutral-400', 'bg-neutral-500/10');
+        icon.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        text.textContent = 'إظهار للمستخدمين';
+      } else {
+        btn.classList.remove('border-neutral-400', 'bg-neutral-500/10');
+        icon.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+        text.textContent = 'إخفاء عن المستخدمين';
+      }
+    }
+
+    function toggleHiddenFromManage() {
+      const id = document.getElementById('manageSiteId').value;
+      const site = activeSites.find(s => s.id === id);
+      if (!site) return;
+      site.isHidden = !site.isHidden;
+      const mHidden = document.getElementById('manageSiteHidden');
+      if (mHidden) mHidden.checked = site.isHidden;
+      updateManageHiddenButton(site.isHidden);
+      persistActiveSites();
+      renderSites();
+      showToast(site.isHidden ? `تم إخفاء "${site.name}" عن المستخدمين` : `تم إظهار "${site.name}" للمستخدمين`, 'info');
     }
 
     function updateManageFavButton(isFav) {
@@ -2124,6 +2190,7 @@
       const newDesc = document.getElementById('manageSiteDesc').value.trim();
       const newUrl = document.getElementById('manageSiteUrl').value.trim();
       const newTranslate = document.getElementById('manageSiteTranslate').checked;
+      const newHidden = Boolean(document.getElementById('manageSiteHidden')?.checked);
       const newCategory = document.getElementById('manageSiteCategory').value || 'general';
 
       if (!newName || !newUrl) {
@@ -2140,6 +2207,7 @@
       activeSites[idx].domain = cleanDomain(newUrl);
       activeSites[idx].category = newCategory;
       activeSites[idx].translate = newTranslate;
+      activeSites[idx].isHidden = newHidden;
 
       sortActiveSites();
       persistActiveSites();
@@ -2878,6 +2946,7 @@
                 if (item.category) existingSite.category = item.category;
                 if (typeof item.translate === 'boolean') existingSite.translate = item.translate;
                 if (typeof item.isFavorite === 'boolean') existingSite.isFavorite = item.isFavorite;
+                if (typeof item.isHidden === 'boolean') existingSite.isHidden = item.isHidden;
                 existingSite.visits = Math.max(Number(existingSite.visits) || 0, Number(item.visits) || 0);
                 existingSite.lastVisited = Math.max(Number(existingSite.lastVisited) || 0, Number(item.lastVisited) || Date.now());
               } else {
@@ -2892,7 +2961,8 @@
                   visits: Number(item.visits) || 0,
                   lastVisited: Number(item.lastVisited) || Date.now(),
                   isUserAdded: true,
-                  isFavorite: Boolean(item.isFavorite)
+                  isFavorite: Boolean(item.isFavorite),
+            isHidden: Boolean(item.isHidden)
                 });
               }
             });
@@ -2972,6 +3042,7 @@
 
       // Manage Modal
       document.getElementById('manageFavToggleBtn').addEventListener('click', toggleFavoriteFromManage);
+      document.getElementById('manageHiddenToggleBtn').addEventListener('click', toggleHiddenFromManage);
       document.getElementById('manageMoveApplyBtn').addEventListener('click', applyMoveCategoryFromManage);
       document.getElementById('closeManageModalBtn').addEventListener('click', () => closeManageModal());
       document.getElementById('cancelManageBtn').addEventListener('click', () => closeManageModal());
