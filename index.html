@@ -353,7 +353,7 @@
 </head>
 <body class="min-h-screen flex justify-center selection:bg-amber-500 selection:text-white">
 
-  <div class="app-shell w-full max-w-5xl min-h-screen flex flex-col relative pb-24">
+  <div class="app-shell w-full max-w-5xl min-h-screen flex flex-col relative pb-24 md:pb-6">
 
     <!-- Main App Header -->
     <header class="px-4 pt-3.5 pb-2 sticky top-0 z-40 ios-glass" style="background-color: color-mix(in srgb, var(--bg-page) 88%, transparent);">
@@ -379,7 +379,7 @@
               </span>
             </button>
             <button type="button" id="brandDropdownQrMessageBtn" role="menuitem"
-              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -428,17 +428,17 @@
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                <span>العودة لوضع المستخدم</span>
+                <span>خروج من وضع المدير</span>
               </span>
             </button>
           </div>
 
           <div>
-            <div class="flex flex-wrap items-center gap-1.5">
-              <h1 id="appTitleTrigger" class="text-lg font-black text-main leading-tight cursor-default select-none" style="cursor: default;">روابطي المفضلة</h1>
-              <span class="admin-only text-[10px] font-black px-2 py-0.5 rounded-full surface-sub text-main border">وضع المدير</span>
-            </div>
-            <p class="text-[11px] text-muted font-semibold mt-0.5">لوحة روابطك الشخصية السريعة</p>
+            <h1 id="appTitleTrigger" class="text-lg font-black text-main leading-tight cursor-default select-none" style="cursor: default;">روابطي المفضلة</h1>
+            <p class="text-[11px] text-muted font-semibold mt-0.5 flex items-center gap-1.5">
+              <span>لوحة روابطك الشخصية السريعة</span>
+              <span class="admin-only text-[11px] font-black text-main">• وضع المدير</span>
+            </p>
           </div>
         </div>
 
@@ -494,16 +494,10 @@
 
     <!-- Responsive Compact Grid Cards -->
     <main class="px-4 py-2 flex flex-col gap-3 flex-1">
-      <div id="sitesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 w-full"></div>
+      <div id="sitesGrid" class="flex flex-wrap justify-center gap-2.5 w-full"></div>
 
       <!-- Storage Status & Footer -->
       <div class="mt-auto pt-4 flex flex-col items-center gap-2">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[11px] font-bold">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
-          </svg>
-          <span>الحفظ الدائم الفوري مفعّل</span>
-        </div>
         <footer class="text-[11px] font-bold text-muted pb-1">
           فكرة وتصميم أبو حازم
         </footer>
@@ -511,7 +505,7 @@
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav fixed bottom-0 inset-x-0 max-w-5xl mx-auto z-40 ios-glass border-t px-6 sm:px-12 pt-2.5 pb-4 flex justify-around sm:justify-center sm:gap-14 items-center text-[10px] font-bold text-muted">
+    <nav class="bottom-nav md:hidden fixed bottom-0 inset-x-0 max-w-5xl mx-auto z-40 ios-glass border-t px-6 pt-2.5 pb-4 flex justify-around items-center text-[10px] font-bold text-muted">
       <button type="button" id="navAllBtn" class="flex flex-col items-center gap-1 text-blue-600 cursor-pointer">
         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -534,13 +528,6 @@
         <span>الأقسام</span>
       </button>
 
-      <button type="button" id="navSettingsBtn" class="admin-only flex flex-col items-center gap-1 hover:text-main transition-colors cursor-pointer">
-        <svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
-          <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" stroke-linecap="round" stroke-linejoin="round"></path>
-          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-        <span>الإعدادات</span>
-      </button>
     </nav>
   </div>
 
@@ -900,16 +887,6 @@
             class="ios-pressable px-2.5 py-1 rounded-lg bg-amber-500 text-neutral-950 text-[10px] font-black shrink-0 cursor-pointer">نسخ</button>
         </div>
 
-        <!-- Admin-only Custom QR URL editor -->
-        <div class="admin-only w-full surface-sub border rounded-xl p-2.5 flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold text-main" for="qrCustomUrlInput">تخصيص رابط الباركود (للمدير):</label>
-          <div class="flex gap-1.5">
-            <input type="text" id="qrCustomUrlInput" class="field-input flex-1 text-xs" placeholder="اتركه فارغاً لرابط الصفحة الحالي" dir="ltr">
-            <button type="button" id="saveQrCustomUrlBtn"
-              class="ios-pressable px-3 rounded-xl bg-neutral-950 text-amber-400 text-[11px] font-black shrink-0 cursor-pointer">تطبيق</button>
-          </div>
-        </div>
-
         <!-- 30s Countdown Bar -->
         <div class="w-full flex flex-col gap-1 pt-1">
           <div class="flex items-center justify-between text-[11px] font-bold text-muted">
@@ -1059,6 +1036,7 @@
     const STORAGE_KEY_QR_URL = 'news_app_qr_custom_url_v7';
     const STORAGE_KEY_ADMIN_PASS = 'news_app_admin_password_v7';
     const STORAGE_KEY_QR_MSG = 'news_app_qr_display_msg_v7';
+    const STORAGE_KEY_ADMIN_STATE = 'news_app_admin_state_v7';
     let isAdminMode = false;
     let titleClickTimestamps = [];
     let qrCountdownTimer = null;
@@ -1593,7 +1571,7 @@
 
       if (filteredSites.length === 0) {
         const empty = document.createElement('div');
-        empty.className = 'col-span-full surface-card rounded-2xl p-8 border border-dashed text-center flex flex-col items-center gap-3';
+        empty.className = 'w-full surface-card rounded-2xl p-8 border border-dashed text-center flex flex-col items-center gap-3';
         empty.style.borderColor = 'var(--accent-border)';
 
         if (savedSearchQuery) {
@@ -1641,7 +1619,7 @@
 
       filteredSites.forEach(site => {
         const card = document.createElement('article');
-        card.className = 'ios-pressable surface-card rounded-2xl p-2 sm:p-2.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-1 relative';
+        card.className = 'ios-pressable surface-card rounded-2xl p-2 sm:p-2.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-1 relative w-[calc(50%-5px)] sm:w-[175px] md:w-[180px]';
         card.id = 'card_' + site.id;
 
         const siteTitle = (site.name && site.name.trim()) ? site.name.trim() : 'رابط';
@@ -2140,11 +2118,12 @@
     // ========================================================
     function setAdminMode(enabled, silent = false) {
       isAdminMode = Boolean(enabled);
+      try { localStorage.setItem(STORAGE_KEY_ADMIN_STATE, isAdminMode ? 'true' : 'false'); } catch (e) {}
       document.body.classList.toggle('admin-mode', isAdminMode);
       renderSites();
       if (!silent) {
         showToast(
-          isAdminMode ? 'تم تفعيل وضع المدير (الصلاحيات الكاملة)' : 'تم العودة إلى وضع المستخدم',
+          isAdminMode ? 'تم تفعيل وضع المدير (الصلاحيات الكاملة)' : 'تم الخروج من وضع المدير',
           isAdminMode ? 'success' : 'info'
         );
       }
@@ -2222,16 +2201,13 @@
     }
 
     function handleSecretTitleClick() {
+      if (isAdminMode) return;
       const now = Date.now();
       titleClickTimestamps = titleClickTimestamps.filter(t => now - t <= 2000);
       titleClickTimestamps.push(now);
       if (titleClickTimestamps.length >= 5) {
         titleClickTimestamps = [];
-        if (isAdminMode) {
-          setAdminMode(false);
-        } else {
-          openAdminLoginModal();
-        }
+        openAdminLoginModal();
       }
     }
 
@@ -2239,10 +2215,7 @@
     // SMART QR CODE MODAL (Auto-show 30s + Manual Reopen)
     // ========================================================
     function getEffectiveQrUrl() {
-      let custom = '';
-      try { custom = (localStorage.getItem(STORAGE_KEY_QR_URL) || '').trim(); } catch (e) {}
-      if (custom) return formatUrl(custom);
-      return window.location.href;
+      return 'https://jalalhmd002-collab.github.io/favorite-/';
     }
 
     // Self-contained Offline QR Code Generator (Byte mode, ECC-L, Versions 1..10)
@@ -2493,10 +2466,6 @@
     function openQrModal() {
       stopQrTimer();
       updateQrDisplayMessageUI();
-      const customInput = document.getElementById('qrCustomUrlInput');
-      if (customInput) {
-        try { customInput.value = localStorage.getItem(STORAGE_KEY_QR_URL) || ''; } catch (e) {}
-      }
       renderQrCode(getEffectiveQrUrl());
 
       qrRemainingSeconds = 30;
@@ -2635,16 +2604,6 @@
         }
       });
 
-      document.getElementById('saveQrCustomUrlBtn').addEventListener('click', () => {
-        const val = (document.getElementById('qrCustomUrlInput').value || '').trim();
-        try {
-          if (val) localStorage.setItem(STORAGE_KEY_QR_URL, val);
-          else localStorage.removeItem(STORAGE_KEY_QR_URL);
-        } catch (e) {}
-        renderQrCode(getEffectiveQrUrl());
-        showToast(val ? 'تم تحديث رابط الباركود' : 'تمت استعادة رابط الصفحة الحالي', 'success');
-      });
-
       document.getElementById('brandDropdownBackupBtn').addEventListener('click', () => {
         closeBrandDropdown();
         openBackupModal();
@@ -2659,7 +2618,9 @@
 
       openQrModal();
       loadActiveSites();
-      setAdminMode(false, true);
+      let savedAdmin = false;
+      try { savedAdmin = localStorage.getItem(STORAGE_KEY_ADMIN_STATE) === 'true'; } catch (e) {}
+      setAdminMode(savedAdmin, true);
 
       // Header & Bottom Nav
       document.getElementById('openAddModalBtn').addEventListener('click', openAddModal);
@@ -2674,7 +2635,6 @@
         renderSites();
       });
       document.getElementById('navCatsBtn').addEventListener('click', openCurtain);
-      document.getElementById('navSettingsBtn').addEventListener('click', openBackupModal);
 
       // Add Modal
       document.getElementById('addFavToggleBtn').addEventListener('click', () => {
@@ -2714,20 +2674,71 @@
         reader.onload = (evt) => {
           try {
             const imported = JSON.parse(evt.target.result);
+            let importedSites = [];
+            let importedCats = [];
             if (Array.isArray(imported)) {
-              activeSites = imported;
+              importedSites = imported;
             } else if (imported && Array.isArray(imported.sites)) {
-              activeSites = imported.sites;
-              if (Array.isArray(imported.categories)) customCategories = imported.categories;
+              importedSites = imported.sites;
+              if (Array.isArray(imported.categories)) importedCats = imported.categories;
             } else {
               showToast('الملف لا يحتوي على بيانات صحيحة', 'error');
               return;
             }
+
+            importedCats.forEach(cat => {
+              if (!cat || !cat.name) return;
+              const existingCat = customCategories.find(c => c.id === cat.id || c.name.toLowerCase() === cat.name.toLowerCase());
+              if (existingCat) {
+                existingCat.name = cat.name;
+                if (cat.icon) existingCat.icon = cat.icon;
+              } else {
+                customCategories.unshift({
+                  id: cat.id || ('custom_cat_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5)),
+                  name: cat.name,
+                  icon: cat.icon || 'layers'
+                });
+              }
+            });
+
+            importedSites.forEach(item => {
+              if (!item || !item.url) return;
+              const fullUrl = formatUrl(item.url);
+              const domain = item.domain || cleanDomain(fullUrl);
+              const existingSite = activeSites.find(s => (item.id && s.id === item.id) || formatUrl(s.url) === fullUrl);
+              if (existingSite) {
+                if (item.name) existingSite.name = item.name;
+                if (typeof item.description === 'string') existingSite.description = item.description.trim();
+                existingSite.url = fullUrl;
+                existingSite.domain = domain;
+                if (item.category) existingSite.category = item.category;
+                if (typeof item.translate === 'boolean') existingSite.translate = item.translate;
+                if (typeof item.isFavorite === 'boolean') existingSite.isFavorite = item.isFavorite;
+                existingSite.visits = Math.max(Number(existingSite.visits) || 0, Number(item.visits) || 0);
+                existingSite.lastVisited = Math.max(Number(existingSite.lastVisited) || 0, Number(item.lastVisited) || Date.now());
+              } else {
+                activeSites.unshift({
+                  id: item.id || ('custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+                  name: item.name || extractNameFromDomain(domain),
+                  description: (item.description && item.description.trim()) ? item.description.trim() : '',
+                  url: fullUrl,
+                  domain: domain,
+                  category: item.category || 'general',
+                  translate: Boolean(item.translate),
+                  visits: Number(item.visits) || 0,
+                  lastVisited: Number(item.lastVisited) || Date.now(),
+                  isUserAdded: true,
+                  isFavorite: Boolean(item.isFavorite)
+                });
+              }
+            });
+
+            sortActiveSites();
             populateCategoryDropdowns();
             persistActiveSites();
             renderSites();
             closeBackupModal();
-            showToast('تمت استعادة البيانات بنجاح', 'success');
+            showToast('تم دمج وتحديث البيانات بنجاح', 'success');
           } catch (err) {
             showToast('خطأ في قراءة الملف', 'error');
           }
