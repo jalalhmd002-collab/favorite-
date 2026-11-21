@@ -783,45 +783,45 @@
       </div>
 
       <div class="flex flex-col gap-2.5">
-        <div class="surface-sub border rounded-xl p-3 flex items-center justify-between">
+        <div class="surface-sub border rounded-xl p-3 flex items-center justify-between shadow-xs">
           <div>
             <div class="text-xs font-extrabold text-main">المظهر</div>
             <div class="text-[11px] text-muted">التبديل بين الوضع الفاتح والمظلم</div>
           </div>
           <button type="button" id="settingsThemeToggleBtn"
-            class="ios-pressable px-3 py-1.5 rounded-xl bg-amber-500 text-neutral-950 text-xs font-black cursor-pointer">تبديل</button>
+            class="ios-pressable px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black shadow-xs transition-all cursor-pointer">تبديل</button>
         </div>
 
         <button type="button" id="exportBackupBtn"
-          class="ios-pressable w-full py-2.5 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">
-          تصدير نسخة احتياطية (JSON)
+          class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-amber-400 text-xs font-black shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>تصدير نسخة احتياطية (JSON)</span>
         </button>
 
-        <label class="ios-pressable surface-sub border w-full py-2.5 rounded-xl text-xs font-extrabold text-main text-center cursor-pointer block">
-          استيراد نسخة محفوظة
+        <label class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-main text-xs font-black shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
+          <svg class="w-4 h-4 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span>استيراد نسخة محفوظة</span>
           <input type="file" id="importBackupInput" accept=".json" class="hidden">
         </label>
 
-        <div class="surface-sub border rounded-xl p-3 flex flex-col gap-2">
-          <label class="text-xs font-extrabold text-main" for="newAdminPasswordInput">تغيير كلمة مرور المدير:</label>
-          <div class="flex gap-2">
-            <input type="password" id="newAdminPasswordInput" class="field-input flex-1 text-xs" placeholder="كلمة المرور الجديدة" dir="ltr">
-            <button type="button" id="saveAdminPasswordBtn"
-              class="ios-pressable px-3.5 py-2 rounded-xl bg-amber-500 text-neutral-950 text-xs font-black shrink-0 cursor-pointer">تحديث</button>
-          </div>
-        </div>
-
         <div class="pt-2 mt-1 border-t" style="border-color: var(--border-soft);">
           <button type="button" id="resetDefaultsBtn"
-            class="ios-pressable w-full py-2.5 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">
-            تفريغ قاعدة البيانات بالكامل
+            class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            <span>تفريغ قاعدة البيانات بالكامل</span>
           </button>
         </div>
       </div>
 
       <div class="flex justify-end pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelBackupBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إغلاق</button>
+          class="ios-pressable surface-sub border hover:bg-neutral-500/10 px-5 py-2 rounded-xl text-xs font-extrabold text-main shadow-xs transition-all cursor-pointer">إغلاق</button>
       </div>
     </div>
   </div>
@@ -2539,19 +2539,6 @@
       document.getElementById('confirmAdminLoginBtn').addEventListener('click', submitAdminLogin);
       document.getElementById('adminPasswordInput').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') submitAdminLogin();
-      });
-
-      document.getElementById('saveAdminPasswordBtn').addEventListener('click', () => {
-        const input = document.getElementById('newAdminPasswordInput');
-        const newPass = input ? input.value.trim() : '';
-        if (!newPass) {
-          showToast('يرجى إدخال كلمة مرور صالحة', 'error');
-          if (input) input.focus();
-          return;
-        }
-        try { localStorage.setItem(STORAGE_KEY_ADMIN_PASS, newPass); } catch (e) {}
-        if (input) input.value = '';
-        showToast('تم تحديث كلمة مرور المدير بنجاح', 'success');
       });
 
       document.getElementById('brandDropdownQrMessageBtn').addEventListener('click', () => {
