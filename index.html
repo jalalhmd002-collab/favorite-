@@ -984,6 +984,9 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
+    // ضع رابط Google Apps Script Web App هنا بعد نشره للمزامنة السحابية
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUsxDpzb0Iv40teHqgctOXbx1bzjXWFnzHeUtxGBL0oP6rAktemZGHU0-SZi-Y6e550Q/exec";
+
     const SVG_ICONS = {
       bookmark: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
       newspaper: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>`,
@@ -1297,13 +1300,96 @@
       try { localStorage.setItem(STORAGE_KEY_CATS, JSON.stringify(customCategories)); } catch (e) {}
     }
 
-    function persistActiveSites() {
+    let cloudSyncTimer = null;
+
+    async function syncToCloud(showNotify = true) {
+      const url = (typeof GOOGLE_SCRIPT_URL === 'string') ? GOOGLE_SCRIPT_URL.trim() : '';
+      if (!url || !isAdminMode) return;
+      try {
+        const payload = {
+          sites: activeSites,
+          categories: customCategories,
+          deletedBuiltinCats: deletedBuiltinCatIds,
+          qrMessage: getQrDisplayMessage()
+        };
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        if (showNotify) {
+          showToast('تمت المزامنة مع السحابة', 'success');
+        }
+      } catch (err) {}
+    }
+
+    function scheduleCloudSync(showNotify = true) {
+      const url = (typeof GOOGLE_SCRIPT_URL === 'string') ? GOOGLE_SCRIPT_URL.trim() : '';
+      if (!url || !isAdminMode) return;
+      if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = setTimeout(() => {
+        syncToCloud(showNotify);
+      }, 150);
+    }
+
+    async function fetchFromCloud() {
+      const url = (typeof GOOGLE_SCRIPT_URL === 'string') ? GOOGLE_SCRIPT_URL.trim() : '';
+      if (!url) return;
+      try {
+        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || data.ok === false) return;
+
+        if (Array.isArray(data.categories)) {
+          customCategories = data.categories;
+          saveCustomCategories();
+        }
+        if (Array.isArray(data.deletedBuiltinCats)) {
+          deletedBuiltinCatIds = data.deletedBuiltinCats;
+          saveDeletedBuiltinCats();
+        }
+        if (typeof data.qrMessage === 'string') {
+          try {
+            if (data.qrMessage.trim()) localStorage.setItem(STORAGE_KEY_QR_MSG, data.qrMessage.trim());
+            else localStorage.removeItem(STORAGE_KEY_QR_MSG);
+          } catch (e) {}
+          updateQrDisplayMessageUI();
+        }
+        if (Array.isArray(data.sites)) {
+          activeSites = data.sites.map(item => ({
+            id: item.id || ('site_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+            name: item.name || extractNameFromDomain(item.domain || item.url),
+            description: (item.description && String(item.description).trim()) ? String(item.description).trim() : '',
+            url: formatUrl(item.url),
+            domain: item.domain || cleanDomain(item.url),
+            category: item.category || 'general',
+            translate: Boolean(item.translate),
+            visits: Number(item.visits) || 0,
+            lastVisited: Number(item.lastVisited) || Date.now(),
+            isUserAdded: true,
+            isFavorite: Boolean(item.isFavorite)
+          }));
+          sortActiveSites();
+        }
+        persistActiveSites(true);
+        populateCategoryDropdowns();
+        updateTriggerBar();
+        renderSites();
+      } catch (err) {}
+    }
+
+    function persistActiveSites(skipCloudSync = false) {
       if (!isAppInitialized || !Array.isArray(activeSites)) return;
       try { localStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(activeSites)); } catch (e) {}
       saveCustomCategories();
       try { sessionStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(activeSites)); } catch (e) {}
       saveToIndexedDB(activeSites, customCategories);
       updateTriggerBar();
+      if (!skipCloudSync && isAdminMode) {
+        scheduleCloudSync(true);
+      }
     }
 
     async function loadActiveSites() {
@@ -1351,12 +1437,13 @@
       isAppInitialized = true;
       currentCategory = loadSavedCategory();
       sortActiveSites();
-      persistActiveSites();
+      persistActiveSites(true);
 
       populateCategoryDropdowns();
       updateTriggerBar();
       updateBottomNavActiveState();
       renderSites();
+      fetchFromCloud();
     }
 
     function sortActiveSites() {
@@ -2518,6 +2605,7 @@
       } catch (e) {}
       updateQrDisplayMessageUI();
       closeQrMessageModal();
+      if (isAdminMode) scheduleCloudSync(true);
       showToast(msg ? 'تم حفظ رسالة العرض بنجاح' : 'تم مسح رسالة العرض', 'success');
     }
 
@@ -2870,11 +2958,11 @@
       });
 
       window.addEventListener('beforeunload', () => {
-        if (isAppInitialized) persistActiveSites();
+        if (isAppInitialized) persistActiveSites(true);
       });
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden' && isAppInitialized) {
-          persistActiveSites();
+          persistActiveSites(true);
         }
       });
     });
