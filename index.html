@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>روابطي المفضلة - لوحة الروابط السريعة</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: ['class', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Cairo"', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root,
+    [data-theme="light"] {
+      --bg-page: #F4F5F7;
+      --bg-card: #FFFFFF;
+      --bg-surface-2: #F8F9FA;
+      --bg-input: #FFFFFF;
+      --text-main: #171717;
+      --text-muted: #737373;
+      --border-soft: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.14);
+      --nav-bg: rgba(255, 255, 255, 0.88);
+      --modal-bg: #FFFFFF;
+      --accent: #F59E0B;
+      --accent-soft: #FFFBEB;
+      --accent-border: rgba(245, 158, 11, 0.35);
+      --accent-text: #B45309;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0B0D12;
+      --bg-card: #141720;
+      --bg-surface-2: #1C202B;
+      --bg-input: #1A1E29;
+      --text-main: #F5F5F7;
+      --text-muted: #9CA3AF;
+      --border-soft: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --nav-bg: rgba(20, 23, 32, 0.9);
+      --modal-bg: #141720;
+      --accent: #F59E0B;
+      --accent-soft: rgba(245, 158, 11, 0.14);
+      --accent-border: rgba(245, 158, 11, 0.35);
+      --accent-text: #FBBF24;
+    }
+
+    * {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      box-sizing: border-box;
+      font-variant-numeric: tabular-nums;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    body:not(.admin-mode) .admin-only {
+      display: none !important;
+    }
+
+    .app-shell {
+      background-color: var(--bg-page);
+      border-color: var(--border-soft);
+    }
+
+    .surface-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-soft);
+      color: var(--text-main);
+    }
+
+    .surface-sub {
+      background-color: var(--bg-surface-2);
+      border-color: var(--border-soft);
+    }
+
+    .text-main { color: var(--text-main); }
+    .text-muted { color: var(--text-muted); }
+
+    .ios-glass {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .ios-pressable {
+      transition: transform 0.14s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ios-pressable:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .bottom-nav {
+      background-color: var(--nav-bg);
+      border-color: var(--border-soft);
+    }
+
+    /* Overlay & Modals */
+    .curtain-overlay,
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.52);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1050;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      display: flex;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .curtain-overlay {
+      align-items: flex-start;
+      padding-top: max(14px, env(safe-area-inset-top));
+    }
+
+    .modal-overlay {
+      align-items: center;
+      z-index: 1100;
+    }
+
+    @media (max-width: 480px) {
+      .modal-overlay {
+        align-items: flex-end;
+        padding: 10px;
+      }
+      #qrModalOverlay.modal-overlay {
+        align-items: center;
+      }
+    }
+
+    .curtain-overlay.active,
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .curtain-sheet,
+    .modal-box {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--modal-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+      border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      padding: 16px;
+      max-height: 88dvh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      transform: translate3d(0, 12px, 0);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .curtain-sheet {
+      transform: translate3d(0, -18px, 0);
+    }
+
+    .curtain-overlay.active .curtain-sheet,
+    .modal-overlay.active .modal-box {
+      transform: translate3d(0, 0, 0);
+    }
+
+    .field-input {
+      width: 100%;
+      background-color: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 9px 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field-input:focus {
+      border-color: #F59E0B;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+    }
+
+    @media (max-width: 480px) {
+      .field-input, .search-field {
+        font-size: 16px;
+      }
+    }
+
+    /* Custom Styled Dropdown (Replaces native mobile select) */
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .custom-select-trigger {
+      width: 100%;
+      background-color: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      text-align: right;
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger {
+      border-color: #F59E0B;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+    }
+
+    .custom-select-wrapper.open .custom-select-arrow {
+      transform: rotate(180deg);
+    }
+
+    .custom-select-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background-color: var(--modal-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.2);
+      padding: 6px;
+      max-height: 210px;
+      overflow-y: auto;
+      z-index: 1200;
+      display: none;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .custom-select-wrapper.open .custom-select-menu {
+      display: flex;
+    }
+
+    .custom-select-option {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 11px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      text-align: right;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .custom-select-option:hover {
+      background-color: rgba(245, 158, 11, 0.1);
+    }
+
+    .custom-select-option.selected {
+      background-color: rgba(245, 158, 11, 0.16);
+      color: #D97706;
+    }
+
+    .brand-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 210px;
+      background-color: var(--modal-bg);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 200;
+    }
+
+    .brand-dropdown.active {
+      display: flex;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 2000;
+      pointer-events: none;
+      width: max-content;
+      max-width: calc(100vw - 32px);
+    }
+
+    .toast {
+      background: #171717;
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success { background: #065F46; }
+    .toast.error { background: #9F1239; }
+    .toast.info { background: #171717; }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center selection:bg-amber-500 selection:text-white">
+
+  <div class="app-shell w-full max-w-5xl min-h-screen flex flex-col relative pb-24">
+
+    <!-- Main App Header -->
+    <header class="px-4 pt-3.5 pb-2 sticky top-0 z-40 ios-glass" style="background-color: color-mix(in srgb, var(--bg-page) 88%, transparent);">
+      <div class="surface-card rounded-2xl p-3 sm:px-4 border shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center justify-between gap-2">
+        <!-- Right: Bookmark Logo + Title -->
+        <div class="flex items-center gap-3 relative" id="brandMenuWrapper">
+          <button type="button" id="brandMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="قائمة الخيارات"
+            class="ios-pressable w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 text-white flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0 border-0 cursor-pointer">
+            <svg class="w-5 h-5 stroke-current stroke-[2.2] fill-none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+            </svg>
+          </button>
+
+          <!-- Brand Quick Dropdown -->
+          <div class="brand-dropdown" id="brandDropdown" role="menu">
+            <button type="button" id="brandDropdownAddLinkBtn" role="menuitem"
+              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>إضافة رابط جديد</span>
+              </span>
+            </button>
+            <button type="button" id="brandDropdownQrMessageBtn" role="menuitem"
+              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>رسالة العرض</span>
+              </span>
+            </button>
+            <button type="button" id="brandDropdownQrBtn" role="menuitem"
+              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3z"/><path d="M17 17h4v4h-4z"/><path d="M14 20h1"/><path d="M20 14h1"/>
+                </svg>
+                <span>باركود الصفحة (QR)</span>
+              </span>
+            </button>
+            <button type="button" id="brandDropdownThemeBtn" role="menuitem"
+              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <span id="brandThemeIcon"></span>
+                <span>الوضع المظلم</span>
+              </span>
+              <span id="brandThemeBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full surface-sub border text-muted">معطّل</span>
+            </button>
+            <button type="button" id="brandDropdownBackupBtn" role="menuitem"
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+                <span>النسخ الاحتياطي</span>
+              </span>
+            </button>
+            <button type="button" id="brandDropdownChangePassBtn" role="menuitem"
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-neutral-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                </svg>
+                <span>تغيير كلمة المرور</span>
+              </span>
+            </button>
+            <button type="button" id="brandDropdownExitAdminBtn" role="menuitem"
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-rose-600 hover:bg-rose-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>العودة لوضع المستخدم</span>
+              </span>
+            </button>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <h1 id="appTitleTrigger" class="text-lg font-black text-main leading-tight cursor-default select-none" style="cursor: default;">روابطي المفضلة</h1>
+              <span class="admin-only text-[10px] font-black px-2 py-0.5 rounded-full surface-sub text-main border">وضع المدير</span>
+            </div>
+            <p class="text-[11px] text-muted font-semibold mt-0.5">لوحة روابطك الشخصية السريعة</p>
+          </div>
+        </div>
+
+        <!-- Left: Add Link Button -->
+        <div class="flex flex-col items-center shrink-0">
+          <button type="button" id="openAddModalBtn" aria-label="إضافة رابط جديد"
+            class="ios-pressable w-10 h-10 rounded-full bg-neutral-950 text-amber-500 flex items-center justify-center shadow hover:bg-neutral-800 transition-colors cursor-pointer">
+            <svg class="w-5 h-5 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <span class="text-[10px] font-bold text-muted mt-1">إضافة رابط</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Search & Filter Controls -->
+    <div class="px-4 py-1.5 flex flex-col sm:flex-row gap-2">
+      <!-- Search Bar -->
+      <div class="surface-card relative flex items-center rounded-2xl border shadow-[0_2px_8px_rgba(0,0,0,0.03)] px-3.5 h-11 flex-1">
+        <input type="text" id="searchInput"
+          class="search-field w-full bg-transparent border-none p-0 text-xs font-semibold text-main placeholder:text-neutral-400 focus:outline-none focus:ring-0 leading-normal"
+          placeholder="بحث بالاسم أو الوصف أو الرابط...">
+        <svg class="w-4 h-4 text-amber-500 stroke-[2.2] shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="flex items-center gap-2 sm:w-auto">
+        <button type="button" id="categoryCurtainTrigger" aria-haspopup="true" aria-expanded="false"
+          class="ios-pressable surface-card flex-1 sm:min-w-[180px] border rounded-2xl h-11 px-3 flex items-center justify-between gap-2 shadow-[0_2px_6px_rgba(0,0,0,0.03)] cursor-pointer">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span id="triggerCatIcon" class="text-amber-600 flex items-center shrink-0"></span>
+            <span id="triggerCatName" class="text-xs font-bold text-main truncate">الكل</span>
+            <span id="triggerCatCount" class="bg-neutral-900 text-white text-[11px] font-black px-2 py-0.5 rounded-lg shrink-0">0</span>
+          </div>
+          <svg id="triggerArrowIcon" class="w-4 h-4 text-neutral-400 stroke-[2.5] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+
+        <button type="button" id="quickFavFilterBtn"
+          class="ios-pressable surface-card border border-amber-300/70 rounded-2xl h-11 px-3 flex items-center gap-1.5 shadow-[0_2px_6px_rgba(0,0,0,0.03)] shrink-0 cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+          </svg>
+          <span class="text-xs font-bold text-main">المفضلة</span>
+          <span id="quickFavCount" class="bg-amber-100 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded-md">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Responsive Compact Grid Cards -->
+    <main class="px-4 py-2 flex flex-col gap-3 flex-1">
+      <div id="sitesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 w-full"></div>
+
+      <!-- Storage Status & Footer -->
+      <div class="mt-auto pt-4 flex flex-col items-center gap-2">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[11px] font-bold">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+          </svg>
+          <span>الحفظ الدائم الفوري مفعّل</span>
+        </div>
+        <footer class="text-[11px] font-bold text-muted pb-1">
+          فكرة وتصميم أبو حازم
+        </footer>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav fixed bottom-0 inset-x-0 max-w-5xl mx-auto z-40 ios-glass border-t px-6 sm:px-12 pt-2.5 pb-4 flex justify-around sm:justify-center sm:gap-14 items-center text-[10px] font-bold text-muted">
+      <button type="button" id="navAllBtn" class="flex flex-col items-center gap-1 text-blue-600 cursor-pointer">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <span>الروابط</span>
+      </button>
+
+      <button type="button" id="navFavBtn" class="flex flex-col items-center gap-1 hover:text-main transition-colors cursor-pointer">
+        <svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+          <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <span>المفضلة</span>
+      </button>
+
+      <button type="button" id="navCatsBtn" class="flex flex-col items-center gap-1 hover:text-main transition-colors cursor-pointer">
+        <svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+          <path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <span>الأقسام</span>
+      </button>
+
+      <button type="button" id="navSettingsBtn" class="admin-only flex flex-col items-center gap-1 hover:text-main transition-colors cursor-pointer">
+        <svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+          <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <span>الإعدادات</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- CATEGORY CURTAIN -->
+  <div class="curtain-overlay" id="categoryCurtainOverlay">
+    <div class="curtain-sheet flex flex-col gap-3" id="categoryCurtainSheet">
+      <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
+        <div>
+          <div class="text-sm font-black text-main flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+            </svg>
+            <span>قائمة التصنيفات</span>
+          </div>
+          <p class="text-[11px] text-muted mt-0.5">اختر التصنيف المطلوب، أو أنشئ تصنيفاً جديداً</p>
+        </div>
+        <button type="button" id="closeCurtainBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[52dvh] overflow-y-auto py-0.5" id="curtainCategoriesGrid"></div>
+
+      <div class="pt-2.5 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="curtainAddCategoryBtn"
+          class="ios-pressable w-full py-2.5 px-3 rounded-xl border surface-sub text-main font-extrabold text-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-neutral-500/10">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>إنشاء تصنيف جديد خاص بك</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD SITE MODAL -->
+  <div class="modal-overlay" id="addModalOverlay">
+    <div class="modal-box flex flex-col gap-3">
+      <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main truncate">إضافة رابط جديد</div>
+        <button type="button" id="closeAddModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <!-- 1. URL + Paste (Topmost element) -->
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="quickUrlInput">الرابط:</label>
+          <div class="flex gap-2">
+            <input type="text" id="quickUrlInput" class="field-input flex-1" placeholder="https://example.com" dir="ltr">
+            <button type="button" id="pasteBtn"
+              class="ios-pressable surface-sub border px-3 rounded-xl text-xs font-extrabold text-main flex items-center gap-1 shrink-0 cursor-pointer">
+              لصق
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Category + Favorite in ONE horizontal row -->
+        <div class="surface-sub border rounded-xl p-2 flex flex-col gap-1.5">
+          <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 flex-1 min-w-0">
+              <div class="custom-select-wrapper flex-1 min-w-0" id="quickCategorySelectWrapper">
+                <input type="hidden" id="quickCategorySelect" value="general">
+                <button type="button" class="custom-select-trigger" id="quickCategoryTrigger" aria-expanded="false">
+                  <span class="flex items-center gap-1.5 min-w-0">
+                    <span class="custom-select-icon text-amber-500 flex items-center shrink-0"></span>
+                    <span class="custom-select-label truncate">روابط عامة</span>
+                  </span>
+                  <svg class="custom-select-arrow w-3.5 h-3.5 text-neutral-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                    <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <div class="custom-select-menu" id="quickCategoryMenu"></div>
+              </div>
+              <button type="button" id="quickNewCatBtn" title="إنشاء تصنيف جديد"
+                class="ios-pressable px-2.5 py-2.5 rounded-xl surface-card border text-main font-extrabold text-[11px] shrink-0 cursor-pointer whitespace-nowrap hover:bg-neutral-500/10">
+                + تصنيف
+              </button>
+            </div>
+            <button type="button" id="addFavToggleBtn"
+              class="ios-pressable py-2.5 px-2.5 rounded-xl surface-card border text-[11px] font-extrabold text-main flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+              <span id="addFavStarIcon"></span>
+              <span id="addFavActionText">المفضلة</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Remaining Fields -->
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="quickNameInput">وصف الموقع:</label>
+          <input type="text" id="quickNameInput" class="field-input" placeholder="مثال: بريد العمل، متجر، موقع...">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="quickDescInput">الوصف (اختياري):</label>
+          <input type="text" id="quickDescInput" class="field-input" placeholder="مثال: صفحة الدخول السريع">
+        </div>
+
+        <label class="flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="quickTranslateInput">
+          <input type="checkbox" id="quickTranslateInput" class="w-4 h-4 rounded accent-amber-500">
+          <span>فتح الرابط مترجماً عبر ترجمة جوجل تلقائياً</span>
+        </label>
+      </div>
+
+      <!-- 4. Unified Footer: Cancel & Save on left -->
+      <div class="flex items-center justify-end pt-2.5 border-t gap-2" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelAddModalBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+        <button type="button" id="addCustomSiteBtn"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 font-black text-xs shadow cursor-pointer">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANAGE SITE MODAL -->
+  <div class="modal-overlay" id="manageModalOverlay">
+    <div class="modal-box flex flex-col gap-3">
+      <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main truncate" id="manageModalHeaderTitle">تعديل الرابط</div>
+        <button type="button" id="closeManageModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <input type="hidden" id="manageSiteId">
+
+        <!-- 1. URL + Paste (Topmost element) -->
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="manageSiteUrl">الرابط:</label>
+          <div class="flex gap-2">
+            <input type="text" id="manageSiteUrl" class="field-input flex-1" placeholder="https://example.com" dir="ltr">
+            <button type="button" id="managePasteBtn"
+              class="ios-pressable surface-sub border px-3 rounded-xl text-xs font-extrabold text-main flex items-center gap-1 shrink-0 cursor-pointer">
+              لصق
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Category + Favorite in ONE horizontal row -->
+        <div class="surface-sub border rounded-xl p-2 flex flex-col gap-1.5">
+          <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 flex-1 min-w-0">
+              <div class="custom-select-wrapper flex-1 min-w-0" id="manageCategorySelectWrapper">
+                <input type="hidden" id="manageSiteCategory" value="general">
+                <button type="button" class="custom-select-trigger" id="manageCategoryTrigger" aria-expanded="false">
+                  <span class="flex items-center gap-1.5 min-w-0">
+                    <span class="custom-select-icon text-amber-500 flex items-center shrink-0"></span>
+                    <span class="custom-select-label truncate">روابط عامة</span>
+                  </span>
+                  <svg class="custom-select-arrow w-3.5 h-3.5 text-neutral-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                    <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <div class="custom-select-menu" id="manageCategoryMenu"></div>
+              </div>
+              <button type="button" id="manageMoveApplyBtn"
+                class="ios-pressable px-2.5 py-2.5 rounded-xl surface-card border text-main font-extrabold text-[11px] shrink-0 cursor-pointer whitespace-nowrap hover:bg-neutral-500/10">
+                نقل الآن
+              </button>
+            </div>
+            <button type="button" id="manageFavToggleBtn"
+              class="ios-pressable py-2.5 px-2.5 rounded-xl surface-card border text-[11px] font-extrabold text-main flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+              <span id="favStarIcon"></span>
+              <span id="favActionText">المفضلة</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Remaining Fields -->
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="manageSiteName">وصف الموقع:</label>
+          <input type="text" id="manageSiteName" class="field-input">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="manageSiteDesc">الوصف (اختياري):</label>
+          <input type="text" id="manageSiteDesc" class="field-input">
+        </div>
+
+        <label class="flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="manageSiteTranslate">
+          <input type="checkbox" id="manageSiteTranslate" class="w-4 h-4 rounded accent-amber-500">
+          <span>فتح الرابط مترجماً عبر ترجمة جوجل تلقائياً</span>
+        </label>
+
+        <div class="surface-sub border rounded-xl px-3 py-2 flex justify-between items-center text-xs">
+          <span class="text-muted font-semibold">عدد الزيارات:</span>
+          <span id="manageVisitsText" class="font-black text-amber-600">0 زيارة</span>
+        </div>
+      </div>
+
+      <!-- 4. Unified Footer: Delete on far right, Cancel & Save on left -->
+      <div class="flex items-center justify-between pt-2.5 border-t gap-2" style="border-color: var(--border-soft);">
+        <button type="button" id="manageDeleteBtn"
+          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">حذف</button>
+        <div class="flex items-center gap-2">
+          <button type="button" id="cancelManageBtn"
+            class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          <button type="button" id="saveManageBtn"
+            class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 font-black text-xs shadow cursor-pointer">حفظ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CATEGORY MODAL -->
+  <div class="modal-overlay" id="addCategoryModalOverlay">
+    <div class="modal-box flex flex-col gap-3.5" style="max-width: 400px;">
+      <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main">إضافة تصنيف جديد</div>
+        <button type="button" id="closeAddCategoryModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="newCategoryNameInput">اسم التصنيف الجديد:</label>
+          <input type="text" id="newCategoryNameInput" class="field-input" placeholder="مثال: عمل، أدوات، منوعات، تسوق...">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1">الأيقونة:</label>
+          <div class="custom-select-wrapper" id="newCategoryIconWrapper">
+            <input type="hidden" id="newCategoryIconSelect" value="layers">
+            <button type="button" class="custom-select-trigger" id="newCategoryIconTrigger" aria-expanded="false">
+              <span class="flex items-center gap-2 min-w-0">
+                <span class="custom-select-icon text-amber-500 flex items-center shrink-0"></span>
+                <span class="custom-select-label truncate">طبقات (عام)</span>
+              </span>
+              <svg class="custom-select-arrow w-4 h-4 text-neutral-400 shrink-0 transition-transform duration-150" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="custom-select-menu" id="newCategoryIconMenu"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelAddCategoryBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+        <button type="button" id="saveNewCategoryBtn"
+          class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">حفظ التصنيف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS & BACKUP MODAL -->
+  <div class="modal-overlay" id="backupModalOverlay">
+    <div class="modal-box flex flex-col gap-3.5" style="max-width: 410px;">
+      <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main">الإعدادات والنسخ الاحتياطي</div>
+        <button type="button" id="closeBackupModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        <div class="surface-sub border rounded-xl p-3 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-extrabold text-main">المظهر</div>
+            <div class="text-[11px] text-muted">التبديل بين الوضع الفاتح والمظلم</div>
+          </div>
+          <button type="button" id="settingsThemeToggleBtn"
+            class="ios-pressable px-3 py-1.5 rounded-xl bg-amber-500 text-neutral-950 text-xs font-black cursor-pointer">تبديل</button>
+        </div>
+
+        <button type="button" id="exportBackupBtn"
+          class="ios-pressable w-full py-2.5 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">
+          تصدير نسخة احتياطية (JSON)
+        </button>
+
+        <label class="ios-pressable surface-sub border w-full py-2.5 rounded-xl text-xs font-extrabold text-main text-center cursor-pointer block">
+          استيراد نسخة محفوظة
+          <input type="file" id="importBackupInput" accept=".json" class="hidden">
+        </label>
+
+        <div class="surface-sub border rounded-xl p-3 flex flex-col gap-2">
+          <label class="text-xs font-extrabold text-main" for="newAdminPasswordInput">تغيير كلمة مرور المدير:</label>
+          <div class="flex gap-2">
+            <input type="password" id="newAdminPasswordInput" class="field-input flex-1 text-xs" placeholder="كلمة المرور الجديدة" dir="ltr">
+            <button type="button" id="saveAdminPasswordBtn"
+              class="ios-pressable px-3.5 py-2 rounded-xl bg-amber-500 text-neutral-950 text-xs font-black shrink-0 cursor-pointer">تحديث</button>
+          </div>
+        </div>
+
+        <div class="pt-2 mt-1 border-t" style="border-color: var(--border-soft);">
+          <button type="button" id="resetDefaultsBtn"
+            class="ios-pressable w-full py-2.5 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">
+            تفريغ قاعدة البيانات بالكامل
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelBackupBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="deleteModalOverlay">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-rose-600">تأكيد الحذف</div>
+        <button type="button" id="closeDeleteModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+      <input type="hidden" id="deleteSiteId">
+      <p id="deletePromptText" class="text-xs font-semibold text-main leading-relaxed"></p>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelDeleteBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">تراجع</button>
+        <button type="button" id="confirmDeleteBtn"
+          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">نعم، احذف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANUAL PASTE MODAL -->
+  <div class="modal-overlay" id="pasteModalOverlay">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main">لصق الرابط يدوياً</div>
+        <button type="button" id="closePasteModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+      <input type="text" id="manualPasteInput" class="field-input" placeholder="https://..." dir="ltr">
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelPasteBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+        <button type="button" id="confirmPasteBtn"
+          class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">تطبيق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SMART QR CODE MODAL -->
+  <div class="modal-overlay" id="qrModalOverlay">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
+      <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3z"/><path d="M17 17h4v4h-4z"/><path d="M14 20h1"/><path d="M20 14h1"/>
+          </svg>
+          <span>باركود الصفحة (QR)</span>
+        </div>
+        <button type="button" id="closeQrModalBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+
+      <div class="flex flex-col items-center gap-2.5 py-1">
+        <div id="qrDisplayMessageBox" class="hidden w-full surface-sub border rounded-xl px-3 py-2 text-xs font-extrabold text-main text-center leading-relaxed"></div>
+        <div id="qrCodeContainer" class="p-3 bg-white rounded-2xl border border-black/10 shadow-xs flex items-center justify-center min-w-[196px] min-h-[196px]"></div>
+
+        <div class="w-full surface-sub border rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+          <span id="qrCurrentUrlText" class="text-[11px] font-bold text-muted truncate flex-1 text-left" dir="ltr"></span>
+          <button type="button" id="copyQrUrlBtn"
+            class="ios-pressable px-2.5 py-1 rounded-lg bg-amber-500 text-neutral-950 text-[10px] font-black shrink-0 cursor-pointer">نسخ</button>
+        </div>
+
+        <!-- Admin-only Custom QR URL editor -->
+        <div class="admin-only w-full surface-sub border rounded-xl p-2.5 flex flex-col gap-2">
+          <label class="text-[11px] font-extrabold text-main" for="qrCustomUrlInput">تخصيص رابط الباركود (للمدير):</label>
+          <div class="flex gap-1.5">
+            <input type="text" id="qrCustomUrlInput" class="field-input flex-1 text-xs" placeholder="اتركه فارغاً لرابط الصفحة الحالي" dir="ltr">
+            <button type="button" id="saveQrCustomUrlBtn"
+              class="ios-pressable px-3 rounded-xl bg-neutral-950 text-amber-400 text-[11px] font-black shrink-0 cursor-pointer">تطبيق</button>
+          </div>
+        </div>
+
+        <!-- 30s Countdown Bar -->
+        <div class="w-full flex flex-col gap-1 pt-1">
+          <div class="flex items-center justify-between text-[11px] font-bold text-muted">
+            <span>يُغلق تلقائياً خلال</span>
+            <span id="qrCountdownText" class="font-black text-amber-600">30 ثانية</span>
+          </div>
+          <div class="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+            <div id="qrCountdownBar" class="h-full bg-amber-500 rounded-full transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelQrModalBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PASSWORD MODAL -->
+  <div class="modal-overlay" id="adminLoginModalOverlay">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 360px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>دخول وضع المدير</span>
+        </div>
+        <button type="button" id="closeAdminLoginBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-main mb-1" for="adminPasswordInput">كلمة مرور المدير:</label>
+        <input type="password" id="adminPasswordInput" class="field-input" placeholder="أدخل كلمة المرور (الافتراضية: 1234)" dir="ltr">
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelAdminLoginBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+        <button type="button" id="confirmAdminLoginBtn"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">دخول</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE ADMIN PASSWORD MODAL -->
+  <div class="modal-overlay" id="changePassModalOverlay">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 380px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main">تغيير كلمة مرور المدير</div>
+        <button type="button" id="closeChangePassBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="changePassNewInput">كلمة المرور الجديدة:</label>
+          <input type="password" id="changePassNewInput" class="field-input" placeholder="أدخل كلمة المرور الجديدة" dir="ltr">
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-main mb-1" for="changePassConfirmInput">تأكيد كلمة المرور:</label>
+          <input type="password" id="changePassConfirmInput" class="field-input" placeholder="أعد إدخال كلمة المرور" dir="ltr">
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelChangePassBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+        <button type="button" id="saveChangePassBtn"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR DISPLAY MESSAGE MODAL -->
+  <div class="modal-overlay" id="qrMessageModalOverlay">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-sm font-black text-main">رسالة العرض</div>
+        <button type="button" id="closeQrMessageBtn" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-main mb-1" for="qrMessageInput">اكتب الرسالة التي تظهر في أعلى نافذة الباركود:</label>
+        <input type="text" id="qrMessageInput" class="field-input" placeholder="مثال: امسح الباركود لفتح الروابط">
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="cancelQrMessageBtn"
+          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+        <button type="button" id="saveQrMessageBtn"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const SVG_ICONS = {
+      bookmark: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
+      newspaper: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>`,
+      flag: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`,
+      globe: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+      compass: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+      zap: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+      star: (sz = 16, filled = false) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      layers: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
+      sun: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+      moon: (sz = 16) => `<svg class="shrink-0" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`
+    };
+
+    const CATEGORY_ICON_OPTIONS = [
+      { id: 'layers', name: 'طبقات (عام)' },
+      { id: 'bookmark', name: 'إشارة مرجعية' },
+      { id: 'globe', name: 'مواقع ويب' },
+      { id: 'zap', name: 'أدوات سريعة' },
+      { id: 'compass', name: 'استكشاف ومنوعات' },
+      { id: 'newspaper', name: 'أخبار ومقالات' },
+      { id: 'flag', name: 'محلي وخدمات' }
+    ];
+
+    function getCategoryIconHtml(iconKey, size = 16) {
+      if (iconKey === 'star') return SVG_ICONS.star(size, true);
+      if (SVG_ICONS[iconKey]) return SVG_ICONS[iconKey](size);
+      return SVG_ICONS.layers(size);
+    }
+
+    const BUILTIN_CATEGORIES = [
+      { id: 'general', name: 'روابط عامة', icon: 'bookmark' },
+      { id: 'work', name: 'العمل والإنتاجية', icon: 'zap' },
+      { id: 'news', name: 'أخبار ومواقع إعلامية', icon: 'newspaper' },
+      { id: 'tech', name: 'تقنية وأدوات', icon: 'globe' },
+      { id: 'learning', name: 'تعليم ومراجع', icon: 'compass' },
+      { id: 'services', name: 'خدمات ومنوعات', icon: 'flag' }
+    ];
+
+    let customCategories = [];
+    let activeSites = [];
+    let savedSearchQuery = '';
+    let currentCategory = 'all';
+    let addModalFavorite = false;
+    let isAppInitialized = false;
+
+    const STORAGE_KEY_SITES = 'news_app_empty_sites_v7';
+    const STORAGE_KEY_CATS = 'news_app_empty_cats_v7';
+    const STORAGE_KEY_CURRENT_CAT = 'news_app_empty_current_cat_v7';
+    const THEME_STORAGE_KEY = 'news_app_theme_v7';
+    const STORAGE_KEY_QR_URL = 'news_app_qr_custom_url_v7';
+    const STORAGE_KEY_ADMIN_PASS = 'news_app_admin_password_v7';
+    const STORAGE_KEY_QR_MSG = 'news_app_qr_display_msg_v7';
+    let isAdminMode = false;
+    let titleClickTimestamps = [];
+    let qrCountdownTimer = null;
+    let qrRemainingSeconds = 30;
+    const DB_NAME = 'NewsAppEmptyStorage_v7';
+    const DB_STORE = 'app_store';
+
+    function formatEnNumber(num) {
+      return Number(num || 0).toLocaleString('en-US');
+    }
+
+    function normalizeArabicText(str) {
+      if (!str) return '';
+      return str
+        .toLowerCase()
+        .replace(/[\u064B-\u065F\u0670]/g, '')
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي');
+    }
+
+    function cleanDomain(input) {
+      if (!input) return '';
+      let domain = input.trim().toLowerCase();
+      domain = domain.replace(/^https?:\/\//i, '').replace(/^www\./i, '');
+      return domain.split('/')[0].split('?')[0].split('#')[0];
+    }
+
+    function formatUrl(input) {
+      let clean = (input || '').trim();
+      if (!clean) return '';
+      if (!/^https?:\/\//i.test(clean)) {
+        clean = 'https://' + clean;
+      }
+      return clean;
+    }
+
+    function extractNameFromDomain(domain) {
+      const clean = cleanDomain(domain);
+      if (!clean) return 'رابط جديد';
+      const parts = clean.split('.');
+      let core = (parts[0] === 'm' || parts[0] === 'edition') ? (parts[1] || parts[0]) : parts[0];
+      return core ? core.charAt(0).toUpperCase() + core.slice(1) : 'رابط جديد';
+    }
+
+    // Custom categories always appear FIRST (right after All & Favorites)
+    function getAllCategories() {
+      return [...customCategories, ...BUILTIN_CATEGORIES];
+    }
+
+    function saveCurrentCategory(catId) {
+      currentCategory = catId || 'all';
+      try { localStorage.setItem(STORAGE_KEY_CURRENT_CAT, currentCategory); } catch (e) {}
+      try { sessionStorage.setItem(STORAGE_KEY_CURRENT_CAT, currentCategory); } catch (e) {}
+      updateBottomNavActiveState();
+    }
+
+    function loadSavedCategory() {
+      let saved = null;
+      try {
+        saved = localStorage.getItem(STORAGE_KEY_CURRENT_CAT) || sessionStorage.getItem(STORAGE_KEY_CURRENT_CAT);
+      } catch (e) {}
+      if (!saved) return 'all';
+      if (saved === 'all' || saved === 'favorites') return saved;
+      return getAllCategories().some(c => c.id === saved) ? saved : 'all';
+    }
+
+    function debounce(fn, delay = 150) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    // ========================================================
+    // CUSTOM STYLED DROPDOWNS (App-themed on mobile & desktop)
+    // ========================================================
+    function closeAllCustomSelects(exceptWrapperId = null) {
+      document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+        if (w.id !== exceptWrapperId) {
+          w.classList.remove('open');
+          const btn = w.querySelector('.custom-select-trigger');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    function populateCustomSelect(wrapperId, inputId, menuId, items, selectedId) {
+      const wrapper = document.getElementById(wrapperId);
+      const input = document.getElementById(inputId);
+      const menu = document.getElementById(menuId);
+      if (!wrapper || !input || !menu) return;
+
+      const targetId = (selectedId && items.some(i => i.id === selectedId))
+        ? selectedId
+        : (items.some(i => i.id === input.value) ? input.value : (items[0]?.id || ''));
+
+      input.value = targetId;
+      menu.innerHTML = '';
+
+      items.forEach(item => {
+        const isSelected = item.id === targetId;
+        const opt = document.createElement('button');
+        opt.type = 'button';
+        opt.className = `custom-select-option ${isSelected ? 'selected' : ''}`;
+        opt.innerHTML = `
+          <span class="flex items-center gap-2 min-w-0">
+            <span class="text-amber-500 flex items-center shrink-0">${getCategoryIconHtml(item.icon, 15)}</span>
+            <span class="truncate">${item.name}</span>
+          </span>
+          ${isSelected ? '<span class="text-amber-500 font-black text-xs shrink-0">✓</span>' : ''}
+        `;
+        opt.onclick = (e) => {
+          e.stopPropagation();
+          input.value = item.id;
+          updateCustomSelectDisplay(wrapperId, item);
+          populateCustomSelect(wrapperId, inputId, menuId, items, item.id);
+          wrapper.classList.remove('open');
+          const trig = wrapper.querySelector('.custom-select-trigger');
+          if (trig) trig.setAttribute('aria-expanded', 'false');
+        };
+        menu.appendChild(opt);
+      });
+
+      const activeItem = items.find(i => i.id === targetId) || items[0];
+      if (activeItem) updateCustomSelectDisplay(wrapperId, activeItem);
+    }
+
+    function updateCustomSelectDisplay(wrapperId, item) {
+      const wrapper = document.getElementById(wrapperId);
+      if (!wrapper || !item) return;
+      const iconSpan = wrapper.querySelector('.custom-select-icon');
+      const labelSpan = wrapper.querySelector('.custom-select-label');
+      if (iconSpan) iconSpan.innerHTML = getCategoryIconHtml(item.icon, 15);
+      if (labelSpan) labelSpan.textContent = item.name;
+    }
+
+    function setupCustomSelectTrigger(wrapperId, triggerId) {
+      const wrapper = document.getElementById(wrapperId);
+      const trigger = document.getElementById(triggerId);
+      if (!wrapper || !trigger) return;
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const willOpen = !wrapper.classList.contains('open');
+        closeAllCustomSelects(willOpen ? wrapperId : null);
+        wrapper.classList.toggle('open', willOpen);
+        trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      });
+    }
+
+    function populateCategoryDropdowns(selectedVal = '') {
+      const allCats = getAllCategories();
+      populateCustomSelect('quickCategorySelectWrapper', 'quickCategorySelect', 'quickCategoryMenu', allCats, selectedVal);
+      populateCustomSelect('manageCategorySelectWrapper', 'manageSiteCategory', 'manageCategoryMenu', allCats, selectedVal);
+    }
+
+    // ========================================================
+    // STORAGE (IndexedDB + localStorage + sessionStorage)
+    // ========================================================
+    function openDatabase() {
+      return new Promise((resolve) => {
+        if (!window.indexedDB) { resolve(null); return; }
+        try {
+          const req = indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(DB_STORE)) {
+              db.createObjectStore(DB_STORE, { keyPath: 'key' });
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+
+    async function saveToIndexedDB(sitesList, catsList) {
+      try {
+        const db = await openDatabase();
+        if (!db) return;
+        const tx = db.transaction(DB_STORE, 'readwrite');
+        const store = tx.objectStore(DB_STORE);
+        store.put({ key: 'active_sites', payload: JSON.stringify(sitesList), timestamp: Date.now() });
+        store.put({ key: 'custom_cats', payload: JSON.stringify(catsList), timestamp: Date.now() });
+      } catch (err) {}
+    }
+
+    async function loadFromIndexedDB() {
+      try {
+        const db = await openDatabase();
+        if (!db) return null;
+        return new Promise((resolve) => {
+          const tx = db.transaction(DB_STORE, 'readonly');
+          const store = tx.objectStore(DB_STORE);
+          const req = store.get('active_sites');
+          req.onsuccess = () => {
+            let sitesResult = null;
+            if (req.result && req.result.payload) {
+              try {
+                const parsed = JSON.parse(req.result.payload);
+                if (Array.isArray(parsed)) sitesResult = parsed;
+              } catch (e) {}
+            }
+            const reqCats = store.get('custom_cats');
+            reqCats.onsuccess = () => {
+              let catsResult = [];
+              if (reqCats.result && reqCats.result.payload) {
+                try {
+                  const parsedCats = JSON.parse(reqCats.result.payload);
+                  if (Array.isArray(parsedCats)) catsResult = parsedCats;
+                } catch (e) {}
+              }
+              resolve({ sites: sitesResult, cats: catsResult });
+            };
+            reqCats.onerror = () => resolve({ sites: sitesResult, cats: [] });
+          };
+          req.onerror = () => resolve(null);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function loadCustomCategories() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_CATS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveCustomCategories() {
+      try { localStorage.setItem(STORAGE_KEY_CATS, JSON.stringify(customCategories)); } catch (e) {}
+    }
+
+    function persistActiveSites() {
+      if (!isAppInitialized || !Array.isArray(activeSites)) return;
+      try { localStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(activeSites)); } catch (e) {}
+      saveCustomCategories();
+      try { sessionStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(activeSites)); } catch (e) {}
+      saveToIndexedDB(activeSites, customCategories);
+      updateTriggerBar();
+    }
+
+    async function loadActiveSites() {
+      customCategories = loadCustomCategories();
+      let loaded = null;
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_SITES);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) loaded = parsed;
+        }
+      } catch (e) {}
+
+      if (loaded === null) {
+        const idbData = await loadFromIndexedDB();
+        if (idbData) {
+          if (Array.isArray(idbData.sites)) loaded = idbData.sites;
+          if (Array.isArray(idbData.cats) && idbData.cats.length > 0 && customCategories.length === 0) {
+            customCategories = idbData.cats;
+            saveCustomCategories();
+          }
+        }
+      }
+
+      if (Array.isArray(loaded)) {
+        activeSites = loaded.map(item => ({
+          id: item.id || ('site_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+          name: item.name || extractNameFromDomain(item.domain || item.url),
+          description: (item.description && item.description.trim()) ? item.description.trim() : '',
+          url: formatUrl(item.url),
+          domain: item.domain || cleanDomain(item.url),
+          category: item.category || 'general',
+          translate: Boolean(item.translate),
+          visits: Number(item.visits) || 0,
+          lastVisited: Number(item.lastVisited) || Date.now(),
+          isUserAdded: true,
+          isFavorite: Boolean(item.isFavorite)
+        }));
+      } else {
+        activeSites = [];
+      }
+
+      isAppInitialized = true;
+      currentCategory = loadSavedCategory();
+      sortActiveSites();
+      persistActiveSites();
+
+      populateCategoryDropdowns();
+      updateTriggerBar();
+      updateBottomNavActiveState();
+      renderSites();
+    }
+
+    function sortActiveSites() {
+      activeSites.sort((a, b) => {
+        const vA = Number(a.visits) || 0;
+        const vB = Number(b.visits) || 0;
+        if (vB !== vA) return vB - vA;
+        return (Number(b.lastVisited) || 0) - (Number(a.lastVisited) || 0);
+      });
+    }
+
+    function getCategoryCounts() {
+      const counts = { all: activeSites.length, favorites: 0 };
+      getAllCategories().forEach(c => { counts[c.id] = 0; });
+      activeSites.forEach(s => {
+        if (s.isFavorite) counts.favorites++;
+        const cat = s.category || 'general';
+        counts[cat] = (counts[cat] || 0) + 1;
+      });
+      return counts;
+    }
+
+    function updateTriggerBar() {
+      const triggerIcon = document.getElementById('triggerCatIcon');
+      const triggerName = document.getElementById('triggerCatName');
+      const triggerCount = document.getElementById('triggerCatCount');
+      const quickFavBtn = document.getElementById('quickFavFilterBtn');
+      const quickFavCount = document.getElementById('quickFavCount');
+
+      const counts = getCategoryCounts();
+      if (quickFavCount) quickFavCount.textContent = formatEnNumber(counts.favorites);
+
+      if (currentCategory === 'all') {
+        if (triggerIcon) triggerIcon.innerHTML = SVG_ICONS.layers(16);
+        if (triggerName) triggerName.textContent = 'الكل';
+        if (triggerCount) triggerCount.textContent = formatEnNumber(counts.all);
+        if (quickFavBtn) quickFavBtn.classList.remove('ring-2', 'ring-amber-500');
+      } else if (currentCategory === 'favorites') {
+        if (triggerIcon) triggerIcon.innerHTML = SVG_ICONS.star(16, true);
+        if (triggerName) triggerName.textContent = 'المفضلة';
+        if (triggerCount) triggerCount.textContent = formatEnNumber(counts.favorites);
+        if (quickFavBtn) quickFavBtn.classList.add('ring-2', 'ring-amber-500');
+      } else {
+        const found = getAllCategories().find(c => c.id === currentCategory);
+        if (found) {
+          if (triggerIcon) triggerIcon.innerHTML = getCategoryIconHtml(found.icon, 16);
+          if (triggerName) triggerName.textContent = found.name;
+          if (triggerCount) triggerCount.textContent = formatEnNumber(counts[found.id] || 0);
+        }
+        if (quickFavBtn) quickFavBtn.classList.remove('ring-2', 'ring-amber-500');
+      }
+    }
+
+    function updateBottomNavActiveState() {
+      const navAll = document.getElementById('navAllBtn');
+      const navFav = document.getElementById('navFavBtn');
+      if (!navAll || !navFav) return;
+      if (currentCategory === 'favorites') {
+        navFav.classList.add('text-blue-600');
+        navAll.classList.remove('text-blue-600');
+      } else {
+        navAll.classList.add('text-blue-600');
+        navFav.classList.remove('text-blue-600');
+      }
+    }
+
+    function renderCurtainCategories() {
+      const grid = document.getElementById('curtainCategoriesGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const counts = getCategoryCounts();
+      const fragment = document.createDocumentFragment();
+
+      function createCatCard(id, name, icon, count) {
+        const isActive = currentCategory === id;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `ios-pressable w-full rounded-xl px-3 py-2.5 border text-right flex items-center justify-between gap-2 cursor-pointer ${
+          isActive
+            ? 'surface-card border-neutral-900/30 text-main ring-1 ring-black/10'
+            : 'surface-sub text-main hover:border-neutral-400/50'
+        }`;
+
+        card.innerHTML = `
+          <span class="flex items-center gap-2 min-w-0 flex-1">
+            <span class="w-7 h-7 rounded-lg surface-card border text-main flex items-center justify-center shrink-0">
+              ${getCategoryIconHtml(icon, 15)}
+            </span>
+            <span class="text-xs font-extrabold truncate">${name}</span>
+          </span>
+          <span class="flex items-center gap-1.5 shrink-0">
+            <span class="text-[11px] font-black px-2 py-0.5 rounded-lg ${isActive ? 'bg-neutral-950 text-white' : 'surface-card border text-muted'}">${formatEnNumber(count)}</span>
+          </span>
+        `;
+
+        card.onclick = () => {
+          saveCurrentCategory(id);
+          updateTriggerBar();
+          renderSites();
+          closeCurtain();
+        };
+
+        return card;
+      }
+
+      fragment.appendChild(createCatCard('all', 'الكل (جميع الروابط)', 'layers', counts.all));
+      fragment.appendChild(createCatCard('favorites', 'المفضلة', 'star', counts.favorites));
+
+      getAllCategories().forEach(cat => {
+        fragment.appendChild(createCatCard(cat.id, cat.name, cat.icon, counts[cat.id] || 0));
+      });
+
+      grid.appendChild(fragment);
+    }
+
+    // ========================================================
+    // MODAL STACK & BACK BUTTON HANDLING
+    // ========================================================
+    let modalStack = [];
+    let hasModalHistoryEntry = false;
+    let suppressPopstateCount = 0;
+
+    function pushOverlayToStack(overlayId) {
+      if (!modalStack.includes(overlayId)) modalStack.push(overlayId);
+      document.body.classList.add('modal-open');
+      if (!hasModalHistoryEntry) {
+        try {
+          history.pushState({ appModal: true }, '', window.location.pathname + window.location.search);
+          hasModalHistoryEntry = true;
+        } catch (e) {}
+      }
+    }
+
+    function removeOverlayFromStack(overlayId, fromPopState = false) {
+      modalStack = modalStack.filter(id => id !== overlayId);
+      if (modalStack.length === 0) document.body.classList.remove('modal-open');
+      if (!fromPopState) {
+        setTimeout(() => {
+          if (modalStack.length === 0 && hasModalHistoryEntry) {
+            hasModalHistoryEntry = false;
+            suppressPopstateCount++;
+            try { history.back(); } catch (e) { suppressPopstateCount = Math.max(0, suppressPopstateCount - 1); }
+          }
+        }, 0);
+      }
+    }
+
+    function closeOverlayById(overlayId, fromPopState = false) {
+      if (overlayId === 'categoryCurtainOverlay') closeCurtain(fromPopState);
+      else if (overlayId === 'addModalOverlay') closeAddModal(fromPopState);
+      else if (overlayId === 'manageModalOverlay') closeManageModal(fromPopState);
+      else if (overlayId === 'addCategoryModalOverlay') closeAddCategoryModal(fromPopState);
+      else if (overlayId === 'backupModalOverlay') closeBackupModal(fromPopState);
+      else if (overlayId === 'deleteModalOverlay') closeDeleteModal(fromPopState);
+      else if (overlayId === 'pasteModalOverlay') closeManualPasteModal(fromPopState);
+      else if (overlayId === 'qrModalOverlay') closeQrModal(fromPopState);
+      else if (overlayId === 'adminLoginModalOverlay') closeAdminLoginModal(fromPopState);
+      else if (overlayId === 'changePassModalOverlay') closeChangePassModal(fromPopState);
+      else if (overlayId === 'qrMessageModalOverlay') closeQrMessageModal(fromPopState);
+    }
+
+    window.addEventListener('popstate', () => {
+      if (suppressPopstateCount > 0) { suppressPopstateCount--; return; }
+      if (modalStack.length > 0) {
+        hasModalHistoryEntry = false;
+        const topOverlayId = modalStack[modalStack.length - 1];
+        closeOverlayById(topOverlayId, true);
+        if (modalStack.length > 0) {
+          try {
+            history.pushState({ appModal: true }, '', window.location.pathname + window.location.search);
+            hasModalHistoryEntry = true;
+          } catch (e) {}
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAllCustomSelects();
+        if (modalStack.length > 0) {
+          closeOverlayById(modalStack[modalStack.length - 1], false);
+        }
+      }
+    });
+
+    function openCurtain() {
+      renderCurtainCategories();
+      const overlay = document.getElementById('categoryCurtainOverlay');
+      const trigger = document.getElementById('categoryCurtainTrigger');
+      const arrow = document.getElementById('triggerArrowIcon');
+      overlay.classList.add('active');
+      trigger.setAttribute('aria-expanded', 'true');
+      if (arrow) arrow.classList.add('rotate-180');
+      pushOverlayToStack('categoryCurtainOverlay');
+    }
+
+    function closeCurtain(fromPopState = false) {
+      const overlay = document.getElementById('categoryCurtainOverlay');
+      const trigger = document.getElementById('categoryCurtainTrigger');
+      const arrow = document.getElementById('triggerArrowIcon');
+      overlay.classList.remove('active');
+      trigger.setAttribute('aria-expanded', 'false');
+      if (arrow) arrow.classList.remove('rotate-180');
+      removeOverlayFromStack('categoryCurtainOverlay', fromPopState);
+    }
+
+    // ========================================================
+    // RENDER COMPACT RESPONSIVE GRID CARDS
+    // ========================================================
+    function renderSites() {
+      const grid = document.getElementById('sitesGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      updateTriggerBar();
+
+      const filteredSites = activeSites.filter(s => {
+        if (currentCategory === 'favorites') {
+          if (!s.isFavorite) return false;
+        } else if (currentCategory !== 'all') {
+          if (s.category !== currentCategory) return false;
+        }
+
+        if (!savedSearchQuery) return true;
+        const q = normalizeArabicText(savedSearchQuery);
+        return (s.name && normalizeArabicText(s.name).includes(q)) ||
+               (s.description && normalizeArabicText(s.description).includes(q)) ||
+               (s.domain && normalizeArabicText(s.domain).includes(q)) ||
+               (s.url && normalizeArabicText(s.url).includes(q));
+      });
+
+      if (filteredSites.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'col-span-full surface-card rounded-2xl p-8 border border-dashed text-center flex flex-col items-center gap-3';
+        empty.style.borderColor = 'var(--accent-border)';
+
+        if (savedSearchQuery) {
+          empty.innerHTML = `
+            <p class="text-xs font-bold text-muted">لا توجد نتائج تطابق "${savedSearchQuery}".</p>
+            <button type="button" id="emptyClearSearchBtn"
+              class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">مسح البحث</button>
+          `;
+          grid.appendChild(empty);
+          const clearBtn = document.getElementById('emptyClearSearchBtn');
+          if (clearBtn) {
+            clearBtn.onclick = () => {
+              document.getElementById('searchInput').value = '';
+              savedSearchQuery = '';
+              renderSites();
+            };
+          }
+        } else if (currentCategory === 'favorites') {
+          empty.innerHTML = `
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
+              ${SVG_ICONS.star(24, true)}
+            </div>
+            <div class="text-xs font-black text-main">لا توجد روابط في المفضلة حالياً</div>
+            <p class="text-[11px] text-muted max-w-[280px] leading-relaxed">انقر على أيقونة النجمة أعلى أي بطاقة لإضافتها إلى المفضلة.</p>
+          `;
+          grid.appendChild(empty);
+        } else {
+          empty.innerHTML = `
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
+              ${SVG_ICONS.bookmark(24)}
+            </div>
+            <div class="text-xs font-black text-main">لوحة الروابط فارغة حالياً</div>
+            <p class="text-[11px] text-muted max-w-[280px] leading-relaxed">أضف مواقعك وصفحاتك المفضلة لتظهر هنا على شكل بطاقات سريعة الفتح.</p>
+            <button type="button" id="emptyAddBtn"
+              class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">إضافة رابط جديد</button>
+          `;
+          grid.appendChild(empty);
+          const addBtn = document.getElementById('emptyAddBtn');
+          if (addBtn) addBtn.onclick = openAddModal;
+        }
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      filteredSites.forEach(site => {
+        const card = document.createElement('article');
+        card.className = 'ios-pressable surface-card rounded-2xl p-2 sm:p-2.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-1 relative';
+        card.id = 'card_' + site.id;
+
+        const siteTitle = (site.name && site.name.trim()) ? site.name.trim() : 'رابط';
+        const domain = cleanDomain(site.domain || site.url);
+
+        // Compact top bar: Favorite star & 3-dots menu
+        const topRow = document.createElement('div');
+        topRow.className = 'flex items-center justify-between w-full -mb-1';
+
+        const starBtn = document.createElement('button');
+        starBtn.type = 'button';
+        starBtn.className = `p-0.5 rounded-lg cursor-pointer transition-colors ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
+        starBtn.setAttribute('aria-label', site.isFavorite ? 'إزالة من المفضلة' : 'أضف للمفضلة');
+        starBtn.innerHTML = SVG_ICONS.star(14, Boolean(site.isFavorite));
+        starBtn.onclick = (e) => {
+          e.stopPropagation();
+          toggleFavoriteDirect(site.id);
+        };
+
+        const dotsBtn = document.createElement('button');
+        dotsBtn.type = 'button';
+        dotsBtn.className = 'admin-only p-0.5 rounded-lg text-neutral-400 hover:text-neutral-700 cursor-pointer';
+        dotsBtn.setAttribute('aria-label', 'خيارات');
+        dotsBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>`;
+        dotsBtn.onclick = (e) => {
+          e.stopPropagation();
+          openManageModal(site);
+        };
+
+        topRow.appendChild(starBtn);
+        topRow.appendChild(dotsBtn);
+        card.appendChild(topRow);
+
+        // Compact center clickable area: Favicon + Title
+        const launchBtn = document.createElement('button');
+        launchBtn.type = 'button';
+        launchBtn.className = 'flex flex-col items-center text-center w-full bg-transparent border-0 py-0.5 px-1 cursor-pointer flex-1 justify-center';
+        launchBtn.title = `فتح ${siteTitle}`;
+        launchBtn.onclick = () => openSite(site);
+
+        const iconBox = document.createElement('div');
+        iconBox.className = 'w-9 h-9 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center font-black text-amber-700 text-xs overflow-hidden mb-1.5';
+
+        const img = document.createElement('img');
+        img.className = 'w-5 h-5 object-contain rounded';
+        img.src = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+        img.alt = siteTitle;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.onerror = () => {
+          img.remove();
+          iconBox.textContent = siteTitle.trim().slice(0, 2) || '🔗';
+        };
+        iconBox.appendChild(img);
+
+        const titleEl = document.createElement('h2');
+        titleEl.className = 'text-[11.5px] sm:text-xs font-black text-main leading-tight line-clamp-1 w-full';
+        titleEl.textContent = siteTitle;
+
+        launchBtn.appendChild(iconBox);
+        launchBtn.appendChild(titleEl);
+        card.appendChild(launchBtn);
+
+        // Compact bottom badge row
+        const bottomRow = document.createElement('div');
+        bottomRow.className = 'flex items-center justify-center gap-1 pt-0.5';
+
+        if (site.translate) {
+          const trBadge = document.createElement('span');
+          trBadge.className = 'text-[8.5px] font-bold text-sky-600 bg-sky-50 border border-sky-200/60 px-1 py-0.5 rounded leading-none';
+          trBadge.textContent = 'مترجم';
+          bottomRow.appendChild(trBadge);
+        }
+
+        const visitsPill = document.createElement('span');
+        visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[9.5px] font-black leading-none';
+        visitsPill.innerHTML = `${formatEnNumber(site.visits || 0)} <svg class="w-2 h-2 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+        bottomRow.appendChild(visitsPill);
+
+        card.appendChild(bottomRow);
+        fragment.appendChild(card);
+      });
+
+      grid.appendChild(fragment);
+    }
+
+    function toggleFavoriteDirect(siteId) {
+      const site = activeSites.find(s => s.id === siteId);
+      if (!site) return;
+      site.isFavorite = !site.isFavorite;
+      persistActiveSites();
+      renderSites();
+      showToast(site.isFavorite ? `تمت إضافة "${site.name}" للمفضلة` : `تمت إزالة "${site.name}" من المفضلة`, 'info');
+    }
+
+    function openSite(site) {
+      site.visits = (Number(site.visits) || 0) + 1;
+      site.lastVisited = Date.now();
+      persistActiveSites();
+      setTimeout(() => renderSites(), 300);
+
+      const targetUrl = formatUrl(site.url);
+      const finalUrl = site.translate
+        ? `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(targetUrl)}`
+        : targetUrl;
+      window.open(finalUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    // ========================================================
+    // UNIFIED ADD & MANAGE MODALS
+    // ========================================================
+    function updateAddFavButton() {
+      const favBtn = document.getElementById('addFavToggleBtn');
+      const favStarIcon = document.getElementById('addFavStarIcon');
+      const favActionText = document.getElementById('addFavActionText');
+      if (addModalFavorite) {
+        favBtn.classList.add('border-amber-500', 'bg-amber-500/10', 'text-amber-600');
+        favStarIcon.innerHTML = SVG_ICONS.star(15, true);
+        favActionText.textContent = 'في المفضلة';
+      } else {
+        favBtn.classList.remove('border-amber-500', 'bg-amber-500/10', 'text-amber-600');
+        favStarIcon.innerHTML = SVG_ICONS.star(15, false);
+        favActionText.textContent = 'المفضلة';
+      }
+    }
+
+    function openAddModal() {
+      const defaultCat = (currentCategory !== 'all' && currentCategory !== 'favorites')
+        ? currentCategory
+        : (getAllCategories()[0]?.id || 'general');
+      addModalFavorite = (currentCategory === 'favorites');
+      updateAddFavButton();
+      populateCategoryDropdowns(defaultCat);
+      closeAllCustomSelects();
+      document.getElementById('addModalOverlay').classList.add('active');
+      pushOverlayToStack('addModalOverlay');
+      document.getElementById('quickUrlInput').focus();
+    }
+
+    function closeAddModal(fromPopState = false) {
+      closeAllCustomSelects();
+      document.getElementById('addModalOverlay').classList.remove('active');
+      removeOverlayFromStack('addModalOverlay', fromPopState);
+    }
+
+    function addCustomSite() {
+      const urlInput = document.getElementById('quickUrlInput');
+      const nameInput = document.getElementById('quickNameInput');
+      const descInput = document.getElementById('quickDescInput');
+      const translateInput = document.getElementById('quickTranslateInput');
+      const catInput = document.getElementById('quickCategorySelect');
+
+      const urlVal = urlInput.value.trim();
+      if (!urlVal) {
+        showToast('يرجى إدخال الرابط أولاً', 'error');
+        urlInput.focus();
+        return;
+      }
+
+      const fullUrl = formatUrl(urlVal);
+      const domain = cleanDomain(fullUrl);
+      if (!domain) {
+        showToast('يرجى إدخال رابط صحيح (مثل: example.com)', 'error');
+        urlInput.focus();
+        return;
+      }
+
+      const nameVal = nameInput.value.trim() || extractNameFromDomain(domain);
+      const descVal = descInput.value.trim();
+      const catVal = (catInput && catInput.value) ? catInput.value : (getAllCategories()[0]?.id || 'general');
+
+      const existing = activeSites.find(s => s.url === fullUrl);
+      if (existing) {
+        existing.name = nameVal;
+        existing.description = descVal;
+        existing.category = catVal;
+        existing.translate = Boolean(translateInput.checked);
+        existing.isFavorite = addModalFavorite;
+        sortActiveSites();
+        persistActiveSites();
+        saveCurrentCategory(catVal);
+        renderSites();
+        closeAddModal();
+        showToast(`تم تحديث "${nameVal}" بنجاح`, 'success');
+        return;
+      }
+
+      const newSite = {
+        id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        name: nameVal,
+        description: descVal,
+        url: fullUrl,
+        domain: domain,
+        category: catVal,
+        translate: Boolean(translateInput.checked),
+        visits: 0,
+        lastVisited: Date.now(),
+        isUserAdded: true,
+        isFavorite: addModalFavorite
+      };
+
+      activeSites.unshift(newSite);
+      sortActiveSites();
+      persistActiveSites();
+
+      if (currentCategory !== 'all' && currentCategory !== catVal) {
+        saveCurrentCategory(catVal);
+      }
+      renderSites();
+
+      urlInput.value = '';
+      nameInput.value = '';
+      descInput.value = '';
+      translateInput.checked = false;
+      addModalFavorite = false;
+      closeAddModal();
+
+      showToast(`تمت إضافة "${nameVal}" بنجاح`, 'success');
+    }
+
+    function openAddCategoryModal() {
+      document.getElementById('newCategoryNameInput').value = '';
+      populateCustomSelect('newCategoryIconWrapper', 'newCategoryIconSelect', 'newCategoryIconMenu', CATEGORY_ICON_OPTIONS, 'layers');
+      closeAllCustomSelects();
+      document.getElementById('addCategoryModalOverlay').classList.add('active');
+      pushOverlayToStack('addCategoryModalOverlay');
+      document.getElementById('newCategoryNameInput').focus();
+    }
+
+    function closeAddCategoryModal(fromPopState = false) {
+      closeAllCustomSelects();
+      document.getElementById('addCategoryModalOverlay').classList.remove('active');
+      removeOverlayFromStack('addCategoryModalOverlay', fromPopState);
+    }
+
+    function saveNewCategory() {
+      const nameInput = document.getElementById('newCategoryNameInput');
+      const iconInput = document.getElementById('newCategoryIconSelect');
+      const catName = nameInput.value.trim();
+      const catIcon = (iconInput && iconInput.value) ? iconInput.value : 'layers';
+
+      if (!catName) {
+        showToast('يرجى كتابة اسم للتصنيف الجديد', 'error');
+        nameInput.focus();
+        return;
+      }
+
+      const exists = getAllCategories().some(c => c.name.toLowerCase() === catName.toLowerCase());
+      if (exists) {
+        showToast('يوجد تصنيف بهذا الاسم مسبقاً', 'error');
+        nameInput.focus();
+        return;
+      }
+
+      const newCatId = 'custom_cat_' + Date.now();
+      // Add to the beginning so newly created category appears first
+      customCategories.unshift({ id: newCatId, name: catName, icon: catIcon });
+
+      persistActiveSites();
+      populateCategoryDropdowns(newCatId);
+      saveCurrentCategory(newCatId);
+      updateTriggerBar();
+      renderSites();
+      closeAddCategoryModal();
+
+      showToast(`تم إنشاء تصنيف "${catName}" بنجاح`, 'success');
+    }
+
+    function openManageModal(site) {
+      document.getElementById('manageSiteId').value = site.id;
+      document.getElementById('manageSiteName').value = site.name || '';
+      document.getElementById('manageSiteDesc').value = site.description || '';
+      document.getElementById('manageSiteUrl').value = site.url || '';
+      document.getElementById('manageSiteTranslate').checked = Boolean(site.translate);
+      populateCategoryDropdowns(site.category || 'general');
+      closeAllCustomSelects();
+
+      updateManageFavButton(Boolean(site.isFavorite));
+      document.getElementById('manageModalHeaderTitle').textContent = `تعديل: ${site.name}`;
+      document.getElementById('manageVisitsText').textContent = `${formatEnNumber(site.visits || 0)} زيارة`;
+
+      document.getElementById('manageModalOverlay').classList.add('active');
+      pushOverlayToStack('manageModalOverlay');
+    }
+
+    function updateManageFavButton(isFav) {
+      const favBtn = document.getElementById('manageFavToggleBtn');
+      const favStarIcon = document.getElementById('favStarIcon');
+      const favActionText = document.getElementById('favActionText');
+      if (isFav) {
+        favBtn.classList.add('border-amber-500', 'bg-amber-500/10', 'text-amber-600');
+        favStarIcon.innerHTML = SVG_ICONS.star(15, true);
+        favActionText.textContent = 'في المفضلة';
+      } else {
+        favBtn.classList.remove('border-amber-500', 'bg-amber-500/10', 'text-amber-600');
+        favStarIcon.innerHTML = SVG_ICONS.star(15, false);
+        favActionText.textContent = 'المفضلة';
+      }
+    }
+
+    function closeManageModal(fromPopState = false) {
+      closeAllCustomSelects();
+      document.getElementById('manageModalOverlay').classList.remove('active');
+      removeOverlayFromStack('manageModalOverlay', fromPopState);
+    }
+
+    function toggleFavoriteFromManage() {
+      const id = document.getElementById('manageSiteId').value;
+      const site = activeSites.find(s => s.id === id);
+      if (!site) return;
+
+      site.isFavorite = !site.isFavorite;
+      persistActiveSites();
+      updateManageFavButton(site.isFavorite);
+      renderSites();
+      showToast(site.isFavorite ? `تمت إضافة "${site.name}" للمفضلة` : `تمت إزالة "${site.name}" من المفضلة`, 'info');
+    }
+
+    function applyMoveCategoryFromManage() {
+      const id = document.getElementById('manageSiteId').value;
+      const site = activeSites.find(s => s.id === id);
+      if (!site) return;
+
+      const targetCat = document.getElementById('manageSiteCategory').value;
+      site.category = targetCat;
+      persistActiveSites();
+      renderSites();
+
+      const catObj = getAllCategories().find(c => c.id === targetCat);
+      showToast(`تم نقل "${site.name}" إلى "${catObj ? catObj.name : targetCat}"`, 'success');
+    }
+
+    function saveManageEdits() {
+      const id = document.getElementById('manageSiteId').value;
+      const newName = document.getElementById('manageSiteName').value.trim();
+      const newDesc = document.getElementById('manageSiteDesc').value.trim();
+      const newUrl = document.getElementById('manageSiteUrl').value.trim();
+      const newTranslate = document.getElementById('manageSiteTranslate').checked;
+      const newCategory = document.getElementById('manageSiteCategory').value || 'general';
+
+      if (!newName || !newUrl) {
+        showToast('يرجى إدخال اسم ورابط صحيحين', 'error');
+        return;
+      }
+
+      const idx = activeSites.findIndex(s => s.id === id);
+      if (idx === -1) { closeManageModal(); return; }
+
+      activeSites[idx].name = newName;
+      activeSites[idx].description = newDesc;
+      activeSites[idx].url = formatUrl(newUrl);
+      activeSites[idx].domain = cleanDomain(newUrl);
+      activeSites[idx].category = newCategory;
+      activeSites[idx].translate = newTranslate;
+
+      sortActiveSites();
+      persistActiveSites();
+      renderSites();
+      closeManageModal();
+      showToast('تم حفظ التعديلات بنجاح', 'success');
+    }
+
+    function openDeleteModalFromManage() {
+      const id = document.getElementById('manageSiteId').value;
+      const site = activeSites.find(s => s.id === id);
+      if (!site) return;
+      closeManageModal();
+      document.getElementById('deleteSiteId').value = site.id;
+      document.getElementById('deletePromptText').innerHTML = `هل تريد حذف رابط <strong>"${site.name}"</strong>؟`;
+      document.getElementById('deleteModalOverlay').classList.add('active');
+      pushOverlayToStack('deleteModalOverlay');
+    }
+
+    function closeDeleteModal(fromPopState = false) {
+      document.getElementById('deleteModalOverlay').classList.remove('active');
+      removeOverlayFromStack('deleteModalOverlay', fromPopState);
+    }
+
+    function confirmDelete() {
+      const id = document.getElementById('deleteSiteId').value;
+      const site = activeSites.find(s => s.id === id);
+      const siteName = site ? site.name : 'الرابط';
+      activeSites = activeSites.filter(s => s.id !== id);
+      persistActiveSites();
+      renderSites();
+      closeDeleteModal();
+      showToast(`تم حذف "${siteName}"`, 'info');
+    }
+
+    // ========================================================
+    // BACKUP, THEME & CLIPBOARD
+    // ========================================================
+    function openBackupModal() {
+      document.getElementById('backupModalOverlay').classList.add('active');
+      pushOverlayToStack('backupModalOverlay');
+    }
+
+    function closeBackupModal(fromPopState = false) {
+      document.getElementById('backupModalOverlay').classList.remove('active');
+      removeOverlayFromStack('backupModalOverlay', fromPopState);
+    }
+
+    let pasteTargetInputId = 'quickUrlInput';
+
+    async function handlePaste(targetId = 'quickUrlInput') {
+      pasteTargetInputId = targetId || 'quickUrlInput';
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text && text.trim()) {
+            const targetEl = document.getElementById(pasteTargetInputId);
+            if (targetEl) targetEl.value = text.trim();
+            showToast('تم اللصق من الحافظة', 'success');
+            return;
+          }
+        }
+        openManualPasteModal();
+      } catch (err) {
+        openManualPasteModal();
+      }
+    }
+
+    function openManualPasteModal() {
+      const modal = document.getElementById('pasteModalOverlay');
+      const input = document.getElementById('manualPasteInput');
+      input.value = '';
+      modal.classList.add('active');
+      pushOverlayToStack('pasteModalOverlay');
+      input.focus();
+    }
+
+    function closeManualPasteModal(fromPopState = false) {
+      document.getElementById('pasteModalOverlay').classList.remove('active');
+      removeOverlayFromStack('pasteModalOverlay', fromPopState);
+    }
+
+    function applyManualPaste() {
+      const val = document.getElementById('manualPasteInput').value.trim();
+      if (val) {
+        const targetEl = document.getElementById(pasteTargetInputId);
+        if (targetEl) targetEl.value = val;
+        showToast('تم وضع الرابط', 'success');
+      }
+      closeManualPasteModal();
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 250);
+      }, 2200);
+    }
+
+    function applyTheme(theme) {
+      const target = theme === 'dark' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', target);
+      const brandThemeIcon = document.getElementById('brandThemeIcon');
+      const brandThemeBadge = document.getElementById('brandThemeBadge');
+      if (brandThemeIcon) brandThemeIcon.innerHTML = target === 'dark' ? SVG_ICONS.moon(16) : SVG_ICONS.sun(16);
+      if (brandThemeBadge) brandThemeBadge.textContent = target === 'dark' ? 'مفعّل' : 'معطّل';
+      try { localStorage.setItem(THEME_STORAGE_KEY, target); } catch (e) {}
+    }
+
+    function initTheme() {
+      let savedTheme = 'light';
+      try {
+        const stored = localStorage.getItem(THEME_STORAGE_KEY);
+        if (stored === 'light' || stored === 'dark') savedTheme = stored;
+      } catch (e) {}
+      applyTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+      showToast(next === 'dark' ? 'تم تفعيل الوضع المظلم' : 'تم تفعيل الوضع الفاتح', 'info');
+    }
+
+    function closeBrandDropdown() {
+      const dropdown = document.getElementById('brandDropdown');
+      const btn = document.getElementById('brandMenuBtn');
+      if (dropdown) dropdown.classList.remove('active');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    // ========================================================
+    // ADMIN / USER ROLE TOGGLE (5 clicks within 2s on title)
+    // ========================================================
+    function setAdminMode(enabled, silent = false) {
+      isAdminMode = Boolean(enabled);
+      document.body.classList.toggle('admin-mode', isAdminMode);
+      renderSites();
+      if (!silent) {
+        showToast(
+          isAdminMode ? 'تم تفعيل وضع المدير (الصلاحيات الكاملة)' : 'تم العودة إلى وضع المستخدم',
+          isAdminMode ? 'success' : 'info'
+        );
+      }
+    }
+
+    function getAdminPassword() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY_ADMIN_PASS);
+        if (stored && stored.trim()) return stored;
+      } catch (e) {}
+      return '1234';
+    }
+
+    function openAdminLoginModal() {
+      const input = document.getElementById('adminPasswordInput');
+      if (input) input.value = '';
+      document.getElementById('adminLoginModalOverlay').classList.add('active');
+      pushOverlayToStack('adminLoginModalOverlay');
+      if (input) input.focus();
+    }
+
+    function closeAdminLoginModal(fromPopState = false) {
+      document.getElementById('adminLoginModalOverlay').classList.remove('active');
+      removeOverlayFromStack('adminLoginModalOverlay', fromPopState);
+    }
+
+    function openChangePassModal() {
+      const n = document.getElementById('changePassNewInput');
+      const c = document.getElementById('changePassConfirmInput');
+      if (n) n.value = '';
+      if (c) c.value = '';
+      document.getElementById('changePassModalOverlay').classList.add('active');
+      pushOverlayToStack('changePassModalOverlay');
+      if (n) n.focus();
+    }
+
+    function closeChangePassModal(fromPopState = false) {
+      document.getElementById('changePassModalOverlay').classList.remove('active');
+      removeOverlayFromStack('changePassModalOverlay', fromPopState);
+    }
+
+    function saveNewAdminPassword() {
+      const n = document.getElementById('changePassNewInput');
+      const c = document.getElementById('changePassConfirmInput');
+      const newPass = n ? n.value.trim() : '';
+      const confirmPass = c ? c.value.trim() : '';
+      if (!newPass) {
+        showToast('يرجى إدخال كلمة المرور الجديدة', 'error');
+        if (n) n.focus();
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showToast('كلمتا المرور غير متطابقتين', 'error');
+        if (c) c.focus();
+        return;
+      }
+      try { localStorage.setItem(STORAGE_KEY_ADMIN_PASS, newPass); } catch (e) {}
+      closeChangePassModal();
+      showToast('تم حفظ كلمة المرور الجديدة بنجاح', 'success');
+    }
+
+    function submitAdminLogin() {
+      const input = document.getElementById('adminPasswordInput');
+      const entered = input ? input.value : '';
+      if (entered === getAdminPassword()) {
+        closeAdminLoginModal();
+        setAdminMode(true);
+      } else {
+        showToast('كلمة المرور غير صحيحة', 'error');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+
+    function handleSecretTitleClick() {
+      const now = Date.now();
+      titleClickTimestamps = titleClickTimestamps.filter(t => now - t <= 2000);
+      titleClickTimestamps.push(now);
+      if (titleClickTimestamps.length >= 5) {
+        titleClickTimestamps = [];
+        if (isAdminMode) {
+          setAdminMode(false);
+        } else {
+          openAdminLoginModal();
+        }
+      }
+    }
+
+    // ========================================================
+    // SMART QR CODE MODAL (Auto-show 30s + Manual Reopen)
+    // ========================================================
+    function getEffectiveQrUrl() {
+      let custom = '';
+      try { custom = (localStorage.getItem(STORAGE_KEY_QR_URL) || '').trim(); } catch (e) {}
+      if (custom) return formatUrl(custom);
+      return window.location.href;
+    }
+
+    // Self-contained Offline QR Code Generator (Byte mode, ECC-L, Versions 1..10)
+    const MiniQR = (() => {
+      const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
+      let x = 1;
+      for (let i = 0; i < 255; i++) {
+        EXP[i] = x; LOG[x] = i;
+        x = (x << 1) ^ (x & 0x80 ? 0x11d : 0);
+      }
+      for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+      const gfMul = (a, b) => (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]];
+      function rsGenPoly(deg) {
+        let p = [1];
+        for (let i = 0; i < deg; i++) {
+          const np = new Array(p.length + 1).fill(0);
+          for (let j = 0; j < p.length; j++) {
+            np[j] ^= p[j];
+            np[j + 1] ^= gfMul(p[j], EXP[i]);
+          }
+          p = np;
+        }
+        return p;
+      }
+      function rsEncode(data, ecLen) {
+        const gen = rsGenPoly(ecLen);
+        const res = new Uint8Array(data.length + ecLen);
+        res.set(data);
+        for (let i = 0; i < data.length; i++) {
+          const coef = res[i];
+          if (coef !== 0) {
+            for (let j = 0; j < gen.length; j++) res[i + j] ^= gfMul(gen[j], coef);
+          }
+        }
+        return res.slice(data.length);
+      }
+      // Version 1..10 ECC-L: [totalCodewords, ecPerBlock, numBlocks]
+      const VER_L = [
+        null,
+        [26, 7, 1], [44, 10, 1], [70, 15, 1], [100, 20, 1], [134, 26, 1],
+        [172, 18, 2], [196, 20, 2], [242, 24, 2], [292, 30, 2], [346, 18, 4]
+      ];
+      const ALIGN = [null, [], [6,18], [6,22], [6,26], [6,30], [6,34], [6,22,38], [6,24,42], [6,26,46], [6,28,50]];
+
+      function makeMatrix(text) {
+        const bytes = new TextEncoder().encode(text);
+        let ver = 1;
+        for (; ver <= 10; ver++) {
+          const [tot, ec, blk] = VER_L[ver];
+          const cap = tot - ec * blk;
+          const hdr = ver >= 10 ? 20 : 12;
+          if (bytes.length * 8 + hdr <= cap * 8) break;
+        }
+        if (ver > 10) ver = 10;
+        const [tot, ec, blk] = VER_L[ver];
+        const dataCap = tot - ec * blk;
+        const bits = [];
+        const pushBits = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1); };
+        pushBits(0b0100, 4);
+        pushBits(bytes.length, ver >= 10 ? 16 : 8);
+        for (const b of bytes) pushBits(b, 8);
+        pushBits(0, Math.min(4, dataCap * 8 - bits.length));
+        while (bits.length % 8 !== 0) bits.push(0);
+        const dc = new Uint8Array(dataCap);
+        for (let i = 0; i < bits.length / 8; i++) {
+          let v = 0;
+          for (let j = 0; j < 8; j++) v = (v << 1) | bits[i * 8 + j];
+          dc[i] = v;
+        }
+        for (let i = bits.length / 8, p = 0; i < dataCap; i++, p ^= 1) dc[i] = p ? 0x11 : 0xec;
+
+        const bSize = Math.floor(dataCap / blk), rem = dataCap % blk;
+        const blocks = [], ecs = [];
+        let off = 0;
+        for (let b = 0; b < blk; b++) {
+          const len = bSize + (b >= blk - rem ? 1 : 0);
+          const slice = dc.slice(off, off + len);
+          off += len;
+          blocks.push(slice);
+          ecs.push(rsEncode(slice, ec));
+        }
+        const finalBytes = [];
+        const maxLen = bSize + (rem > 0 ? 1 : 0);
+        for (let i = 0; i < maxLen; i++) for (let b = 0; b < blk; b++) if (i < blocks[b].length) finalBytes.push(blocks[b][i]);
+        for (let i = 0; i < ec; i++) for (let b = 0; b < blk; b++) finalBytes.push(ecs[b][i]);
+
+        const N = ver * 4 + 17;
+        const mat = Array.from({ length: N }, () => new Int8Array(N).fill(-1));
+        const res = Array.from({ length: N }, () => new Uint8Array(N));
+
+        const setFn = (r, c, v) => { if (r >= 0 && r < N && c >= 0 && c < N) { mat[r][c] = v; res[r][c] = 1; } };
+        const finder = (r0, c0) => {
+          for (let dr = -1; dr <= 7; dr++) for (let dc2 = -1; dc2 <= 7; dc2++) {
+            const inside = dr >= 0 && dr <= 6 && dc2 >= 0 && dc2 <= 6;
+            const dark = inside && (dr === 0 || dr === 6 || dc2 === 0 || dc2 === 6 || (dr >= 2 && dr <= 4 && dc2 >= 2 && dc2 <= 4));
+            setFn(r0 + dr, c0 + dc2, dark ? 1 : 0);
+          }
+        };
+        finder(0, 0); finder(0, N - 7); finder(N - 7, 0);
+        for (let i = 8; i < N - 8; i++) { setFn(6, i, i % 2 === 0 ? 1 : 0); setFn(i, 6, i % 2 === 0 ? 1 : 0); }
+        setFn(N - 8, 8, 1);
+
+        const al = ALIGN[ver];
+        for (const r of al) for (const c of al) {
+          if (res[r][c]) continue;
+          for (let dr = -2; dr <= 2; dr++) for (let dc2 = -2; dc2 <= 2; dc2++) {
+            setFn(r + dr, c + dc2, (Math.abs(dr) === 2 || Math.abs(dc2) === 2 || (dr === 0 && dc2 === 0)) ? 1 : 0);
+          }
+        }
+        // Reserve format info
+        for (let i = 0; i < 9; i++) { if (!res[8][i]) res[8][i] = 1; if (!res[i][8]) res[i][8] = 1; }
+        for (let i = 0; i < 8; i++) { if (!res[8][N - 1 - i]) res[8][N - 1 - i] = 1; if (!res[N - 1 - i][8]) res[N - 1 - i][8] = 1; }
+        if (ver >= 7) {
+          for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) { res[i][N - 11 + j] = 1; res[N - 11 + j][i] = 1; }
+        }
+
+        // Data placement (mask 0: (r + c) % 2 === 0)
+        let bitIdx = 0;
+        const totalBits = finalBytes.length * 8;
+        for (let col = N - 1; col > 0; col -= 2) {
+          if (col === 6) col--;
+          for (let i = 0; i < N; i++) {
+            const r = ((Math.floor((N - 1 - col) / 2)) % 2 === 0) ? (N - 1 - i) : i;
+            for (const c of [col, col - 1]) {
+              if (!res[r][c]) {
+                let b = bitIdx < totalBits ? ((finalBytes[bitIdx >> 3] >> (7 - (bitIdx & 7))) & 1) : 0;
+                bitIdx++;
+                if ((r + c) % 2 === 0) b ^= 1;
+                mat[r][c] = b;
+              }
+            }
+          }
+        }
+        // Format info for ECC-L (01) + Mask 0 (000) => 111011111000100
+        const fmt = 0b111011111000100;
+        const fCoords1 = [[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+        const fCoords2 = [[N-1,8],[N-2,8],[N-3,8],[N-4,8],[N-5,8],[N-6,8],[N-7,8],[8,N-8],[8,N-7],[8,N-6],[8,N-5],[8,N-4],[8,N-3],[8,N-2],[8,N-1]];
+        for (let i = 0; i < 15; i++) {
+          const bit = (fmt >> (14 - i)) & 1;
+          mat[fCoords1[i][0]][fCoords1[i][1]] = bit;
+          mat[fCoords2[i][0]][fCoords2[i][1]] = bit;
+        }
+        return mat;
+      }
+
+      function toSvg(text, size = 180) {
+        const mat = makeMatrix(text);
+        const N = mat.length;
+        const pad = 2;
+        const total = N + pad * 2;
+        let d = '';
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (mat[r][c] === 1) d += `M${c + pad},${r + pad}h1v1h-1z`;
+          }
+        }
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" width="${size}" height="${size}" shape-rendering="crispEdges"><rect width="${total}" height="${total}" fill="#ffffff"/><path d="${d}" fill="#171717"/></svg>`;
+      }
+      return { toSvg };
+    })();
+
+    function renderQrCode(url) {
+      const container = document.getElementById('qrCodeContainer');
+      const urlText = document.getElementById('qrCurrentUrlText');
+      if (!container) return;
+      container.innerHTML = '';
+      if (urlText) urlText.textContent = url;
+
+      try {
+        if (typeof window.qrcode === 'function') {
+          const qr = window.qrcode(0, 'M');
+          qr.addData(url);
+          qr.make();
+          container.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+          const svg = container.querySelector('svg');
+          if (svg) {
+            svg.style.width = '180px';
+            svg.style.height = '180px';
+            svg.style.display = 'block';
+          }
+          return;
+        }
+      } catch (e) {}
+
+      try {
+        container.innerHTML = MiniQR.toSvg(url, 180);
+      } catch (e) {
+        container.innerHTML = '<div class="text-xs font-bold text-muted text-center p-4">تعذّر توليد الباركود</div>';
+      }
+    }
+
+    function updateQrCountdownUI() {
+      const textEl = document.getElementById('qrCountdownText');
+      const barEl = document.getElementById('qrCountdownBar');
+      if (textEl) textEl.textContent = `${formatEnNumber(qrRemainingSeconds)} ثانية`;
+      if (barEl) barEl.style.width = `${Math.max(0, (qrRemainingSeconds / 30) * 100)}%`;
+    }
+
+    function stopQrTimer() {
+      if (qrCountdownTimer) {
+        clearInterval(qrCountdownTimer);
+        qrCountdownTimer = null;
+      }
+    }
+
+    function getQrDisplayMessage() {
+      try { return (localStorage.getItem(STORAGE_KEY_QR_MSG) || '').trim(); } catch (e) { return ''; }
+    }
+
+    function updateQrDisplayMessageUI() {
+      const box = document.getElementById('qrDisplayMessageBox');
+      if (!box) return;
+      const msg = getQrDisplayMessage();
+      if (msg) {
+        box.textContent = msg;
+        box.classList.remove('hidden');
+      } else {
+        box.textContent = '';
+        box.classList.add('hidden');
+      }
+    }
+
+    function openQrMessageModal() {
+      const input = document.getElementById('qrMessageInput');
+      if (input) input.value = getQrDisplayMessage();
+      document.getElementById('qrMessageModalOverlay').classList.add('active');
+      pushOverlayToStack('qrMessageModalOverlay');
+      if (input) input.focus();
+    }
+
+    function closeQrMessageModal(fromPopState = false) {
+      document.getElementById('qrMessageModalOverlay').classList.remove('active');
+      removeOverlayFromStack('qrMessageModalOverlay', fromPopState);
+    }
+
+    function saveQrDisplayMessage() {
+      const input = document.getElementById('qrMessageInput');
+      const msg = input ? input.value.trim() : '';
+      try {
+        if (msg) localStorage.setItem(STORAGE_KEY_QR_MSG, msg);
+        else localStorage.removeItem(STORAGE_KEY_QR_MSG);
+      } catch (e) {}
+      updateQrDisplayMessageUI();
+      closeQrMessageModal();
+      showToast(msg ? 'تم حفظ رسالة العرض بنجاح' : 'تم مسح رسالة العرض', 'success');
+    }
+
+    function openQrModal() {
+      stopQrTimer();
+      updateQrDisplayMessageUI();
+      const customInput = document.getElementById('qrCustomUrlInput');
+      if (customInput) {
+        try { customInput.value = localStorage.getItem(STORAGE_KEY_QR_URL) || ''; } catch (e) {}
+      }
+      renderQrCode(getEffectiveQrUrl());
+
+      qrRemainingSeconds = 30;
+      updateQrCountdownUI();
+
+      document.getElementById('qrModalOverlay').classList.add('active');
+      pushOverlayToStack('qrModalOverlay');
+
+      qrCountdownTimer = setInterval(() => {
+        qrRemainingSeconds--;
+        updateQrCountdownUI();
+        if (qrRemainingSeconds <= 0) {
+          closeQrModal();
+        }
+      }, 1000);
+    }
+
+    function closeQrModal(fromPopState = false) {
+      stopQrTimer();
+      document.getElementById('qrModalOverlay').classList.remove('active');
+      removeOverlayFromStack('qrModalOverlay', fromPopState);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+
+      setupCustomSelectTrigger('quickCategorySelectWrapper', 'quickCategoryTrigger');
+      setupCustomSelectTrigger('manageCategorySelectWrapper', 'manageCategoryTrigger');
+      setupCustomSelectTrigger('newCategoryIconWrapper', 'newCategoryIconTrigger');
+
+      const brandMenuBtn = document.getElementById('brandMenuBtn');
+      const brandMenuWrapper = document.getElementById('brandMenuWrapper');
+      if (brandMenuBtn) {
+        brandMenuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const dropdown = document.getElementById('brandDropdown');
+          const isOpen = dropdown.classList.toggle('active');
+          brandMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        if (brandMenuWrapper && !brandMenuWrapper.contains(e.target)) {
+          closeBrandDropdown();
+        }
+        if (!e.target.closest('.custom-select-wrapper')) {
+          closeAllCustomSelects();
+        }
+      });
+
+      const appTitleTrigger = document.getElementById('appTitleTrigger');
+      if (appTitleTrigger) {
+        appTitleTrigger.addEventListener('click', handleSecretTitleClick);
+      }
+
+      document.getElementById('brandDropdownChangePassBtn').addEventListener('click', () => {
+        closeBrandDropdown();
+        openChangePassModal();
+      });
+      document.getElementById('closeChangePassBtn').addEventListener('click', () => closeChangePassModal());
+      document.getElementById('cancelChangePassBtn').addEventListener('click', () => closeChangePassModal());
+      document.getElementById('saveChangePassBtn').addEventListener('click', saveNewAdminPassword);
+
+      document.getElementById('brandDropdownAddLinkBtn').addEventListener('click', () => {
+        closeBrandDropdown();
+        openAddModal();
+      });
+
+      document.getElementById('closeAdminLoginBtn').addEventListener('click', () => closeAdminLoginModal());
+      document.getElementById('cancelAdminLoginBtn').addEventListener('click', () => closeAdminLoginModal());
+      document.getElementById('confirmAdminLoginBtn').addEventListener('click', submitAdminLogin);
+      document.getElementById('adminPasswordInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submitAdminLogin();
+      });
+
+      document.getElementById('saveAdminPasswordBtn').addEventListener('click', () => {
+        const input = document.getElementById('newAdminPasswordInput');
+        const newPass = input ? input.value.trim() : '';
+        if (!newPass) {
+          showToast('يرجى إدخال كلمة مرور صالحة', 'error');
+          if (input) input.focus();
+          return;
+        }
+        try { localStorage.setItem(STORAGE_KEY_ADMIN_PASS, newPass); } catch (e) {}
+        if (input) input.value = '';
+        showToast('تم تحديث كلمة مرور المدير بنجاح', 'success');
+      });
+
+      document.getElementById('brandDropdownQrMessageBtn').addEventListener('click', () => {
+        closeBrandDropdown();
+        openQrMessageModal();
+      });
+      document.getElementById('closeQrMessageBtn').addEventListener('click', () => closeQrMessageModal());
+      document.getElementById('cancelQrMessageBtn').addEventListener('click', () => closeQrMessageModal());
+      document.getElementById('saveQrMessageBtn').addEventListener('click', saveQrDisplayMessage);
+      document.getElementById('qrMessageInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveQrDisplayMessage();
+      });
+
+      document.getElementById('brandDropdownQrBtn').addEventListener('click', () => {
+        closeBrandDropdown();
+        openQrModal();
+      });
+
+      document.getElementById('brandDropdownExitAdminBtn').addEventListener('click', () => {
+        closeBrandDropdown();
+        setAdminMode(false);
+      });
+
+      document.getElementById('closeQrModalBtn').addEventListener('click', () => closeQrModal());
+      document.getElementById('cancelQrModalBtn').addEventListener('click', () => closeQrModal());
+      document.getElementById('qrModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeQrModal();
+      });
+
+      document.getElementById('copyQrUrlBtn').addEventListener('click', () => {
+        const url = getEffectiveQrUrl();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => showToast('تم نسخ الرابط', 'success')).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = url;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+            showToast('تم نسخ الرابط', 'success');
+          });
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = url;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          showToast('تم نسخ الرابط', 'success');
+        }
+      });
+
+      document.getElementById('saveQrCustomUrlBtn').addEventListener('click', () => {
+        const val = (document.getElementById('qrCustomUrlInput').value || '').trim();
+        try {
+          if (val) localStorage.setItem(STORAGE_KEY_QR_URL, val);
+          else localStorage.removeItem(STORAGE_KEY_QR_URL);
+        } catch (e) {}
+        renderQrCode(getEffectiveQrUrl());
+        showToast(val ? 'تم تحديث رابط الباركود' : 'تمت استعادة رابط الصفحة الحالي', 'success');
+      });
+
+      document.getElementById('brandDropdownBackupBtn').addEventListener('click', () => {
+        closeBrandDropdown();
+        openBackupModal();
+      });
+
+      document.getElementById('brandDropdownThemeBtn').addEventListener('click', () => {
+        toggleTheme();
+        closeBrandDropdown();
+      });
+
+      document.getElementById('settingsThemeToggleBtn').addEventListener('click', toggleTheme);
+
+      openQrModal();
+      loadActiveSites();
+      setAdminMode(false, true);
+
+      // Header & Bottom Nav
+      document.getElementById('openAddModalBtn').addEventListener('click', openAddModal);
+      document.getElementById('navAllBtn').addEventListener('click', () => {
+        saveCurrentCategory('all');
+        updateTriggerBar();
+        renderSites();
+      });
+      document.getElementById('navFavBtn').addEventListener('click', () => {
+        saveCurrentCategory('favorites');
+        updateTriggerBar();
+        renderSites();
+      });
+      document.getElementById('navCatsBtn').addEventListener('click', openCurtain);
+      document.getElementById('navSettingsBtn').addEventListener('click', openBackupModal);
+
+      // Add Modal
+      document.getElementById('addFavToggleBtn').addEventListener('click', () => {
+        addModalFavorite = !addModalFavorite;
+        updateAddFavButton();
+      });
+      document.getElementById('closeAddModalBtn').addEventListener('click', () => closeAddModal());
+      document.getElementById('cancelAddModalBtn').addEventListener('click', () => closeAddModal());
+
+      document.getElementById('addCustomSiteBtn').addEventListener('click', addCustomSite);
+      document.getElementById('pasteBtn').addEventListener('click', () => handlePaste('quickUrlInput'));
+      document.getElementById('managePasteBtn').addEventListener('click', () => handlePaste('manageSiteUrl'));
+      document.getElementById('quickNewCatBtn').addEventListener('click', openAddCategoryModal);
+
+      // Backup Modal
+      document.getElementById('closeBackupModalBtn').addEventListener('click', () => closeBackupModal());
+      document.getElementById('cancelBackupBtn').addEventListener('click', () => closeBackupModal());
+      document.getElementById('backupModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeBackupModal();
+      });
+
+      document.getElementById('exportBackupBtn').addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ sites: activeSites, categories: customCategories }, null, 2));
+        const a = document.createElement('a');
+        a.href = dataStr;
+        a.download = `my_links_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('تم تنزيل النسخة الاحتياطية', 'success');
+      });
+
+      document.getElementById('importBackupInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const imported = JSON.parse(evt.target.result);
+            if (Array.isArray(imported)) {
+              activeSites = imported;
+            } else if (imported && Array.isArray(imported.sites)) {
+              activeSites = imported.sites;
+              if (Array.isArray(imported.categories)) customCategories = imported.categories;
+            } else {
+              showToast('الملف لا يحتوي على بيانات صحيحة', 'error');
+              return;
+            }
+            populateCategoryDropdowns();
+            persistActiveSites();
+            renderSites();
+            closeBackupModal();
+            showToast('تمت استعادة البيانات بنجاح', 'success');
+          } catch (err) {
+            showToast('خطأ في قراءة الملف', 'error');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      document.getElementById('resetDefaultsBtn').addEventListener('click', () => {
+        activeSites = [];
+        customCategories = [];
+        saveCurrentCategory('all');
+        populateCategoryDropdowns();
+        persistActiveSites();
+        renderSites();
+        closeBackupModal();
+        showToast('تم تفريغ قاعدة البيانات بالكامل', 'info');
+      });
+
+      // Category Curtain
+      document.getElementById('categoryCurtainTrigger').addEventListener('click', () => {
+        const overlay = document.getElementById('categoryCurtainOverlay');
+        if (overlay.classList.contains('active')) closeCurtain();
+        else openCurtain();
+      });
+      document.getElementById('closeCurtainBtn').addEventListener('click', () => closeCurtain());
+      document.getElementById('categoryCurtainOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeCurtain();
+      });
+
+      document.getElementById('quickFavFilterBtn').addEventListener('click', () => {
+        saveCurrentCategory(currentCategory === 'favorites' ? 'all' : 'favorites');
+        updateTriggerBar();
+        renderSites();
+      });
+
+      document.getElementById('curtainAddCategoryBtn').addEventListener('click', () => {
+        closeCurtain();
+        openAddCategoryModal();
+      });
+
+      // Add Category Modal
+      document.getElementById('closeAddCategoryModalBtn').addEventListener('click', () => closeAddCategoryModal());
+      document.getElementById('cancelAddCategoryBtn').addEventListener('click', () => closeAddCategoryModal());
+      document.getElementById('saveNewCategoryBtn').addEventListener('click', saveNewCategory);
+      document.getElementById('addCategoryModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeAddCategoryModal();
+      });
+
+      // Search
+      const debouncedMainSearch = debounce((query) => {
+        savedSearchQuery = query.trim();
+        renderSites();
+      }, 150);
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        debouncedMainSearch(e.target.value);
+      });
+
+      // Manage Modal
+      document.getElementById('manageFavToggleBtn').addEventListener('click', toggleFavoriteFromManage);
+      document.getElementById('manageMoveApplyBtn').addEventListener('click', applyMoveCategoryFromManage);
+      document.getElementById('closeManageModalBtn').addEventListener('click', () => closeManageModal());
+      document.getElementById('cancelManageBtn').addEventListener('click', () => closeManageModal());
+      document.getElementById('saveManageBtn').addEventListener('click', saveManageEdits);
+      document.getElementById('manageDeleteBtn').addEventListener('click', openDeleteModalFromManage);
+
+
+      // Delete Modal
+      document.getElementById('closeDeleteModalBtn').addEventListener('click', () => closeDeleteModal());
+      document.getElementById('cancelDeleteBtn').addEventListener('click', () => closeDeleteModal());
+      document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+      document.getElementById('deleteModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeDeleteModal();
+      });
+
+      // Paste Modal
+      document.getElementById('closePasteModalBtn').addEventListener('click', () => closeManualPasteModal());
+      document.getElementById('cancelPasteBtn').addEventListener('click', () => closeManualPasteModal());
+      document.getElementById('confirmPasteBtn').addEventListener('click', applyManualPaste);
+      document.getElementById('pasteModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeManualPasteModal();
+      });
+
+      window.addEventListener('beforeunload', () => {
+        if (isAppInitialized) persistActiveSites();
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && isAppInitialized) {
+          persistActiveSites();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
