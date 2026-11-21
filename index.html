@@ -194,8 +194,8 @@
       border: 1px solid var(--border-strong);
       border-radius: 14px;
       padding: 9px 12px;
-      font-size: 13.5px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 400;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
@@ -224,8 +224,8 @@
       border: 1px solid var(--border-strong);
       border-radius: 14px;
       padding: 9px 12px;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 14.5px;
+      font-weight: 400;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -270,8 +270,8 @@
       width: 100%;
       padding: 8px 10px;
       border-radius: 11px;
-      font-size: 12.5px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 400;
       color: var(--text-main);
       background: transparent;
       border: none;
@@ -332,8 +332,8 @@
       color: #FFFFFF;
       padding: 10px 16px;
       border-radius: 14px;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 14.5px;
+      font-weight: 400;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
       opacity: 0;
       transform: translateY(8px);
@@ -370,7 +370,7 @@
           <!-- Brand Quick Dropdown -->
           <div class="brand-dropdown" id="brandDropdown" role="menu">
             <button type="button" id="brandDropdownAddLinkBtn" role="menuitem"
-              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -379,7 +379,7 @@
               </span>
             </button>
             <button type="button" id="brandDropdownQrMessageBtn" role="menuitem"
-              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -388,7 +388,7 @@
               </span>
             </button>
             <button type="button" id="brandDropdownQrBtn" role="menuitem"
-              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3z"/><path d="M17 17h4v4h-4z"/><path d="M14 20h1"/><path d="M20 14h1"/>
@@ -397,15 +397,15 @@
               </span>
             </button>
             <button type="button" id="brandDropdownThemeBtn" role="menuitem"
-              class="w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <span id="brandThemeIcon"></span>
                 <span>الوضع المظلم</span>
               </span>
-              <span id="brandThemeBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full surface-sub border text-muted">معطّل</span>
+              <span id="brandThemeBadge" class="text-xs font-normal px-2 py-0.5 rounded-full surface-sub border text-muted">معطّل</span>
             </button>
             <button type="button" id="brandDropdownBackupBtn" role="menuitem"
-              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
@@ -414,7 +414,7 @@
               </span>
             </button>
             <button type="button" id="brandDropdownChangePassBtn" role="menuitem"
-              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-main hover:bg-neutral-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-neutral-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
@@ -423,7 +423,7 @@
               </span>
             </button>
             <button type="button" id="brandDropdownExitAdminBtn" role="menuitem"
-              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-xs font-bold text-rose-600 hover:bg-rose-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-rose-600 hover:bg-rose-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -434,10 +434,10 @@
           </div>
 
           <div>
-            <h1 id="appTitleTrigger" class="text-lg font-black text-main leading-tight cursor-default select-none" style="cursor: default;">روابطي المفضلة</h1>
-            <p class="text-[11px] text-muted font-semibold mt-0.5 flex items-center gap-1.5">
+            <h1 id="appTitleTrigger" class="text-xl font-normal text-main leading-tight cursor-default select-none" style="cursor: default;">روابطي المفضلة</h1>
+            <p class="text-[13px] text-muted font-normal mt-0.5 flex items-center gap-1.5">
               <span>لوحة روابطك الشخصية السريعة</span>
-              <span class="admin-only text-[11px] font-black text-main">• وضع المدير</span>
+              <span class="admin-only text-[13px] font-normal text-main">• وضع المدير</span>
             </p>
           </div>
         </div>
@@ -450,7 +450,7 @@
               <path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
           </button>
-          <span class="text-[10px] font-bold text-muted mt-1">إضافة رابط</span>
+          <span class="text-xs font-normal text-muted mt-1">إضافة رابط</span>
         </div>
       </div>
     </header>
@@ -460,7 +460,7 @@
       <!-- Search Bar -->
       <div class="surface-card relative flex items-center rounded-2xl border shadow-[0_2px_8px_rgba(0,0,0,0.03)] px-3.5 h-11 flex-1">
         <input type="text" id="searchInput"
-          class="search-field w-full bg-transparent border-none p-0 text-xs font-semibold text-main placeholder:text-neutral-400 focus:outline-none focus:ring-0 leading-normal"
+          class="search-field w-full bg-transparent border-none p-0 text-sm font-normal text-main placeholder:text-neutral-400 focus:outline-none focus:ring-0 leading-normal"
           placeholder="بحث بالاسم أو الوصف أو الرابط...">
         <svg class="w-4 h-4 text-amber-500 stroke-[2.2] shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -473,8 +473,8 @@
           class="ios-pressable surface-card flex-1 sm:min-w-[180px] border rounded-2xl h-11 px-3 flex items-center justify-between gap-2 shadow-[0_2px_6px_rgba(0,0,0,0.03)] cursor-pointer">
           <div class="flex items-center gap-1.5 min-w-0">
             <span id="triggerCatIcon" class="text-amber-600 flex items-center shrink-0"></span>
-            <span id="triggerCatName" class="text-xs font-bold text-main truncate">الكل</span>
-            <span id="triggerCatCount" class="bg-neutral-900 text-white text-[11px] font-black px-2 py-0.5 rounded-lg shrink-0">0</span>
+            <span id="triggerCatName" class="text-sm font-normal text-main truncate">الكل</span>
+            <span id="triggerCatCount" class="bg-neutral-900 text-white text-[13px] font-normal px-2 py-0.5 rounded-lg shrink-0">0</span>
           </div>
           <svg id="triggerArrowIcon" class="w-4 h-4 text-neutral-400 stroke-[2.5] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -486,8 +486,8 @@
           <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
           </svg>
-          <span class="text-xs font-bold text-main">المفضلة</span>
-          <span id="quickFavCount" class="bg-amber-100 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded-md">0</span>
+          <span class="text-sm font-normal text-main">المفضلة</span>
+          <span id="quickFavCount" class="bg-amber-100 text-amber-900 text-xs font-normal px-1.5 py-0.5 rounded-md">0</span>
         </button>
       </div>
     </div>
@@ -498,14 +498,14 @@
 
       <!-- Storage Status & Footer -->
       <div class="mt-auto pt-4 flex flex-col items-center gap-2">
-        <footer class="text-[11px] font-bold text-muted pb-1">
+        <footer class="text-[13px] font-normal text-muted pb-1">
           فكرة وتصميم أبو حازم
         </footer>
       </div>
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav md:hidden fixed bottom-0 inset-x-0 max-w-5xl mx-auto z-40 ios-glass border-t px-6 pt-2.5 pb-4 flex justify-around items-center text-[10px] font-bold text-muted">
+    <nav class="bottom-nav md:hidden fixed bottom-0 inset-x-0 max-w-5xl mx-auto z-40 ios-glass border-t px-6 pt-2.5 pb-4 flex justify-around items-center text-xs font-normal text-muted">
       <button type="button" id="navAllBtn" class="flex flex-col items-center gap-1 text-blue-600 cursor-pointer">
         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -536,23 +536,23 @@
     <div class="curtain-sheet flex flex-col gap-3" id="categoryCurtainSheet">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
         <div>
-          <div class="text-sm font-black text-main flex items-center gap-2">
+          <div class="text-base font-normal text-main flex items-center gap-2">
             <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
             </svg>
             <span>قائمة التصنيفات</span>
           </div>
-          <p class="text-[11px] text-muted mt-0.5">اختر التصنيف المطلوب، أو أنشئ تصنيفاً جديداً</p>
+          <p class="text-[13px] text-muted mt-0.5">اختر التصنيف المطلوب، أو أنشئ تصنيفاً جديداً</p>
         </div>
         <button type="button" id="closeCurtainBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[52dvh] overflow-y-auto py-0.5" id="curtainCategoriesGrid"></div>
 
       <div class="pt-2.5 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="curtainAddCategoryBtn"
-          class="ios-pressable w-full py-2.5 px-3 rounded-xl border surface-sub text-main font-extrabold text-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-neutral-500/10">
+          class="ios-pressable w-full py-2.5 px-3 rounded-xl border surface-sub text-main font-normal text-sm flex items-center justify-center gap-1.5 cursor-pointer hover:bg-neutral-500/10">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
@@ -566,19 +566,19 @@
   <div class="modal-overlay" id="addModalOverlay">
     <div class="modal-box flex flex-col gap-3">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main truncate">إضافة رابط جديد</div>
+        <div class="text-base font-normal text-main truncate">إضافة رابط جديد</div>
         <button type="button" id="closeAddModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
 
       <div class="flex flex-col gap-3">
         <!-- 1. URL + Paste (Topmost element) -->
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="quickUrlInput">الرابط:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="quickUrlInput">الرابط:</label>
           <div class="flex gap-2">
             <input type="text" id="quickUrlInput" class="field-input flex-1" placeholder="https://example.com" dir="ltr">
             <button type="button" id="pasteBtn"
-              class="ios-pressable surface-sub border px-3 rounded-xl text-xs font-extrabold text-main flex items-center gap-1 shrink-0 cursor-pointer">
+              class="ios-pressable surface-sub border px-3 rounded-xl text-sm font-normal text-main flex items-center gap-1 shrink-0 cursor-pointer">
               لصق
             </button>
           </div>
@@ -602,12 +602,12 @@
                 <div class="custom-select-menu" id="quickCategoryMenu"></div>
               </div>
               <button type="button" id="quickNewCatBtn" title="إنشاء تصنيف جديد"
-                class="ios-pressable px-2.5 py-2.5 rounded-xl surface-card border text-main font-extrabold text-[11px] shrink-0 cursor-pointer whitespace-nowrap hover:bg-neutral-500/10">
+                class="ios-pressable px-2.5 py-2.5 rounded-xl surface-card border text-main font-normal text-[13px] shrink-0 cursor-pointer whitespace-nowrap hover:bg-neutral-500/10">
                 + تصنيف
               </button>
             </div>
             <button type="button" id="addFavToggleBtn"
-              class="ios-pressable py-2.5 px-2.5 rounded-xl surface-card border text-[11px] font-extrabold text-main flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+              class="ios-pressable py-2.5 px-2.5 rounded-xl surface-card border text-[13px] font-normal text-main flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
               <span id="addFavStarIcon"></span>
               <span id="addFavActionText">المفضلة</span>
             </button>
@@ -616,21 +616,21 @@
 
         <!-- 3. Remaining Fields -->
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="quickNameInput">وصف الموقع:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="quickNameInput">وصف الموقع:</label>
           <input type="text" id="quickNameInput" class="field-input" placeholder="مثال: بريد العمل، متجر، موقع...">
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="quickDescInput">الوصف (اختياري):</label>
+          <label class="block text-sm font-normal text-main mb-1" for="quickDescInput">الوصف (اختياري):</label>
           <input type="text" id="quickDescInput" class="field-input" placeholder="مثال: صفحة الدخول السريع">
         </div>
 
-        <label class="flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="quickTranslateInput">
+        <label class="flex items-center gap-2 text-sm font-normal text-muted cursor-pointer" for="quickTranslateInput">
           <input type="checkbox" id="quickTranslateInput" class="w-4 h-4 rounded accent-amber-500">
           <span>فتح الرابط مترجماً عبر ترجمة جوجل تلقائياً</span>
         </label>
 
-        <label class="admin-only flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="quickHiddenInput">
+        <label class="admin-only flex items-center gap-2 text-sm font-normal text-muted cursor-pointer" for="quickHiddenInput">
           <input type="checkbox" id="quickHiddenInput" class="w-4 h-4 rounded accent-amber-500">
           <span>إخفاء عن المستخدمين (للمدير فقط)</span>
         </label>
@@ -639,9 +639,9 @@
       <!-- 4. Unified Footer: Cancel & Save on left -->
       <div class="flex items-center justify-end pt-2.5 border-t gap-2" style="border-color: var(--border-soft);">
         <button type="button" id="cancelAddModalBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="addCustomSiteBtn"
-          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 font-black text-xs shadow cursor-pointer">حفظ</button>
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 font-normal text-sm shadow cursor-pointer">حفظ</button>
       </div>
     </div>
   </div>
@@ -650,9 +650,9 @@
   <div class="modal-overlay" id="manageModalOverlay">
     <div class="modal-box flex flex-col gap-3">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main truncate" id="manageModalHeaderTitle">تعديل الرابط</div>
+        <div class="text-base font-normal text-main truncate" id="manageModalHeaderTitle">تعديل الرابط</div>
         <button type="button" id="closeManageModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
 
       <div class="flex flex-col gap-3">
@@ -660,11 +660,11 @@
 
         <!-- 1. URL + Paste (Topmost element) -->
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="manageSiteUrl">الرابط:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="manageSiteUrl">الرابط:</label>
           <div class="flex gap-2">
             <input type="text" id="manageSiteUrl" class="field-input flex-1" placeholder="https://example.com" dir="ltr">
             <button type="button" id="managePasteBtn"
-              class="ios-pressable surface-sub border px-3 rounded-xl text-xs font-extrabold text-main flex items-center gap-1 shrink-0 cursor-pointer">
+              class="ios-pressable surface-sub border px-3 rounded-xl text-sm font-normal text-main flex items-center gap-1 shrink-0 cursor-pointer">
               لصق
             </button>
           </div>
@@ -688,12 +688,12 @@
                 <div class="custom-select-menu" id="manageCategoryMenu"></div>
               </div>
               <button type="button" id="manageMoveApplyBtn"
-                class="ios-pressable px-2.5 py-2.5 rounded-xl surface-card border text-main font-extrabold text-[11px] shrink-0 cursor-pointer whitespace-nowrap hover:bg-neutral-500/10">
+                class="ios-pressable px-2.5 py-2.5 rounded-xl surface-card border text-main font-normal text-[13px] shrink-0 cursor-pointer whitespace-nowrap hover:bg-neutral-500/10">
                 نقل الآن
               </button>
             </div>
             <button type="button" id="manageFavToggleBtn"
-              class="ios-pressable py-2.5 px-2.5 rounded-xl surface-card border text-[11px] font-extrabold text-main flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+              class="ios-pressable py-2.5 px-2.5 rounded-xl surface-card border text-[13px] font-normal text-main flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
               <span id="favStarIcon"></span>
               <span id="favActionText">المفضلة</span>
             </button>
@@ -702,46 +702,40 @@
 
         <!-- 3. Remaining Fields -->
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="manageSiteName">وصف الموقع:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="manageSiteName">وصف الموقع:</label>
           <input type="text" id="manageSiteName" class="field-input">
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="manageSiteDesc">الوصف (اختياري):</label>
+          <label class="block text-sm font-normal text-main mb-1" for="manageSiteDesc">الوصف (اختياري):</label>
           <input type="text" id="manageSiteDesc" class="field-input">
         </div>
 
-        <label class="flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="manageSiteTranslate">
+        <label class="flex items-center gap-2 text-sm font-normal text-muted cursor-pointer" for="manageSiteTranslate">
           <input type="checkbox" id="manageSiteTranslate" class="w-4 h-4 rounded accent-amber-500">
           <span>فتح الرابط مترجماً عبر ترجمة جوجل تلقائياً</span>
         </label>
 
-        <label class="admin-only flex items-center gap-2 text-xs font-bold text-muted cursor-pointer" for="manageSiteHidden">
+        <label class="admin-only flex items-center gap-2 text-sm font-normal text-muted cursor-pointer" for="manageSiteHidden">
           <input type="checkbox" id="manageSiteHidden" class="w-4 h-4 rounded accent-amber-500">
           <span>إخفاء عن المستخدمين (للمدير فقط)</span>
         </label>
 
-        <button type="button" id="manageHiddenToggleBtn"
-          class="admin-only ios-pressable w-full py-2 px-3 rounded-xl surface-sub border text-xs font-extrabold text-main flex items-center justify-center gap-2 cursor-pointer">
-          <span id="manageHiddenToggleIcon"></span>
-          <span id="manageHiddenToggleText">إخفاء عن المستخدمين</span>
-        </button>
-
-        <div class="surface-sub border rounded-xl px-3 py-2 flex justify-between items-center text-xs">
-          <span class="text-muted font-semibold">عدد الزيارات:</span>
-          <span id="manageVisitsText" class="font-black text-amber-600">0 زيارة</span>
+        <div class="surface-sub border rounded-xl px-3 py-2 flex justify-between items-center text-sm">
+          <span class="text-muted font-normal">عدد الزيارات:</span>
+          <span id="manageVisitsText" class="font-normal text-amber-600">0 زيارة</span>
         </div>
       </div>
 
       <!-- 4. Unified Footer: Delete on far right, Cancel & Save on left -->
       <div class="flex items-center justify-between pt-2.5 border-t gap-2" style="border-color: var(--border-soft);">
         <button type="button" id="manageDeleteBtn"
-          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">حذف</button>
+          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-normal cursor-pointer">حذف</button>
         <div class="flex items-center gap-2">
           <button type="button" id="cancelManageBtn"
-            class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+            class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
           <button type="button" id="saveManageBtn"
-            class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 font-black text-xs shadow cursor-pointer">حفظ</button>
+            class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 font-normal text-sm shadow cursor-pointer">حفظ</button>
         </div>
       </div>
     </div>
@@ -751,19 +745,19 @@
   <div class="modal-overlay" id="addCategoryModalOverlay">
     <div class="modal-box flex flex-col gap-3.5" style="max-width: 400px;">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main">إضافة تصنيف جديد</div>
+        <div class="text-base font-normal text-main">إضافة تصنيف جديد</div>
         <button type="button" id="closeAddCategoryModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
 
       <div class="flex flex-col gap-3">
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="newCategoryNameInput">اسم التصنيف الجديد:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="newCategoryNameInput">اسم التصنيف الجديد:</label>
           <input type="text" id="newCategoryNameInput" class="field-input" placeholder="مثال: عمل، أدوات، منوعات، تسوق...">
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1">الأيقونة:</label>
+          <label class="block text-sm font-normal text-main mb-1">الأيقونة:</label>
           <div class="custom-select-wrapper" id="newCategoryIconWrapper">
             <input type="hidden" id="newCategoryIconSelect" value="layers">
             <button type="button" class="custom-select-trigger" id="newCategoryIconTrigger" aria-expanded="false">
@@ -782,9 +776,9 @@
 
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelAddCategoryBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="saveNewCategoryBtn"
-          class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">حفظ التصنيف</button>
+          class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">حفظ التصنيف</button>
       </div>
     </div>
   </div>
@@ -793,30 +787,30 @@
   <div class="modal-overlay" id="backupModalOverlay">
     <div class="modal-box flex flex-col gap-3.5" style="max-width: 410px;">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main">الإعدادات والنسخ الاحتياطي</div>
+        <div class="text-base font-normal text-main">الإعدادات والنسخ الاحتياطي</div>
         <button type="button" id="closeBackupModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
 
       <div class="flex flex-col gap-2.5">
         <div class="surface-sub border rounded-xl p-3 flex items-center justify-between shadow-xs">
           <div>
-            <div class="text-xs font-extrabold text-main">المظهر</div>
-            <div class="text-[11px] text-muted">التبديل بين الوضع الفاتح والمظلم</div>
+            <div class="text-sm font-normal text-main">المظهر</div>
+            <div class="text-[13px] text-muted">التبديل بين الوضع الفاتح والمظلم</div>
           </div>
           <button type="button" id="settingsThemeToggleBtn"
-            class="ios-pressable px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black shadow-xs transition-all cursor-pointer">تبديل</button>
+            class="ios-pressable px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-sm font-normal shadow-xs transition-all cursor-pointer">تبديل</button>
         </div>
 
         <button type="button" id="exportBackupBtn"
-          class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-amber-400 text-xs font-black shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+          class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-amber-400 text-sm font-normal shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
           <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
           <span>تصدير نسخة احتياطية (JSON)</span>
         </button>
 
-        <label class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-main text-xs font-black shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
+        <label class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-main text-sm font-normal shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
           <svg class="w-4 h-4 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
@@ -826,7 +820,7 @@
 
         <div class="pt-2 mt-1 border-t" style="border-color: var(--border-soft);">
           <button type="button" id="resetDefaultsBtn"
-            class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
+            class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-normal shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
             </svg>
@@ -837,7 +831,7 @@
 
       <div class="flex justify-end pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelBackupBtn"
-          class="ios-pressable surface-sub border hover:bg-neutral-500/10 px-5 py-2 rounded-xl text-xs font-extrabold text-main shadow-xs transition-all cursor-pointer">إغلاق</button>
+          class="ios-pressable surface-sub border hover:bg-neutral-500/10 px-5 py-2 rounded-xl text-sm font-normal text-main shadow-xs transition-all cursor-pointer">إغلاق</button>
       </div>
     </div>
   </div>
@@ -846,17 +840,17 @@
   <div class="modal-overlay" id="deleteModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
       <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-rose-600">تأكيد الحذف</div>
+        <div class="text-base font-normal text-rose-600">تأكيد الحذف</div>
         <button type="button" id="closeDeleteModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
       <input type="hidden" id="deleteSiteId">
-      <p id="deletePromptText" class="text-xs font-semibold text-main leading-relaxed"></p>
+      <p id="deletePromptText" class="text-sm font-normal text-main leading-relaxed"></p>
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelDeleteBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">تراجع</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">تراجع</button>
         <button type="button" id="confirmDeleteBtn"
-          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">نعم، احذف</button>
+          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-normal cursor-pointer">نعم، احذف</button>
       </div>
     </div>
   </div>
@@ -865,18 +859,18 @@
   <div class="modal-overlay" id="confirmResetModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
       <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-rose-600">تأكيد تفريغ قاعدة البيانات</div>
+        <div class="text-base font-normal text-rose-600">تأكيد تفريغ قاعدة البيانات</div>
         <button type="button" id="closeConfirmResetBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
-      <p class="text-xs font-semibold text-main leading-relaxed">
+      <p class="text-sm font-normal text-main leading-relaxed">
         هل أنت متأكد من تفريغ قاعدة البيانات بالكامل؟ سيتم حذف جميع الروابط والتصنيفات المخصصة ولا يمكن التراجع عن هذا الإجراء.
       </p>
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelConfirmResetBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">تراجع</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">تراجع</button>
         <button type="button" id="confirmResetBtn"
-          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">نعم، فرّغ القاعدة</button>
+          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-normal cursor-pointer">نعم، فرّغ القاعدة</button>
       </div>
     </div>
   </div>
@@ -885,16 +879,16 @@
   <div class="modal-overlay" id="pasteModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
       <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main">لصق الرابط يدوياً</div>
+        <div class="text-base font-normal text-main">لصق الرابط يدوياً</div>
         <button type="button" id="closePasteModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
       <input type="text" id="manualPasteInput" class="field-input" placeholder="https://..." dir="ltr">
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelPasteBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="confirmPasteBtn"
-          class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">تطبيق</button>
+          class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">تطبيق</button>
       </div>
     </div>
   </div>
@@ -903,31 +897,31 @@
   <div class="modal-overlay" id="qrModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main flex items-center gap-2">
+        <div class="text-base font-normal text-main flex items-center gap-2">
           <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3z"/><path d="M17 17h4v4h-4z"/><path d="M14 20h1"/><path d="M20 14h1"/>
           </svg>
           <span>باركود الصفحة (QR)</span>
         </div>
         <button type="button" id="closeQrModalBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
 
       <div class="flex flex-col items-center gap-2.5 py-1">
-        <div id="qrDisplayMessageBox" class="hidden w-full surface-sub border rounded-xl px-3 py-2 text-xs font-extrabold text-main text-center leading-relaxed"></div>
+        <div id="qrDisplayMessageBox" class="hidden w-full surface-sub border rounded-xl px-3 py-2 text-sm font-normal text-main text-center leading-relaxed"></div>
         <div id="qrCodeContainer" class="p-3 bg-white rounded-2xl border border-black/10 shadow-xs flex items-center justify-center min-w-[196px] min-h-[196px]"></div>
 
         <div class="w-full surface-sub border rounded-xl px-3 py-2 flex items-center justify-between gap-2">
-          <span id="qrCurrentUrlText" class="text-[11px] font-bold text-muted truncate flex-1 text-left" dir="ltr"></span>
+          <span id="qrCurrentUrlText" class="text-[13px] font-normal text-muted truncate flex-1 text-left" dir="ltr"></span>
           <button type="button" id="copyQrUrlBtn"
-            class="ios-pressable px-2.5 py-1 rounded-lg bg-amber-500 text-neutral-950 text-[10px] font-black shrink-0 cursor-pointer">نسخ</button>
+            class="ios-pressable px-2.5 py-1 rounded-lg bg-amber-500 text-neutral-950 text-xs font-normal shrink-0 cursor-pointer">نسخ</button>
         </div>
 
         <!-- 30s Countdown Bar -->
         <div class="w-full flex flex-col gap-1 pt-1">
-          <div class="flex items-center justify-between text-[11px] font-bold text-muted">
+          <div class="flex items-center justify-between text-[13px] font-normal text-muted">
             <span>يُغلق تلقائياً خلال</span>
-            <span id="qrCountdownText" class="font-black text-amber-600">30 ثانية</span>
+            <span id="qrCountdownText" class="font-normal text-amber-600">30 ثانية</span>
           </div>
           <div class="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
             <div id="qrCountdownBar" class="h-full bg-amber-500 rounded-full transition-all duration-1000 ease-linear" style="width: 100%;"></div>
@@ -937,7 +931,7 @@
 
       <div class="flex justify-end pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelQrModalBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إغلاق</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إغلاق</button>
       </div>
     </div>
   </div>
@@ -946,24 +940,24 @@
   <div class="modal-overlay" id="adminLoginModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 360px;">
       <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main flex items-center gap-2">
+        <div class="text-base font-normal text-main flex items-center gap-2">
           <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
           <span>دخول وضع المدير</span>
         </div>
         <button type="button" id="closeAdminLoginBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
       <div>
-        <label class="block text-xs font-extrabold text-main mb-1" for="adminPasswordInput">كلمة مرور المدير:</label>
+        <label class="block text-sm font-normal text-main mb-1" for="adminPasswordInput">كلمة مرور المدير:</label>
         <input type="password" id="adminPasswordInput" class="field-input" placeholder="أدخل كلمة المرور (الافتراضية: 1234)" dir="ltr">
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelAdminLoginBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="confirmAdminLoginBtn"
-          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">دخول</button>
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">دخول</button>
       </div>
     </div>
   </div>
@@ -972,25 +966,25 @@
   <div class="modal-overlay" id="changePassModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 380px;">
       <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main">تغيير كلمة مرور المدير</div>
+        <div class="text-base font-normal text-main">تغيير كلمة مرور المدير</div>
         <button type="button" id="closeChangePassBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
       <div class="flex flex-col gap-2.5">
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="changePassNewInput">كلمة المرور الجديدة:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="changePassNewInput">كلمة المرور الجديدة:</label>
           <input type="password" id="changePassNewInput" class="field-input" placeholder="أدخل كلمة المرور الجديدة" dir="ltr">
         </div>
         <div>
-          <label class="block text-xs font-extrabold text-main mb-1" for="changePassConfirmInput">تأكيد كلمة المرور:</label>
+          <label class="block text-sm font-normal text-main mb-1" for="changePassConfirmInput">تأكيد كلمة المرور:</label>
           <input type="password" id="changePassConfirmInput" class="field-input" placeholder="أعد إدخال كلمة المرور" dir="ltr">
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelChangePassBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="saveChangePassBtn"
-          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">حفظ</button>
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">حفظ</button>
       </div>
     </div>
   </div>
@@ -999,19 +993,19 @@
   <div class="modal-overlay" id="qrMessageModalOverlay">
     <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
       <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-sm font-black text-main">رسالة العرض</div>
+        <div class="text-base font-normal text-main">رسالة العرض</div>
         <button type="button" id="closeQrMessageBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-lg font-bold text-main cursor-pointer">&times;</button>
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
       </div>
       <div>
-        <label class="block text-xs font-extrabold text-main mb-1" for="qrMessageInput">اكتب الرسالة التي تظهر في أعلى نافذة الباركود:</label>
+        <label class="block text-sm font-normal text-main mb-1" for="qrMessageInput">اكتب الرسالة التي تظهر في أعلى نافذة الباركود:</label>
         <input type="text" id="qrMessageInput" class="field-input" placeholder="مثال: امسح الباركود لفتح الروابط">
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelQrMessageBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-xs font-extrabold text-main cursor-pointer">إلغاء</button>
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="saveQrMessageBtn"
-          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">حفظ</button>
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">حفظ</button>
       </div>
     </div>
   </div>
@@ -1206,7 +1200,7 @@
             <span class="text-amber-500 flex items-center shrink-0">${getCategoryIconHtml(item.icon, 15)}</span>
             <span class="truncate">${item.name}</span>
           </span>
-          ${isSelected ? '<span class="text-amber-500 font-black text-xs shrink-0">✓</span>' : ''}
+          ${isSelected ? '<span class="text-amber-500 font-normal text-sm shrink-0">✓</span>' : ''}
         `;
         opt.onclick = (e) => {
           e.stopPropagation();
@@ -1596,10 +1590,10 @@
             <span class="w-7 h-7 rounded-lg surface-card border text-main flex items-center justify-center shrink-0">
               ${getCategoryIconHtml(icon, 15)}
             </span>
-            <span class="text-xs font-extrabold truncate">${name}</span>
+            <span class="text-sm font-normal truncate">${name}</span>
           </span>
           <span class="flex items-center gap-1.5 shrink-0">
-            <span class="text-[11px] font-black px-2 py-0.5 rounded-lg ${isActive ? 'bg-neutral-950 text-white' : 'surface-card border text-muted'}">${formatEnNumber(count)}</span>
+            <span class="text-[13px] font-normal px-2 py-0.5 rounded-lg ${isActive ? 'bg-neutral-950 text-white' : 'surface-card border text-muted'}">${formatEnNumber(count)}</span>
           </span>
         `;
 
@@ -1607,7 +1601,7 @@
           const endGroup = card.querySelector('span:last-child');
           const delBtn = document.createElement('button');
           delBtn.type = 'button';
-          delBtn.className = 'w-5 h-5 rounded-full surface-card border text-muted hover:text-rose-600 hover:border-rose-400 flex items-center justify-center text-xs font-black leading-none cursor-pointer transition-colors';
+          delBtn.className = 'w-5 h-5 rounded-full surface-card border text-muted hover:text-rose-600 hover:border-rose-400 flex items-center justify-center text-sm font-normal leading-none cursor-pointer transition-colors';
           delBtn.setAttribute('aria-label', `حذف تصنيف ${name}`);
           delBtn.title = 'حذف التصنيف';
           delBtn.textContent = '×';
@@ -1763,9 +1757,9 @@
 
         if (savedSearchQuery) {
           empty.innerHTML = `
-            <p class="text-xs font-bold text-muted">لا توجد نتائج تطابق "${savedSearchQuery}".</p>
+            <p class="text-sm font-normal text-muted">لا توجد نتائج تطابق "${savedSearchQuery}".</p>
             <button type="button" id="emptyClearSearchBtn"
-              class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">مسح البحث</button>
+              class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">مسح البحث</button>
           `;
           grid.appendChild(empty);
           const clearBtn = document.getElementById('emptyClearSearchBtn');
@@ -1781,8 +1775,8 @@
             <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
               ${SVG_ICONS.star(24, true)}
             </div>
-            <div class="text-xs font-black text-main">لا توجد روابط في المفضلة حالياً</div>
-            <p class="text-[11px] text-muted max-w-[280px] leading-relaxed">انقر على أيقونة النجمة أعلى أي بطاقة لإضافتها إلى المفضلة.</p>
+            <div class="text-sm font-normal text-main">لا توجد روابط في المفضلة حالياً</div>
+            <p class="text-[13px] text-muted max-w-[280px] leading-relaxed">انقر على أيقونة النجمة أعلى أي بطاقة لإضافتها إلى المفضلة.</p>
           `;
           grid.appendChild(empty);
         } else {
@@ -1790,10 +1784,10 @@
             <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
               ${SVG_ICONS.bookmark(24)}
             </div>
-            <div class="text-xs font-black text-main">لوحة الروابط فارغة حالياً</div>
-            <p class="text-[11px] text-muted max-w-[280px] leading-relaxed">أضف مواقعك وصفحاتك المفضلة لتظهر هنا على شكل بطاقات سريعة الفتح.</p>
+            <div class="text-sm font-normal text-main">لوحة الروابط فارغة حالياً</div>
+            <p class="text-[13px] text-muted max-w-[280px] leading-relaxed">أضف مواقعك وصفحاتك المفضلة لتظهر هنا على شكل بطاقات سريعة الفتح.</p>
             <button type="button" id="emptyAddBtn"
-              class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-xs font-black cursor-pointer">إضافة رابط جديد</button>
+              class="ios-pressable px-4 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">إضافة رابط جديد</button>
           `;
           grid.appendChild(empty);
           const addBtn = document.getElementById('emptyAddBtn');
@@ -1806,49 +1800,22 @@
 
       filteredSites.forEach(site => {
         const card = document.createElement('article');
-        card.className = `ios-pressable surface-card rounded-2xl p-2 sm:p-2.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-1 relative w-[calc(50%-5px)] sm:w-[175px] md:w-[180px] ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
+        card.className = `ios-pressable surface-card rounded-2xl p-3.5 border shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-md flex flex-col justify-between gap-2 relative w-[calc(50%-5px)] sm:w-[225px] md:w-[235px] ${site.isHidden ? 'border-dashed opacity-80' : ''}`;
         card.id = 'card_' + site.id;
 
         const siteTitle = (site.name && site.name.trim()) ? site.name.trim() : 'رابط';
         const domain = cleanDomain(site.domain || site.url);
+        const siteDesc = (site.description && site.description.trim()) ? site.description.trim() : '';
 
-        // Compact top bar: Favorite star & 3-dots menu
-        const topRow = document.createElement('div');
-        topRow.className = 'flex items-center justify-between w-full -mb-1';
-
-        const starBtn = document.createElement('button');
-        starBtn.type = 'button';
-        starBtn.className = `p-0.5 rounded-lg cursor-pointer transition-colors ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
-        starBtn.setAttribute('aria-label', site.isFavorite ? 'إزالة من المفضلة' : 'أضف للمفضلة');
-        starBtn.innerHTML = SVG_ICONS.star(14, Boolean(site.isFavorite));
-        starBtn.onclick = (e) => {
-          e.stopPropagation();
-          toggleFavoriteDirect(site.id);
-        };
-
-        const dotsBtn = document.createElement('button');
-        dotsBtn.type = 'button';
-        dotsBtn.className = 'admin-only p-0.5 rounded-lg text-neutral-400 hover:text-neutral-700 cursor-pointer';
-        dotsBtn.setAttribute('aria-label', 'خيارات');
-        dotsBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>`;
-        dotsBtn.onclick = (e) => {
-          e.stopPropagation();
-          openManageModal(site);
-        };
-
-        topRow.appendChild(starBtn);
-        topRow.appendChild(dotsBtn);
-        card.appendChild(topRow);
-
-        // Compact center clickable area: Favicon + Title
+        // Main row: Favicon on the right, Title to the left of icon
         const launchBtn = document.createElement('button');
         launchBtn.type = 'button';
-        launchBtn.className = 'flex flex-col items-center text-center w-full bg-transparent border-0 py-0.5 px-1 cursor-pointer flex-1 justify-center';
+        launchBtn.className = 'flex items-center gap-2.5 w-full bg-transparent border-0 p-0 cursor-pointer text-right';
         launchBtn.title = `فتح ${siteTitle}`;
         launchBtn.onclick = () => openSite(site);
 
         const iconBox = document.createElement('div');
-        iconBox.className = 'w-9 h-9 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center font-black text-amber-700 text-xs overflow-hidden mb-1.5';
+        iconBox.className = 'w-9 h-9 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center text-amber-700 text-sm overflow-hidden shrink-0';
 
         const img = document.createElement('img');
         img.className = 'w-5 h-5 object-contain rounded';
@@ -1862,37 +1829,73 @@
         };
         iconBox.appendChild(img);
 
+        const textWrap = document.createElement('div');
+        textWrap.className = 'min-w-0 flex-1 text-right';
+
         const titleEl = document.createElement('h2');
-        titleEl.className = 'text-[11.5px] sm:text-xs font-black text-main leading-tight line-clamp-1 w-full';
+        titleEl.className = 'text-sm text-main leading-tight line-clamp-1 w-full';
         titleEl.textContent = siteTitle;
 
+        textWrap.appendChild(titleEl);
+        if (siteDesc) {
+          const descEl = document.createElement('p');
+          descEl.className = 'text-xs text-muted truncate w-full mt-0.5';
+          descEl.textContent = siteDesc;
+          textWrap.appendChild(descEl);
+        }
         launchBtn.appendChild(iconBox);
-        launchBtn.appendChild(titleEl);
+        launchBtn.appendChild(textWrap);
         card.appendChild(launchBtn);
 
-        // Compact bottom badge row
+        // Bottom row: Actions/badges on right, Visits counter at bottom-left
         const bottomRow = document.createElement('div');
-        bottomRow.className = 'flex items-center justify-center gap-1 pt-0.5';
+        bottomRow.className = 'flex items-center justify-between gap-1 pt-1 w-full';
+
+        const rightActions = document.createElement('div');
+        rightActions.className = 'flex items-center gap-1 min-w-0';
+
+        const starBtn = document.createElement('button');
+        starBtn.type = 'button';
+        starBtn.className = `p-0.5 rounded-lg cursor-pointer transition-colors ${site.isFavorite ? 'text-amber-500' : 'text-neutral-300 hover:text-amber-500'}`;
+        starBtn.setAttribute('aria-label', site.isFavorite ? 'إزالة من المفضلة' : 'أضف للمفضلة');
+        starBtn.innerHTML = SVG_ICONS.star(14, Boolean(site.isFavorite));
+        starBtn.onclick = (e) => {
+          e.stopPropagation();
+          toggleFavoriteDirect(site.id);
+        };
+        rightActions.appendChild(starBtn);
+
+        const dotsBtn = document.createElement('button');
+        dotsBtn.type = 'button';
+        dotsBtn.className = 'admin-only p-0.5 rounded-lg text-neutral-400 hover:text-neutral-700 cursor-pointer';
+        dotsBtn.setAttribute('aria-label', 'خيارات');
+        dotsBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>`;
+        dotsBtn.onclick = (e) => {
+          e.stopPropagation();
+          openManageModal(site);
+        };
+        rightActions.appendChild(dotsBtn);
 
         if (site.translate) {
           const trBadge = document.createElement('span');
-          trBadge.className = 'text-[8.5px] font-bold text-sky-600 bg-sky-50 border border-sky-200/60 px-1 py-0.5 rounded leading-none';
+          trBadge.className = 'text-[10px] text-sky-600 bg-sky-50 border border-sky-200/60 px-1 py-0.5 rounded leading-none';
           trBadge.textContent = 'مترجم';
-          bottomRow.appendChild(trBadge);
+          rightActions.appendChild(trBadge);
         }
 
         if (isAdminMode && site.isHidden) {
           const hiddenBadge = document.createElement('span');
-          hiddenBadge.className = 'inline-flex items-center gap-0.5 text-[8.5px] font-bold text-neutral-600 bg-neutral-200/80 border border-neutral-300 px-1.5 py-0.5 rounded leading-none';
+          hiddenBadge.className = 'inline-flex items-center gap-0.5 text-[10px] text-neutral-600 bg-neutral-200/80 border border-neutral-300 px-1.5 py-0.5 rounded leading-none';
           hiddenBadge.innerHTML = `<svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg><span>مخفي</span>`;
-          bottomRow.appendChild(hiddenBadge);
+          rightActions.appendChild(hiddenBadge);
         }
 
         const visitsPill = document.createElement('span');
-        visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[9.5px] font-black leading-none';
+        visitsPill.className = 'inline-flex items-center gap-0.5 bg-amber-50/90 border border-amber-200/60 px-1.5 py-0.5 rounded-md text-amber-700 text-[11px] leading-none shrink-0';
         visitsPill.innerHTML = `${formatEnNumber(site.visits || 0)} <svg class="w-2 h-2 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
-        bottomRow.appendChild(visitsPill);
 
+        bottomRow.appendChild(rightActions);
+        bottomRow.appendChild(visitsPill);
         card.appendChild(bottomRow);
         fragment.appendChild(card);
       });
@@ -2096,7 +2099,6 @@
       document.getElementById('manageSiteTranslate').checked = Boolean(site.translate);
       const mHidden = document.getElementById('manageSiteHidden');
       if (mHidden) mHidden.checked = Boolean(site.isHidden);
-      updateManageHiddenButton(Boolean(site.isHidden));
       populateCategoryDropdowns(site.category || 'general');
       closeAllCustomSelects();
 
@@ -2106,35 +2108,6 @@
 
       document.getElementById('manageModalOverlay').classList.add('active');
       pushOverlayToStack('manageModalOverlay');
-    }
-
-    function updateManageHiddenButton(isHidden) {
-      const btn = document.getElementById('manageHiddenToggleBtn');
-      const icon = document.getElementById('manageHiddenToggleIcon');
-      const text = document.getElementById('manageHiddenToggleText');
-      if (!btn || !icon || !text) return;
-      if (isHidden) {
-        btn.classList.add('border-neutral-400', 'bg-neutral-500/10');
-        icon.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-        text.textContent = 'إظهار للمستخدمين';
-      } else {
-        btn.classList.remove('border-neutral-400', 'bg-neutral-500/10');
-        icon.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-        text.textContent = 'إخفاء عن المستخدمين';
-      }
-    }
-
-    function toggleHiddenFromManage() {
-      const id = document.getElementById('manageSiteId').value;
-      const site = activeSites.find(s => s.id === id);
-      if (!site) return;
-      site.isHidden = !site.isHidden;
-      const mHidden = document.getElementById('manageSiteHidden');
-      if (mHidden) mHidden.checked = site.isHidden;
-      updateManageHiddenButton(site.isHidden);
-      persistActiveSites();
-      renderSites();
-      showToast(site.isHidden ? `تم إخفاء "${site.name}" عن المستخدمين` : `تم إظهار "${site.name}" للمستخدمين`, 'info');
     }
 
     function updateManageFavButton(isFav) {
@@ -2647,7 +2620,7 @@
       try {
         container.innerHTML = MiniQR.toSvg(url, 180);
       } catch (e) {
-        container.innerHTML = '<div class="text-xs font-bold text-muted text-center p-4">تعذّر توليد الباركود</div>';
+        container.innerHTML = '<div class="text-sm font-normal text-muted text-center p-4">تعذّر توليد الباركود</div>';
       }
     }
 
@@ -2848,7 +2821,17 @@
 
       document.getElementById('settingsThemeToggleBtn').addEventListener('click', toggleTheme);
 
-      openQrModal();
+      try {
+        const QR_LAST_AUTO_KEY = 'news_app_qr_last_auto_v7';
+        const lastAuto = Number(localStorage.getItem(QR_LAST_AUTO_KEY) || 0);
+        const now = Date.now();
+        if (!lastAuto || (now - lastAuto) >= 30 * 60 * 1000) {
+          localStorage.setItem(QR_LAST_AUTO_KEY, String(now));
+          openQrModal();
+        }
+      } catch (e) {
+        openQrModal();
+      }
       loadActiveSites();
       let savedAdmin = false;
       try { savedAdmin = localStorage.getItem(STORAGE_KEY_ADMIN_STATE) === 'true'; } catch (e) {}
@@ -3042,7 +3025,6 @@
 
       // Manage Modal
       document.getElementById('manageFavToggleBtn').addEventListener('click', toggleFavoriteFromManage);
-      document.getElementById('manageHiddenToggleBtn').addEventListener('click', toggleHiddenFromManage);
       document.getElementById('manageMoveApplyBtn').addEventListener('click', applyMoveCategoryFromManage);
       document.getElementById('closeManageModalBtn').addEventListener('click', () => closeManageModal());
       document.getElementById('cancelManageBtn').addEventListener('click', () => closeManageModal());
