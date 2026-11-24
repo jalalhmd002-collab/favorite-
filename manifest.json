@@ -1,0 +1,31 @@
+{
+  "name": "روابطي المفضلة - لوحة الروابط السريعة",
+  "short_name": "روابطي",
+  "description": "لوحة الروابط السريعة والمباشرة لحفظ وإدارة وتصفح المواقع المفضلة بسهولة وسرعة.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F4F5F7",
+  "theme_color": "#F59E0B",
+  "dir": "rtl",
+  "lang": "ar",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
