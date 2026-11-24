@@ -311,14 +311,14 @@ function renderSites() {
     rightContent.className = 'flex items-center gap-3 min-w-0 flex-1';
 
     const iconBox = document.createElement('div');
-    iconBox.className = 'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105';
+    iconBox.className = 'site-icon-box w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105';
     iconBox.style.borderColor = palette.border;
     iconBox.style.backgroundColor = palette.bg;
 
     const img = document.createElement('img');
     img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
     img.alt = siteTitle;
-    img.className = 'w-5 h-5 rounded object-contain';
+    img.className = 'w-6 h-6 rounded object-contain';
     img.loading = 'lazy';
     img.onerror = () => {
       img.onerror = null;
@@ -330,11 +330,11 @@ function renderSites() {
     textWrap.className = 'min-w-0 flex-1';
 
     const titleEl = document.createElement('h3');
-    titleEl.className = 'text-sm font-semibold text-main truncate tracking-tight';
+    titleEl.className = 'text-base font-bold text-main truncate tracking-tight';
     titleEl.textContent = siteTitle;
 
     const descEl = document.createElement('p');
-    descEl.className = 'text-xs text-muted truncate mt-0.5';
+    descEl.className = 'text-xs sm:text-[13px] text-muted truncate mt-0.5';
     descEl.textContent = siteDesc || domain;
 
     textWrap.appendChild(titleEl);
