@@ -399,3 +399,44 @@
       border-color: rgba(255, 255, 255, 0.18);
       box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
     }
+
+    /* 1. العناوين الرئيسية للبطاقات في الوضع المظلم: أبيض ناصع 100% وبوضوح كامل */
+    [data-theme="dark"] .apple-site-card h3 {
+      color: #FFFFFF !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+
+    /* 2. النصوص الفرعية والأوصاف والروابط: رمادي فاتح جداً عالي السطوع والوضوح (#E2E8F0) */
+    [data-theme="dark"] .apple-site-card p {
+      color: #E2E8F0 !important;
+      opacity: 0.96;
+    }
+
+    /* 3. البطاقات المخفية أو غير النشطة (التي تحتوي على أيقونة العين المشطوبة): درجة بهتان متساوية ومعتدلة (0.5) */
+    .apple-site-card.site-card-hidden,
+    .apple-site-card[data-hidden="true"],
+    .apple-site-card.opacity-50,
+    .apple-site-card.opacity-70 {
+      opacity: 0.5 !important;
+      border-style: dashed !important;
+    }
+    .apple-site-card.site-card-hidden:hover,
+    .apple-site-card[data-hidden="true"]:hover,
+    .apple-site-card.opacity-50:hover,
+    .apple-site-card.opacity-70:hover {
+      opacity: 0.75 !important;
+    }
+
+    /* الحفاظ على وضوح قراءة العناوين والوصف في البطاقات المخفية بالوضع المظلم دون فقدان الوضوح */
+    [data-theme="dark"] .apple-site-card.site-card-hidden h3,
+    [data-theme="dark"] .apple-site-card[data-hidden="true"] h3,
+    [data-theme="dark"] .apple-site-card.opacity-50 h3,
+    [data-theme="dark"] .apple-site-card.opacity-70 h3 {
+      color: #FFFFFF !important;
+    }
+    [data-theme="dark"] .apple-site-card.site-card-hidden p,
+    [data-theme="dark"] .apple-site-card[data-hidden="true"] p,
+    [data-theme="dark"] .apple-site-card.opacity-50 p,
+    [data-theme="dark"] .apple-site-card.opacity-70 p {
+      color: #CBD5E1 !important;
+    }

@@ -303,7 +303,8 @@ function renderSites() {
     const siteDesc = (site.description && site.description.trim()) ? site.description.trim() : '';
 
     const card = document.createElement('article');
-    card.className = `apple-site-card flex items-center justify-between gap-3 text-right cursor-pointer select-none group ${site.isHidden ? 'opacity-70 border-dashed border-neutral-400' : ''}`;
+    card.className = `apple-site-card flex items-center justify-between gap-3 text-right cursor-pointer select-none group ${site.isHidden ? 'site-card-hidden opacity-50 border-dashed border-neutral-400' : ''}`;
+    if (site.isHidden) card.setAttribute('data-hidden', 'true');
     card.style.borderColor = site.isHidden ? '' : palette.border;
     card.onclick = () => openSite(site);
 
@@ -316,14 +317,32 @@ function renderSites() {
     iconBox.style.backgroundColor = palette.bg;
 
     const img = document.createElement('img');
-    img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    const cleanFullUrl = formatUrl(site.url).replace(/\/+$/, '');
+    const isSubPath = new URL(cleanFullUrl).pathname.length > 1;
+    const googleFavicon = `https://google.com{domain}&sz=64`;
+    const fallbackSvg = "data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2'%3E%3Cpath d='m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z'/%3E%3C/svg%3E";
+
     img.alt = siteTitle;
     img.className = 'w-6 h-6 rounded object-contain';
     img.loading = 'lazy';
-    img.onerror = () => {
-      img.onerror = null;
-      img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2'%3E%3Cpath d='m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z'/%3E%3C/svg%3E";
-    };
+
+    if (isSubPath) {
+      img.src = `${cleanFullUrl}/icon.png`;
+      img.onerror = () => {
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = fallbackSvg;
+        };
+        img.src = googleFavicon;
+      };
+    } else {
+      img.src = googleFavicon;
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = fallbackSvg;
+      };
+    }
+
     iconBox.appendChild(img);
 
     const textWrap = document.createElement('div');
