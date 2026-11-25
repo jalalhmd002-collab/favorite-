@@ -3,7 +3,7 @@
    روابطي المفضلة - كاش وتصفح دون اتصال
    ========================================================================== */
 
-const CACHE_NAME = 'my-favorites-pwa-v1';
+const CACHE_NAME = 'my-favorites-pwa-v3';
 
 // الملفات الأساسية للتخزين المؤقت المسبق
 const PRECACHE_ASSETS = [
