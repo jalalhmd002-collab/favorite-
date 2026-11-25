@@ -318,7 +318,6 @@ function renderSites() {
     const img = document.createElement('img');
     const cleanFullUrl = formatUrl(site.url).replace(/\/index\.html$/i, '').replace(/\/+$/, '');
     const isGithubSub = domain.endsWith('github.io') && cleanFullUrl.split('/').length > 3;
-    const googleFavicon = `https://google.com{domain}&sz=64`;
     const fallbackSvg = "data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2'%3E%3Cpath d='m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z'/%3E%3C/svg%3E";
 
     img.alt = siteTitle;
@@ -326,19 +325,14 @@ function renderSites() {
 
     if (isGithubSub) {
       img.src = `${cleanFullUrl}/icon.png?v=2`;
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = fallbackSvg;
-      };
     } else {
-      img.src = googleFavicon;
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = fallbackSvg;
-      };
+      img.src = 'https://google.com' + encodeURIComponent(domain) + '&sz=64';
     }
-    iconBox.appendChild(img);
 
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = fallbackSvg;
+    };
     const textWrap = document.createElement('div');
     textWrap.className = 'min-w-0 flex-1';
 
