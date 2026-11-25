@@ -23,7 +23,7 @@ const DB_STORE = 'app_store';
 var activeSites = window.activeSites || [];
 var customCategories = window.customCategories || [];
 var deletedBuiltinCatIds = window.deletedBuiltinCatIds || [];
-var currentCategory = window.currentCategory || 'all';
+var currentCategory = window.currentCategory || 'home';
 var savedSearchQuery = window.savedSearchQuery || '';
 var isAdminMode = false;
 var isAppInitialized = false;
@@ -134,7 +134,7 @@ function saveCustomCategories() {
 }
 
 function saveCurrentCategory(catId) {
-  currentCategory = catId || 'all';
+  currentCategory = catId || 'home';
   try { localStorage.setItem(STORAGE_KEY_CURRENT_CAT, currentCategory); } catch (e) {}
   try { sessionStorage.setItem(STORAGE_KEY_CURRENT_CAT, currentCategory); } catch (e) {}
   if (typeof updateBottomNavActiveState === 'function') updateBottomNavActiveState();
@@ -145,12 +145,10 @@ function loadSavedCategory() {
   try {
     saved = localStorage.getItem(STORAGE_KEY_CURRENT_CAT) || sessionStorage.getItem(STORAGE_KEY_CURRENT_CAT);
   } catch (e) {}
-  if (!saved) return 'all';
-  if (saved === 'all' || saved === 'favorites') return saved;
-  if (typeof getAllCategories === 'function') {
-    return getAllCategories().some(c => c.id === saved) ? saved : 'all';
-  }
-  return 'all';
+  if (!saved || saved === 'all') return 'home';
+  if (saved === 'local') return 'diverse';
+  if (['home', 'favorites', 'diverse', 'global', 'news', 'private', 'programs'].includes(saved)) return saved;
+  return 'home';
 }
 
 function persistActiveSites(skipCloudSync = false) {
@@ -196,7 +194,7 @@ async function loadActiveSites() {
       description: (item.description && item.description.trim()) ? item.description.trim() : '',
       url: (typeof formatUrl === 'function' ? formatUrl(item.url) : item.url),
       domain: item.domain || (typeof cleanDomain === 'function' ? cleanDomain(item.url) : ''),
-      category: item.category || 'general',
+      category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'global', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
       translate: Boolean(item.translate),
       visits: Number(item.visits) || 0,
       lastVisited: Number(item.lastVisited) || Date.now(),
@@ -285,7 +283,7 @@ async function fetchFromCloud() {
         description: (item.description && String(item.description).trim()) ? String(item.description).trim() : '',
         url: (typeof formatUrl === 'function' ? formatUrl(item.url) : item.url),
         domain: item.domain || (typeof cleanDomain === 'function' ? cleanDomain(item.url) : ''),
-        category: item.category || 'general',
+        category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'global', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
         translate: Boolean(item.translate),
         visits: Number(item.visits) || 0,
         lastVisited: Number(item.lastVisited) || Date.now(),

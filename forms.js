@@ -346,9 +346,9 @@ function updateAddFavButton() {
 }
 
 function openAddModal() {
-  const defaultCat = (currentCategory !== 'all' && currentCategory !== 'favorites')
+  const defaultCat = (['diverse', 'global', 'news', 'private', 'programs'].includes(currentCategory))
     ? currentCategory
-    : (getAllCategories()[0]?.id || 'general');
+    : 'diverse';
   addModalFavorite = (currentCategory === 'favorites');
   updateAddFavButton();
   populateCategoryDropdowns(defaultCat);
@@ -391,7 +391,7 @@ function addCustomSite() {
 
   const nameVal = nameInput.value.trim() || extractNameFromDomain(domain);
   const descVal = descInput.value.trim();
-  const catVal = (catInput && catInput.value) ? catInput.value : (getAllCategories()[0]?.id || 'general');
+  const catVal = (catInput && catInput.value) ? catInput.value : 'diverse';
 
   const existing = activeSites.find(s => s.url === fullUrl);
   if (existing) {

@@ -21,20 +21,21 @@
     }
 
     [data-theme="dark"] {
-      --bg-page: #0B0D12;
-      --bg-card: #141720;
-      --bg-surface-2: #1C202B;
-      --bg-input: #1A1E29;
-      --text-main: #FFFFFF;
-      --text-muted: #E2E8F0;
-      --border-soft: rgba(255, 255, 255, 0.09);
-      --border-strong: rgba(255, 255, 255, 0.16);
-      --nav-bg: rgba(20, 23, 32, 0.9);
-      --modal-bg: #141720;
-      --accent: #F59E0B;
-      --accent-soft: rgba(245, 158, 11, 0.14);
-      --accent-border: rgba(245, 158, 11, 0.35);
-      --accent-text: #FBBF24;
+      --bg-page: #12060A;
+      --bg-card: #1D0B11;
+      --bg-surface-2: #281018;
+      --bg-input: #1D0B11;
+      --text-main: #FFF5F7;
+      --text-muted: #D6A8B6;
+      --border-soft: #361420;
+      --border-strong: #542032;
+      --nav-bg: rgba(18, 6, 10, 0.92);
+      --modal-bg: #1D0B11;
+      --accent: #A3294E;
+      --accent-hover: #B8325B;
+      --accent-soft: rgba(163, 41, 78, 0.22);
+      --accent-border: rgba(184, 50, 91, 0.55);
+      --accent-text: #F9D2DE;
     }
 
     * {
@@ -93,11 +94,6 @@
       opacity: 0.9;
     }
 
-    .bottom-nav {
-      background-color: var(--nav-bg);
-      border-color: var(--border-soft);
-    }
-
     /* Overlay & Modals */
     .curtain-overlay,
     .modal-overlay {
@@ -121,17 +117,15 @@
     }
 
     .modal-overlay {
-      align-items: center;
+      align-items: flex-start;
+      padding: max(24px, env(safe-area-inset-top, 24px)) 14px 14px;
       z-index: 1100;
+      overflow-y: auto;
     }
 
-    @media (max-width: 480px) {
+    @media (min-width: 640px) {
       .modal-overlay {
-        align-items: flex-end;
-        padding: 10px;
-      }
-      #qrModalOverlay.modal-overlay {
-        align-items: center;
+        padding-top: 48px;
       }
     }
 
@@ -151,10 +145,11 @@
       border-radius: 22px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
       padding: 16px;
-      max-height: 88dvh;
+      max-height: 85vh;
+      max-height: 85dvh;
       overflow-y: auto;
       overscroll-behavior: contain;
-      transform: translate3d(0, 12px, 0);
+      transform: translate3d(0, -18px, 0);
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -165,6 +160,14 @@
     .curtain-overlay.active .curtain-sheet,
     .modal-overlay.active .modal-box {
       transform: translate3d(0, 0, 0);
+    }
+
+    #addModalOverlay .modal-box,
+    #manageModalOverlay .modal-box {
+      width: 94%;
+      max-width: 560px;
+      padding: 26px 28px;
+      gap: 16px;
     }
 
     .field-input {
@@ -379,37 +382,282 @@
     }
 
     /* تكبير صندوق أيقونة الموقع ليتناسق مع الحجم الجديد */
-    .apple-site-card .site-icon-box {
+    .apple-site-card .site-icon-box,
+    .link-icon-box {
       width: 44px !important;
       height: 44px !important;
-      border-radius: 14px !important;
+      flex-shrink: 0 !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
     }
-    .apple-site-card .site-icon-box img {
-      width: 24px !important;
-      height: 24px !important;
+    .apple-site-card .site-icon-box img,
+    .link-icon-box img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+      padding: 6px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border-radius: 12px;
+    }
+    .site-letter-avatar {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      line-height: 1;
+      color: #FFFFFF;
+      letter-spacing: 0.02em;
+      user-select: none;
     }
 
-    /* الوضع المظلم للبطاقات */
+    .main-search-bar-box {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    [data-theme="dark"] .main-search-bar-box:focus-within {
+      border-color: #A3294E !important;
+      box-shadow: 0 0 0 3px rgba(163, 41, 78, 0.28) !important;
+    }
+
+    /* شبكة البطاقات المربعة الأربع الرئيسية */
+    .home-category-square-card {
+      aspect-ratio: 1 / 1;
+      border-radius: 22px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .home-category-square-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      border-color: var(--border-strong);
+    }
+    .home-category-square-card:active {
+      transform: scale(0.97);
+    }
+    .home-cat-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .home-cat-title {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+    .home-cat-count-pill {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background-color: var(--bg-surface-2);
+      color: var(--text-muted);
+      border: 1px solid var(--border-soft);
+    }
+
+    .cat-badge-favorites { background: #FEF3C7; color: #D97706; }
+    .cat-badge-local,
+    .cat-badge-news { background: #DBEAFE; color: #2563EB; }
+    .cat-badge-global { background: #E0F2FE; color: #0284C7; }
+    .cat-badge-diverse { background: #EDE9FE; color: #7C3AED; }
+    .cat-badge-private { background: #FEE2E2; color: #DC2626; }
+    .cat-badge-programs { background: #D1FAE5; color: #059669; }
+
+    [data-theme="dark"] .home-category-square-card {
+      background-color: #1D0B11 !important;
+      border: 1px solid #361420 !important;
+      box-shadow: 0 6px 20px rgba(8, 2, 4, 0.45);
+    }
+    [data-theme="dark"] .home-category-square-card:hover {
+      background-color: #281018 !important;
+      border-color: #8E2443 !important;
+      box-shadow: 0 14px 30px rgba(8, 2, 4, 0.6);
+    }
+    [data-theme="dark"] .home-cat-title { color: #FFF5F7 !important; }
+    [data-theme="dark"] .home-cat-count-pill {
+      background-color: rgba(163, 41, 78, 0.22) !important;
+      border-color: #361420 !important;
+      color: #F9D2DE !important;
+    }
+    [data-theme="dark"] .cat-badge-favorites { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }
+    [data-theme="dark"] .cat-badge-local,
+    [data-theme="dark"] .cat-badge-news { background: rgba(59, 130, 246, 0.22); color: #60A5FA; }
+    [data-theme="dark"] .cat-badge-global { background: rgba(14, 165, 233, 0.22); color: #38BDF8; }
+    [data-theme="dark"] .cat-badge-diverse { background: rgba(163, 41, 78, 0.26); color: #F9D2DE; }
+    [data-theme="dark"] .cat-badge-private { background: rgba(244, 63, 94, 0.22); color: #FB7185; }
+    [data-theme="dark"] .cat-badge-programs { background: rgba(16, 185, 129, 0.22); color: #34D399; }
+
+    .header-add-text-btn {
+      padding: 10px 22px;
+      border-radius: 14px;
+      background-color: #8E2443;
+      color: #FFFFFF;
+      border: 1px solid #A3294E;
+      line-height: 1.2;
+      transition: background-color 0.15s ease, transform 0.14s ease, box-shadow 0.15s ease;
+    }
+    .header-add-text-btn:hover {
+      background-color: #A3294E;
+    }
+    [data-theme="dark"] .header-add-text-btn {
+      background-color: #8E2443 !important;
+      color: #FFF5F7 !important;
+      border-color: #A3294E !important;
+      box-shadow: 0 4px 14px rgba(142, 36, 67, 0.42) !important;
+    }
+    [data-theme="dark"] .header-add-text-btn:hover {
+      background-color: #A3294E !important;
+    }
+
+    /* شريط عنوان القسم النشط وزر الرجوع العريض */
+    #backToHomeBtn {
+      min-width: 135px;
+      padding: 11px 28px;
+      border-radius: 999px;
+      justify-content: center;
+    }
+    [data-theme="dark"] #categoryDrillHeader {
+      background: linear-gradient(135deg, #3D1422 0%, #2A0D17 100%) !important;
+      border: 1px solid #8E2443 !important;
+      box-shadow: inset 0 1px 0 rgba(255, 245, 247, 0.08), 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    }
+    [data-theme="dark"] #backToHomeBtn {
+      background: linear-gradient(135deg, #8E2443 0%, #A3294E 100%) !important;
+      border: 1px solid #B8325B !important;
+      color: #FFF5F7 !important;
+      box-shadow: 0 4px 12px rgba(163, 41, 78, 0.35) !important;
+    }
+    [data-theme="dark"] #backToHomeBtn:hover {
+      background: linear-gradient(135deg, #A3294E 0%, #B8325B 100%) !important;
+    }
+
+    /* الوضع المظلم: ثيم iPhone 18 Pro Max Deep Burgundy */
+    [data-theme="dark"] .surface-card,
+    [data-theme="dark"] #brandMenuDropdown,
+    [data-theme="dark"] .custom-select-menu {
+      background-color: #1D0B11 !important;
+      border-color: #361420 !important;
+    }
+    [data-theme="dark"] .surface-sub {
+      background-color: #281018 !important;
+      border-color: #361420 !important;
+    }
+
     [data-theme="dark"] .apple-site-card {
-      background-color: rgba(20, 23, 32, 0.92);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      background-color: #1D0B11 !important;
+      border: 1px solid #361420 !important;
+      box-shadow: 0 4px 16px rgba(8, 2, 4, 0.42);
     }
     [data-theme="dark"] .apple-site-card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+      background-color: #281018 !important;
+      border-color: #8E2443 !important;
+      box-shadow: 0 12px 28px rgba(8, 2, 4, 0.56);
     }
 
-    /* 1. العناوين الرئيسية للبطاقات في الوضع المظلم: أبيض ناصع 100% وبوضوح كامل */
+    [data-theme="dark"] .apple-site-card .site-icon-box,
+    [data-theme="dark"] .link-icon-box {
+      background-color: #281018 !important;
+      border-color: #361420 !important;
+    }
+
+    /* 1. العناوين الرئيسية للبطاقات في الوضع المظلم */
     [data-theme="dark"] .apple-site-card h3 {
-      color: #FFFFFF !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      color: #FFF5F7 !important;
+      text-shadow: none;
     }
 
-    /* 2. النصوص الفرعية والأوصاف والروابط: رمادي فاتح جداً عالي السطوع والوضوح (#E2E8F0) */
+    /* 2. النصوص الفرعية والأوصاف والروابط */
     [data-theme="dark"] .apple-site-card p {
-      color: #E2E8F0 !important;
-      opacity: 0.96;
+      color: #D6A8B6 !important;
+      opacity: 1;
+    }
+
+    /* 3. اللمسات العنابية المعدنية (Burgundy-Crimson Metallic) */
+    [data-theme="dark"] #brandMenuBtn {
+      background: linear-gradient(135deg, #8E2443 0%, #A3294E 100%) !important;
+      box-shadow: 0 4px 16px rgba(163, 41, 78, 0.45) !important;
+      color: #FFF5F7 !important;
+    }
+    [data-theme="dark"] #brandMenuBtn:hover {
+      background: linear-gradient(135deg, #A3294E 0%, #B8325B 100%) !important;
+    }
+
+    [data-theme="dark"] #openAddSiteModalBtn,
+    [data-theme="dark"] #settingsThemeToggleBtn,
+    [data-theme="dark"] .bg-neutral-950.text-amber-400,
+    [data-theme="dark"] .bg-neutral-950.text-amber-500,
+    [data-theme="dark"] .bg-amber-500 {
+      background-color: #A3294E !important;
+      color: #FFF5F7 !important;
+      border-color: #B8325B !important;
+      box-shadow: 0 4px 14px rgba(163, 41, 78, 0.4) !important;
+    }
+    [data-theme="dark"] #openAddSiteModalBtn:hover,
+    [data-theme="dark"] #settingsThemeToggleBtn:hover,
+    [data-theme="dark"] .bg-neutral-950.text-amber-400:hover,
+    [data-theme="dark"] .bg-amber-500:hover {
+      background-color: #B8325B !important;
+    }
+
+    [data-theme="dark"] #searchInput:focus,
+    [data-theme="dark"] input:focus,
+    [data-theme="dark"] textarea:focus {
+      border-color: #A3294E !important;
+      box-shadow: 0 0 0 3px rgba(163, 41, 78, 0.28) !important;
+      outline: none !important;
+    }
+
+    [data-theme="dark"] #brandMenuDropdown button:hover,
+    [data-theme="dark"] .custom-select-option:hover,
+    [data-theme="dark"] .custom-select-option.is-selected,
+    [data-theme="dark"] #quickFavFilterBtn.is-active {
+      background-color: rgba(163, 41, 78, 0.24) !important;
+      border-color: #A3294E !important;
+    }
+
+    [data-theme="dark"] #quickFavCount {
+      background-color: rgba(163, 41, 78, 0.24) !important;
+      color: #F9D2DE !important;
+    }
+
+    [data-theme="dark"] #quickFavFilterBtn {
+      border-color: #4A1E2E !important;
+    }
+
+    [data-theme="dark"] input[type="checkbox"] {
+      accent-color: #A3294E !important;
+    }
+
+    [data-theme="dark"] #brandMenuDropdown svg,
+    [data-theme="dark"] #triggerCatIcon,
+    [data-theme="dark"] .custom-select-icon,
+    [data-theme="dark"] #manageVisitsText {
+      color: #D6A8B6 !important;
     }
 
     /* 3. البطاقات المخفية أو غير النشطة (التي تحتوي على أيقونة العين المشطوبة): درجة بهتان متساوية ومعتدلة (0.5) */
@@ -432,11 +680,11 @@
     [data-theme="dark"] .apple-site-card[data-hidden="true"] h3,
     [data-theme="dark"] .apple-site-card.opacity-50 h3,
     [data-theme="dark"] .apple-site-card.opacity-70 h3 {
-      color: #FFFFFF !important;
+      color: #FFF5F7 !important;
     }
     [data-theme="dark"] .apple-site-card.site-card-hidden p,
     [data-theme="dark"] .apple-site-card[data-hidden="true"] p,
     [data-theme="dark"] .apple-site-card.opacity-50 p,
     [data-theme="dark"] .apple-site-card.opacity-70 p {
-      color: #CBD5E1 !important;
+      color: #D6A8B6 !important;
     }

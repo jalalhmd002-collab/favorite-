@@ -6,9 +6,10 @@
   <title>روابطي المفضلة - لوحة الروابط السريعة</title>
 
   <!-- إعدادات تطبيق الويب التقدمي (PWA) والأيقونات -->
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./icon-app.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#F59E0B">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,7 +33,7 @@
 </head>
 <body class="min-h-screen flex justify-center selection:bg-amber-500 selection:text-white">
 
-  <div class="app-shell w-full max-w-5xl min-h-screen flex flex-col relative pb-24 md:pb-6">
+  <div class="app-shell w-full max-w-5xl min-h-screen flex flex-col relative pb-6">
 
     <!-- Main App Header -->
     <header class="px-4 pt-3.5 pb-2 sticky top-0 z-40 ios-glass" style="background-color: color-mix(in srgb, var(--bg-page) 88%, transparent);">
@@ -83,6 +84,16 @@
               </span>
               <span id="brandThemeBadge" class="text-xs font-normal px-2 py-0.5 rounded-full surface-sub border text-muted">معطّل</span>
             </button>
+            <button type="button" id="brandDropdownPrivateSettingsBtn" role="menuitem" onclick="closeBrandDropdown(); openPrivateSettingsModal();"
+              class="w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><rect x="9" y="10" width="6" height="5" rx="1"/><path d="M10 10V8a2 2 0 1 1 4 0v2"/>
+                </svg>
+                <span>إعدادات قسم خاصة</span>
+              </span>
+              <span id="brandPrivateLockBadge" class="text-xs font-normal px-2 py-0.5 rounded-full surface-sub border text-muted">مفتوح</span>
+            </button>
             <button type="button" id="brandDropdownBackupBtn" role="menuitem"
               class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
@@ -122,57 +133,49 @@
         </div>
 
         <!-- Left: Add Link Button -->
-        <div class="flex flex-col items-center shrink-0">
+        <div class="flex items-center shrink-0">
           <button type="button" id="openAddModalBtn" aria-label="إضافة رابط جديد"
-            class="ios-pressable w-10 h-10 rounded-full bg-neutral-950 text-amber-500 flex items-center justify-center shadow hover:bg-neutral-800 transition-colors cursor-pointer">
-            <svg class="w-5 h-5 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-          </button>
-          <span class="text-xs font-normal text-muted mt-1">إضافة رابط</span>
+            class="ios-pressable header-add-text-btn font-bold text-sm shadow cursor-pointer">إضافة</button>
         </div>
       </div>
     </header>
 
-    <!-- Search & Filter Controls -->
-    <div class="px-4 py-1.5 flex flex-col sm:flex-row gap-2">
+    <!-- شريط عنوان التصنيف وزر الرجوع للرئيسية (فوق شريط البحث) -->
+    <div class="px-4 pt-2 w-full">
+      <div id="categoryDrillHeader" class="hidden items-center justify-between gap-3 surface-card rounded-2xl px-4 py-2.5 border shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span id="drillHeaderIcon" class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"></span>
+          <div class="min-w-0">
+            <h2 id="drillHeaderTitle" class="text-base font-bold text-main truncate">التصنيف</h2>
+            <p id="drillHeaderCount" class="text-xs text-muted">0 رابط</p>
+          </div>
+        </div>
+        <button type="button" id="backToHomeBtn" onclick="goHomeDashboard()"
+          class="ios-pressable surface-sub border text-main text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>رجوع</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Controls -->
+    <div class="px-4 py-2 w-full">
       <!-- Search Bar -->
-      <div class="surface-card relative flex items-center rounded-2xl border shadow-[0_2px_8px_rgba(0,0,0,0.03)] px-3.5 h-11 flex-1">
+      <div class="surface-card main-search-bar-box relative flex items-center w-full border shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
         <input type="text" id="searchInput"
-          class="search-field w-full bg-transparent border-none p-0 text-sm font-normal text-main placeholder:text-neutral-400 focus:outline-none focus:ring-0 leading-normal"
+          class="search-field w-full bg-transparent border-none p-0 text-sm sm:text-base font-normal text-main placeholder:text-neutral-400 focus:outline-none focus:ring-0 leading-normal"
           placeholder="بحث بالاسم أو الوصف أو الرابط...">
-        <svg class="w-4 h-4 text-amber-500 stroke-[2.2] shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-amber-500 stroke-[2.2] shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
-      </div>
-
-      <!-- Filter Bar -->
-      <div class="flex items-center gap-2 sm:w-auto">
-        <button type="button" id="categoryCurtainTrigger" aria-haspopup="true" aria-expanded="false"
-          class="ios-pressable surface-card flex-1 sm:min-w-[180px] border rounded-2xl h-11 px-3 flex items-center justify-between gap-2 shadow-[0_2px_6px_rgba(0,0,0,0.03)] cursor-pointer">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span id="triggerCatIcon" class="text-amber-600 flex items-center shrink-0"></span>
-            <span id="triggerCatName" class="text-sm font-normal text-main truncate">الكل</span>
-            <span id="triggerCatCount" class="bg-neutral-900 text-white text-[13px] font-normal px-2 py-0.5 rounded-lg shrink-0">0</span>
-          </div>
-          <svg id="triggerArrowIcon" class="w-4 h-4 text-neutral-400 stroke-[2.5] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
-          </svg>
-        </button>
-
-        <button type="button" id="quickFavFilterBtn"
-          class="ios-pressable surface-card border border-amber-300/70 rounded-2xl h-11 px-3 flex items-center gap-1.5 shadow-[0_2px_6px_rgba(0,0,0,0.03)] shrink-0 cursor-pointer">
-          <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-          </svg>
-          <span class="text-sm font-normal text-main">المفضلة</span>
-          <span id="quickFavCount" class="bg-amber-100 text-amber-900 text-xs font-normal px-1.5 py-0.5 rounded-md">0</span>
-        </button>
       </div>
     </div>
 
     <!-- Responsive Compact Grid Cards -->
     <main class="px-4 py-2 flex flex-col gap-3 flex-1">
+      <!-- شبكة البطاقات المربعة الست الرئيسية -->
+      <div id="homeCategoriesGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4 w-full"></div>
+
       <div id="sitesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-4.5 lg:gap-5 w-full"></div>
 
       <!-- Storage Status & Footer -->
@@ -182,32 +185,6 @@
         </footer>
       </div>
     </main>
-
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav md:hidden fixed bottom-0 inset-x-0 max-w-5xl mx-auto z-40 ios-glass border-t px-6 pt-2.5 pb-4 flex justify-around items-center text-xs font-normal text-muted">
-      <button type="button" id="navAllBtn" class="flex flex-col items-center gap-1 text-blue-600 cursor-pointer">
-        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-        </svg>
-        <span>الروابط</span>
-      </button>
-
-      <button type="button" id="navFavBtn" class="flex flex-col items-center gap-1 hover:text-main transition-colors cursor-pointer">
-        <svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
-          <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-        <span>المفضلة</span>
-      </button>
-
-      <button type="button" id="navCatsBtn" class="flex flex-col items-center gap-1 hover:text-main transition-colors cursor-pointer">
-        <svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
-          <path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-        <span>الأقسام</span>
-      </button>
-
-    </nav>
   </div>
 
   <!-- CATEGORY CURTAIN -->
@@ -243,7 +220,7 @@
 
   <!-- ADD SITE MODAL -->
   <div class="modal-overlay" id="addModalOverlay">
-    <div class="modal-box flex flex-col gap-3">
+    <div class="modal-box flex flex-col gap-4">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
         <div class="text-base font-normal text-main truncate">إضافة رابط جديد</div>
         <button type="button" id="closeAddModalBtn" aria-label="إغلاق"
@@ -327,7 +304,7 @@
 
   <!-- MANAGE SITE MODAL -->
   <div class="modal-overlay" id="manageModalOverlay">
-    <div class="modal-box flex flex-col gap-3">
+    <div class="modal-box flex flex-col gap-4">
       <div class="flex items-center justify-between pb-2.5 border-b" style="border-color: var(--border-soft);">
         <div class="text-base font-normal text-main truncate" id="manageModalHeaderTitle">تعديل الرابط</div>
         <button type="button" id="closeManageModalBtn" aria-label="إغلاق"
@@ -685,6 +662,86 @@
           class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="saveQrMessageBtn"
           class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVATE CATEGORY PROMPT MODAL -->
+  <div class="modal-overlay" id="privatePromptModalOverlay" onclick="if (event.target === this) onPrivatePromptCancel();">
+    <div class="modal-box flex flex-col gap-3.5" style="max-width: 400px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-base font-bold text-main flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg cat-badge-private flex items-center justify-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><rect x="9" y="10" width="6" height="5" rx="1"/><path d="M10 10V8a2 2 0 1 1 4 0v2"/></svg>
+          </span>
+          <span>حماية قسم خاصة</span>
+        </div>
+        <button type="button" onclick="onPrivatePromptCancel()" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
+      </div>
+      <p class="text-sm text-main leading-relaxed">يمكنك إغلاق قسم خاصة بكلمة مرور لحماية روابطك الخاصة.</p>
+      <label class="flex items-center gap-2 text-xs sm:text-sm text-muted cursor-pointer select-none">
+        <input type="checkbox" id="hidePrivatePromptCheckbox" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+        <span>عدم إظهار هذه الرسالة مرة أخرى</span>
+      </label>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" id="privatePromptCancelBtn" onclick="onPrivatePromptCancel()"
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء الأمر</button>
+        <button type="button" id="privatePromptOkBtn" onclick="onPrivatePromptConfirm()"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-bold cursor-pointer">موافق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVATE CATEGORY SETTINGS / SET PASSWORD MODAL -->
+  <div class="modal-overlay" id="privateSettingsModalOverlay" onclick="if (event.target === this) closePrivateSettingsModal();">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 400px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-base font-bold text-main">إعداد كلمة مرور قسم خاصة</div>
+        <button type="button" onclick="closePrivateSettingsModal()" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
+      </div>
+      <div class="flex items-center justify-between surface-sub border rounded-xl px-3.5 py-2.5">
+        <span class="text-sm font-bold text-main">تفعيل قفل قسم خاصة</span>
+        <input type="checkbox" id="privateLockEnabledCheckbox" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+      </div>
+      <div class="flex flex-col gap-2.5" id="privatePwdFieldsBox">
+        <div>
+          <label class="block text-sm font-normal text-main mb-1" for="privateSettingsPwdInput">كلمة مرور قسم خاصة:</label>
+          <input type="password" id="privateSettingsPwdInput" class="field-input" placeholder="أدخل كلمة المرور" dir="ltr">
+        </div>
+        <div>
+          <label class="block text-sm font-normal text-main mb-1" for="privateSettingsConfirmInput">تأكيد كلمة المرور:</label>
+          <input type="password" id="privateSettingsConfirmInput" class="field-input" placeholder="أعد إدخال كلمة المرور" dir="ltr">
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" onclick="closePrivateSettingsModal()"
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
+        <button type="button" onclick="savePrivateCategorySettings()"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-bold cursor-pointer">حفظ الإعدادات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVATE CATEGORY UNLOCK MODAL -->
+  <div class="modal-overlay" id="privateUnlockModalOverlay" onclick="if (event.target === this) closePrivateUnlockModal();">
+    <div class="modal-box flex flex-col gap-3" style="max-width: 380px;">
+      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
+        <div class="text-base font-bold text-main">قسم خاصة محمي</div>
+        <button type="button" onclick="closePrivateUnlockModal()" aria-label="إغلاق"
+          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
+      </div>
+      <div>
+        <label class="block text-sm font-normal text-main mb-1" for="privateUnlockInput">أدخل كلمة مرور قسم خاصة:</label>
+        <input type="password" id="privateUnlockInput" class="field-input" placeholder="كلمة المرور" dir="ltr" autofocus>
+        <p id="privateUnlockError" class="hidden text-xs text-rose-500 mt-1.5">كلمة المرور غير صحيحة</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
+        <button type="button" onclick="closePrivateUnlockModal()"
+          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
+        <button type="button" onclick="submitPrivateUnlock()"
+          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-bold cursor-pointer">فتح القسم</button>
       </div>
     </div>
   </div>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="amberBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="55%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#78350F" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Apple Squircle Background -->
+  <rect width="512" height="512" rx="112" ry="112" fill="url(#amberBg)"/>
+  <rect x="14" y="14" width="484" height="484" rx="100" ry="100" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="3"/>
+
+  <!-- Bookmark Silhouette -->
+  <g filter="url(#softShadow)">
+    <path d="M156 108 C156 90.3 170.3 76 188 76 L324 76 C341.7 76 356 90.3 356 108 L356 420 C356 430.5 344.2 436.7 335.5 430.9 L256 378 L176.5 430.9 C167.8 436.7 156 430.5 156 420 Z" fill="#FFFFFF"/>
+    <!-- Star inside Bookmark -->
+    <path d="M256 154 L272.5 187.4 L309.4 192.8 L282.7 218.8 L289 255.5 L256 238.2 L223 255.5 L229.3 218.8 L202.6 192.8 L239.5 187.4 Z" fill="#F59E0B"/>
+  </g>
+</svg>
