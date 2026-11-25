@@ -322,13 +322,11 @@ function renderSites() {
 
     img.alt = siteTitle;
     img.className = 'w-7 h-7 rounded object-contain';
-
     if (isGithubSub) {
       img.src = cleanFullUrl + '/icon.png?v=2';
     } else {
-      img.src = 'https://google.com' + encodeURIComponent(domain) + '&sz=64';
+      img.src = 'https://duckduckgo.com' + domain + '.ico';
     }
-
     img.onerror = () => {
       img.onerror = null;
       img.src = fallbackSvg;
