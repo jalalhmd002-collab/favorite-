@@ -324,7 +324,7 @@ function renderSites() {
     img.className = 'w-7 h-7 rounded object-contain';
 
     if (isGithubSub) {
-      img.src = `${cleanFullUrl}/icon.png?v=2`;
+      img.src = cleanFullUrl + '/icon.png?v=2';
     } else {
       img.src = 'https://google.com' + encodeURIComponent(domain) + '&sz=64';
     }
@@ -333,7 +333,7 @@ function renderSites() {
       img.onerror = null;
       img.src = fallbackSvg;
     };
-    const textWrap = document.createElement('div');
+	iconBox.appendChild(img);
     textWrap.className = 'min-w-0 flex-1';
 
     const titleEl = document.createElement('h3');
