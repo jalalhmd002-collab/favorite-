@@ -55,15 +55,14 @@ function getCategoryIconHtml(iconKey, size = 16) {
 
 const BUILTIN_CATEGORIES = [
   { id: 'diverse', name: 'منوعة', icon: 'compass' },
-  { id: 'global', name: 'عالمية', icon: 'globe' },
   { id: 'news', name: 'أخبار', icon: 'newspaper' },
   { id: 'private', name: 'خاصة', icon: 'shield' },
   { id: 'programs', name: 'البرامج', icon: 'apps' }
 ];
 
 function normalizeSiteCategory(cat) {
-  if (cat === 'local') return 'diverse';
-  if (['diverse', 'global', 'news', 'private', 'programs'].includes(cat)) return cat;
+  if (cat === 'local' || cat === 'global') return 'diverse';
+  if (['diverse', 'news', 'private', 'programs'].includes(cat)) return cat;
   return 'diverse';
 }
 
@@ -303,12 +302,13 @@ function sortActiveSites() {
 }
 
 function getCategoryCounts() {
-  const counts = { all: 0, favorites: 0, diverse: 0, global: 0, news: 0, private: 0, programs: 0 };
+  const counts = { all: 0, favorites: 0, diverse: 0, news: 0, private: 0, programs: 0 };
   const visibleSites = isAdminMode ? activeSites : activeSites.filter(s => !s.isHidden);
-  counts.all = visibleSites.length;
+  const includePrivateInAll = isAdminMode || !isPrivateCategoryLocked();
   visibleSites.forEach(s => {
     const cat = normalizeSiteCategory(s.category);
     const isPrivateSite = cat === 'private' || s.category === 'خاصة';
+    if (!isPrivateSite || includePrivateInAll) counts.all++;
     if (s.isFavorite && !(isPrivateSite && isPrivateCategoryLocked())) counts.favorites++;
     counts[cat] = (counts[cat] || 0) + 1;
   });
@@ -318,7 +318,7 @@ function getCategoryCounts() {
 const HOME_DASHBOARD_CARDS = [
   { id: 'diverse', name: 'منوعة', icon: 'compass', badgeClass: 'cat-badge-diverse' },
   { id: 'favorites', name: 'المفضلة', icon: 'star', badgeClass: 'cat-badge-favorites' },
-  { id: 'global', name: 'عالمية', icon: 'globe', badgeClass: 'cat-badge-global' },
+  { id: 'all', name: 'الكل', icon: 'layers', badgeClass: 'cat-badge-global' },
   { id: 'news', name: 'أخبار', icon: 'newspaper', badgeClass: 'cat-badge-news' },
   { id: 'private', name: 'خاصة', icon: 'shield', badgeClass: 'cat-badge-private' },
   { id: 'programs', name: 'البرامج', icon: 'apps', badgeClass: 'cat-badge-programs' }
@@ -646,7 +646,9 @@ if (isPrivateSite) return false;
 if (currentCategory === 'favorites') {
 if (!s.isFavorite) return false;
 if (isPrivateSite && isPrivateCategoryLocked()) return false;
-} else if (currentCategory !== 'all' && currentCategory !== 'home') {
+} else if (currentCategory === 'all') {
+if (isPrivateSite && !isAdminMode && isPrivateCategoryLocked()) return false;
+} else if (currentCategory !== 'home') {
 if (normCat !== currentCategory) return false;
 }
 }

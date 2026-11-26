@@ -366,7 +366,7 @@ function updateAddFavButton() {
 }
 
 function openAddModal() {
-  const defaultCat = (['diverse', 'global', 'news', 'private', 'programs'].includes(currentCategory))
+  const defaultCat = (['diverse', 'news', 'private', 'programs'].includes(currentCategory))
     ? currentCategory
     : 'diverse';
   addModalFavorite = (currentCategory === 'favorites');

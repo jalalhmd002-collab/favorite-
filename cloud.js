@@ -112,9 +112,9 @@ function loadSavedCategory() {
   try {
     saved = localStorage.getItem(STORAGE_KEY_CURRENT_CAT) || sessionStorage.getItem(STORAGE_KEY_CURRENT_CAT);
   } catch (e) {}
-  if (!saved || saved === 'all') return 'home';
-  if (saved === 'local') return 'diverse';
-  if (['home', 'favorites', 'diverse', 'global', 'news', 'private', 'programs'].includes(saved)) return saved;
+  if (!saved) return 'home';
+  if (saved === 'local' || saved === 'global') return 'diverse';
+  if (['home', 'all', 'favorites', 'diverse', 'news', 'private', 'programs'].includes(saved)) return saved;
   return 'home';
 }
 
@@ -154,7 +154,7 @@ async function loadActiveSites() {
       description: (item.description && item.description.trim()) ? item.description.trim() : '',
       url: (typeof formatUrl === 'function' ? formatUrl(item.url) : item.url),
       domain: item.domain || (typeof cleanDomain === 'function' ? cleanDomain(item.url) : ''),
-      category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'global', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
+      category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
       translate: Boolean(item.translate),
       visits: Number(item.visits) || 0,
       lastVisited: Number(item.lastVisited) || Date.now(),
@@ -304,7 +304,7 @@ async function fetchFromCloud(isRestore = false) {
           description: (item.description && String(item.description).trim()) ? String(item.description).trim() : '',
           url: (typeof formatUrl === 'function' ? formatUrl(item.url) : item.url),
           domain: item.domain || (typeof cleanDomain === 'function' ? cleanDomain(item.url) : ''),
-          category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'global', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
+          category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
           translate: Boolean(item.translate),
           visits: Number(item.visits) || 0,
           lastVisited: Number(item.lastVisited) || Date.now(),
