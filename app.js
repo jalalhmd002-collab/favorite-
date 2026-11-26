@@ -358,7 +358,10 @@ function updatePrivateLockBadgeUI() {
   badge.textContent = locked ? 'مقفل' : 'مفتوح';
 }
 
-function proceedOpenPrivateCategory() {
+function proceedOpenPrivateCategory(fromPopState = false) {
+  if (!fromPopState && currentCategory === 'home') {
+    try { history.pushState({ appCategory: 'private' }, '', window.location.pathname + window.location.search); } catch (e) {}
+  }
   saveCurrentCategory('private');
   updateTriggerBar();
   updateBottomNavActiveState();
@@ -375,11 +378,11 @@ function openPrivatePromptModal() {
   }
 }
 
-function closePrivatePromptModal() {
+function closePrivatePromptModal(fromPopState = false) {
   const overlay = document.getElementById('privatePromptModalOverlay');
   if (overlay) {
     overlay.classList.remove('active');
-    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privatePromptModalOverlay', false);
+    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privatePromptModalOverlay', fromPopState);
   }
 }
 
@@ -416,11 +419,11 @@ function openPrivateSettingsModal(forceEnable = false) {
   if (pwdInp) setTimeout(() => pwdInp.focus(), 60);
 }
 
-function closePrivateSettingsModal() {
+function closePrivateSettingsModal(fromPopState = false) {
   const overlay = document.getElementById('privateSettingsModalOverlay');
   if (overlay) {
     overlay.classList.remove('active');
-    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privateSettingsModalOverlay', false);
+    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privateSettingsModalOverlay', fromPopState);
   }
 }
 
@@ -480,11 +483,11 @@ function openPrivateUnlockModal() {
   if (inp) setTimeout(() => inp.focus(), 60);
 }
 
-function closePrivateUnlockModal() {
+function closePrivateUnlockModal(fromPopState = false) {
   const overlay = document.getElementById('privateUnlockModalOverlay');
   if (overlay) {
     overlay.classList.remove('active');
-    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privateUnlockModalOverlay', false);
+    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privateUnlockModalOverlay', fromPopState);
   }
 }
 
@@ -527,6 +530,9 @@ function openCategoryDrillDown(catId) {
     }
   } else {
     isPrivateCategoryUnlocked = false;
+  }
+  if (catId !== 'home' && currentCategory === 'home') {
+    try { history.pushState({ appCategory: catId }, '', window.location.pathname + window.location.search); } catch (e) {}
   }
   saveCurrentCategory(catId);
   updateTriggerBar();
@@ -821,8 +827,12 @@ console.warn('[PWA] Service Worker registration failed:', err);
 // نقطة انطلاق التطبيق (ENTRY POINT & DOM LOADED)
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-// تهيئة الثيم
+// تهيئة الثيم وحارس زر الرجوع
 initTheme();
+try {
+  history.replaceState({ appBase: true }, '', window.location.pathname + window.location.search);
+  history.pushState({ appHomeGuard: true }, '', window.location.pathname + window.location.search);
+} catch (e) {}
 updatePrivateLockBadgeUI();
 const privUnlockInp = document.getElementById('privateUnlockInput');
 if (privUnlockInp) {

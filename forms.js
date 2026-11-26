@@ -9,6 +9,14 @@
 let modalStack = [];
 let hasModalHistoryEntry = false;
 let suppressPopstateCount = 0;
+let lastBackExitAttemptTs = 0;
+let backExitResetTimer = null;
+
+function pushGuardHistoryState(stateObj = { appHomeGuard: true }) {
+  try {
+    history.pushState(stateObj, '', window.location.pathname + window.location.search);
+  } catch (e) {}
+}
 
 function safeSetClass(id, className, add = true) {
   const el = document.getElementById(id);
@@ -56,21 +64,64 @@ function closeOverlayById(overlayId, fromPopState = false) {
   else if (overlayId === 'adminLoginModalOverlay') closeAdminLoginModal(fromPopState);
   else if (overlayId === 'changePassModalOverlay') closeChangePassModal(fromPopState);
   else if (overlayId === 'qrMessageModalOverlay') closeQrMessageModal(fromPopState);
+  else if (overlayId === 'privatePromptModalOverlay' && typeof closePrivatePromptModal === 'function') closePrivatePromptModal(fromPopState);
+  else if (overlayId === 'privateSettingsModalOverlay' && typeof closePrivateSettingsModal === 'function') closePrivateSettingsModal(fromPopState);
+  else if (overlayId === 'privateUnlockModalOverlay' && typeof closePrivateUnlockModal === 'function') closePrivateUnlockModal(fromPopState);
 }
 
 window.addEventListener('popstate', () => {
   if (suppressPopstateCount > 0) { suppressPopstateCount--; return; }
+
+  // 1. إغلاق القائمة المنسدلة العلوية إن كانت مفتوحة
+  const brandDd = document.getElementById('brandDropdown');
+  if (brandDd && brandDd.classList.contains('active')) {
+    if (typeof closeBrandDropdown === 'function') closeBrandDropdown();
+    pushGuardHistoryState({ appHomeGuard: true });
+    return;
+  }
+
+  // 2. إغلاق أي نافذة منبثقة مفتوحة خطوة بخطوة
   if (modalStack.length > 0) {
     hasModalHistoryEntry = false;
     const topOverlayId = modalStack[modalStack.length - 1];
     closeOverlayById(topOverlayId, true);
     if (modalStack.length > 0) {
-      try {
-        history.pushState({ appModal: true }, '', window.location.pathname + window.location.search);
-        hasModalHistoryEntry = true;
-      } catch (e) {}
+      pushGuardHistoryState({ appModal: true });
+      hasModalHistoryEntry = true;
+    } else {
+      pushGuardHistoryState({ appHomeGuard: true });
     }
+    return;
   }
+
+  // 3. الرجوع من داخل أي قسم أو بحث إلى الشاشة الرئيسية
+  const inSubView = (typeof currentCategory !== 'undefined' && currentCategory !== 'home') || (typeof savedSearchQuery !== 'undefined' && Boolean(savedSearchQuery));
+  if (inSubView && typeof goHomeDashboard === 'function') {
+    goHomeDashboard(true);
+    pushGuardHistoryState({ appHomeGuard: true });
+    return;
+  }
+
+  // 4. تأكيد الخروج بالضغط مرتين على زر الرجوع في الشاشة الرئيسية
+  const now = Date.now();
+  if (lastBackExitAttemptTs && (now - lastBackExitAttemptTs) < 2000) {
+    if (backExitResetTimer) clearTimeout(backExitResetTimer);
+    lastBackExitAttemptTs = 0;
+    suppressPopstateCount++;
+    try { history.back(); } catch (e) { suppressPopstateCount = Math.max(0, suppressPopstateCount - 1); }
+    return;
+  }
+
+  lastBackExitAttemptTs = now;
+  if (backExitResetTimer) clearTimeout(backExitResetTimer);
+  backExitResetTimer = setTimeout(() => {
+    lastBackExitAttemptTs = 0;
+  }, 2000);
+
+  if (typeof showToast === 'function') {
+    showToast('اضغط رجوع مرة أخرى للخروج من البرنامج', 'info');
+  }
+  pushGuardHistoryState({ appHomeGuard: true });
 });
 
 document.addEventListener('keydown', (e) => {
