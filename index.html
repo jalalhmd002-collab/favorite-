@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-  <title>روابطي المفضلة - لوحة الروابط السريعة</title>
+  <title>المفضلة - Favorites | لوحة الروابط الشخصية</title>
 
   <!-- إعدادات تطبيق الويب التقدمي (PWA) والأيقونات -->
-  <link rel="icon" type="image/svg+xml" href="./icon-app.svg">
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=4">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png?v=4">
+  <link rel="shortcut icon" type="image/png" href="./icon-192.png?v=4">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png?v=4">
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#F59E0B">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="روابطي المفضلة">
+  <meta name="apple-mobile-web-app-title" content="المفضلة">
 
   <!-- المكتبات والخطوط الخارجية -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -41,10 +41,8 @@
         <!-- Right: Bookmark Logo + Title -->
         <div class="flex items-center gap-3 relative" id="brandMenuWrapper">
           <button type="button" id="brandMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="قائمة الخيارات"
-            class="ios-pressable w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 text-white flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0 border-0 cursor-pointer">
-            <svg class="w-5 h-5 stroke-current stroke-[2.2] fill-none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
-            </svg>
+            class="ios-pressable w-11 h-11 rounded-2xl surface-sub border flex items-center justify-center shadow-sm shrink-0 cursor-pointer">
+            <img src="./icon-192.png?v=4" alt="المفضلة" class="header-brand-img">
           </button>
 
           <!-- Brand Quick Dropdown -->
@@ -56,15 +54,6 @@
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
                 <span>إضافة رابط جديد</span>
-              </span>
-            </button>
-            <button type="button" id="brandDropdownQrMessageBtn" role="menuitem"
-              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
-              <span class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-                <span>رسالة العرض</span>
               </span>
             </button>
             <button type="button" id="brandDropdownQrBtn" role="menuitem"
@@ -84,7 +73,7 @@
               </span>
               <span id="brandThemeBadge" class="text-xs font-normal px-2 py-0.5 rounded-full surface-sub border text-muted">معطّل</span>
             </button>
-            <button type="button" id="brandDropdownPrivateSettingsBtn" role="menuitem" onclick="closeBrandDropdown(); openPrivateSettingsModal();"
+            <button type="button" id="brandDropdownPrivateSettingsBtn" role="menuitem" onclick="closeBrandDropdown(); togglePrivateCategoryLock();"
               class="w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -95,7 +84,7 @@
               <span id="brandPrivateLockBadge" class="text-xs font-normal px-2 py-0.5 rounded-full surface-sub border text-muted">مفتوح</span>
             </button>
             <button type="button" id="brandDropdownBackupBtn" role="menuitem"
-              class="admin-only w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
+              class="w-full px-3 py-2.5 rounded-xl text-right text-sm font-normal text-main hover:bg-amber-500/10 flex items-center justify-between gap-2 transition-colors">
               <span class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
@@ -124,10 +113,10 @@
           </div>
 
           <div>
-            <h1 id="appTitleTrigger" class="text-xl font-normal text-main leading-tight cursor-default select-none" style="cursor: default;">روابطي المفضلة</h1>
+            <h1 id="appTitleTrigger" class="text-xl font-normal text-main leading-tight cursor-default select-none" style="cursor: default;">المفضلة <span class="brand-en">Favorites</span></h1>
             <p class="text-[13px] text-muted font-normal mt-0.5 flex items-center gap-1.5">
-              <span>لوحة روابطك الشخصية السريعة</span>
-              <span class="admin-only text-[13px] font-normal text-main">• وضع المدير</span>
+              <span>لوحة الروابط الشخصية</span>
+              <span id="adminStatusDot" class="admin-dot" aria-label="وضع المدير مفعّل"></span>
             </p>
           </div>
         </div>
@@ -449,45 +438,32 @@
       </div>
 
       <div class="flex flex-col gap-2.5">
-        <div class="surface-sub border rounded-xl p-3 flex items-center justify-between shadow-xs">
-          <div>
-            <div class="text-sm font-normal text-main">المظهر</div>
-            <div class="text-[13px] text-muted">التبديل بين الوضع الفاتح والمظلم</div>
+        <div class="surface-sub border rounded-xl p-3 flex flex-col gap-2.5 shadow-xs">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-sm font-bold text-main">رمز المزامنة الخاص بجهازك</span>
+            <button type="button" id="copyDeviceSyncCodeBtn" onclick="copyDeviceSyncCode()"
+              class="ios-pressable px-3 py-1 rounded-lg bg-neutral-950 text-amber-400 text-xs font-bold cursor-pointer">نسخ</button>
           </div>
-          <button type="button" id="settingsThemeToggleBtn"
-            class="ios-pressable px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 text-sm font-normal shadow-xs transition-all cursor-pointer">تبديل</button>
+          <div id="deviceSyncCodeText" class="surface-card border rounded-lg px-3 py-2 text-center font-bold text-sm text-main tracking-wider select-all" dir="ltr">dev_------</div>
+          <div class="backup-restore-row pt-1 border-t" style="border-color: var(--border-soft);">
+            <input type="text" id="restoreDeviceIdInput" class="field-input flex-1 text-xs" placeholder="استعادة برمز جهاز آخر" dir="ltr">
+            <button type="button" id="restoreDeviceIdBtn" onclick="restoreFromOtherDeviceId()"
+              class="ios-pressable bg-amber-500 hover:bg-amber-400 text-neutral-950 text-sm shrink-0 cursor-pointer">استعادة</button>
+          </div>
         </div>
 
-        <button type="button" id="exportBackupBtn"
-          class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-amber-400 text-sm font-normal shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+        <button type="button" id="manualFetchCloudBtn" onclick="manualFetchFromCloud()"
+          class="ios-pressable w-full bg-neutral-950 hover:bg-neutral-800 text-amber-400 text-sm shadow-sm gap-2 cursor-pointer">
           <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
-          <span>تصدير نسخة احتياطية (JSON)</span>
+          <span id="manualFetchCloudBtnText">تحديث / جلب من السحابة</span>
         </button>
-
-        <label class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-main text-sm font-normal shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
-          <svg class="w-4 h-4 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-          <span>استيراد نسخة محفوظة</span>
-          <input type="file" id="importBackupInput" accept=".json" class="hidden">
-        </label>
-
-        <div class="pt-2 mt-1 border-t" style="border-color: var(--border-soft);">
-          <button type="button" id="resetDefaultsBtn"
-            class="ios-pressable w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-normal shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-            <span>تفريغ قاعدة البيانات بالكامل</span>
-          </button>
-        </div>
       </div>
 
-      <div class="flex justify-end pt-2 border-t" style="border-color: var(--border-soft);">
+      <div class="flex pt-2 border-t" style="border-color: var(--border-soft);">
         <button type="button" id="cancelBackupBtn"
-          class="ios-pressable surface-sub border hover:bg-neutral-500/10 px-5 py-2 rounded-xl text-sm font-normal text-main shadow-xs transition-all cursor-pointer">إغلاق</button>
+          class="ios-pressable w-full surface-sub border hover:bg-neutral-500/10 text-sm text-main shadow-xs transition-all cursor-pointer">إغلاق</button>
       </div>
     </div>
   </div>
@@ -507,26 +483,6 @@
           class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">تراجع</button>
         <button type="button" id="confirmDeleteBtn"
           class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-normal cursor-pointer">نعم، احذف</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESET DATABASE CONFIRMATION MODAL -->
-  <div class="modal-overlay" id="confirmResetModalOverlay">
-    <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
-      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-base font-normal text-rose-600">تأكيد تفريغ قاعدة البيانات</div>
-        <button type="button" id="closeConfirmResetBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
-      </div>
-      <p class="text-sm font-normal text-main leading-relaxed">
-        هل أنت متأكد من تفريغ قاعدة البيانات بالكامل؟ سيتم حذف جميع الروابط والتصنيفات المخصصة ولا يمكن التراجع عن هذا الإجراء.
-      </p>
-      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
-        <button type="button" id="cancelConfirmResetBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">تراجع</button>
-        <button type="button" id="confirmResetBtn"
-          class="ios-pressable px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-normal cursor-pointer">نعم، فرّغ القاعدة</button>
       </div>
     </div>
   </div>
@@ -564,7 +520,6 @@
       </div>
 
       <div class="flex flex-col items-center gap-2.5 py-1">
-        <div id="qrDisplayMessageBox" class="hidden w-full surface-sub border rounded-xl px-3 py-2 text-sm font-normal text-main text-center leading-relaxed"></div>
         <div id="qrCodeContainer" class="p-3 bg-white rounded-2xl border border-black/10 shadow-xs flex items-center justify-center min-w-[196px] min-h-[196px]"></div>
 
         <div class="w-full surface-sub border rounded-xl px-3 py-2 flex items-center justify-between gap-2">
@@ -628,6 +583,10 @@
       </div>
       <div class="flex flex-col gap-2.5">
         <div>
+          <label class="block text-sm font-normal text-main mb-1" for="changePassOldInput">كلمة المرور القديمة:</label>
+          <input type="password" id="changePassOldInput" class="field-input" placeholder="أدخل كلمة المرور الحالية" dir="ltr">
+        </div>
+        <div>
           <label class="block text-sm font-normal text-main mb-1" for="changePassNewInput">كلمة المرور الجديدة:</label>
           <input type="password" id="changePassNewInput" class="field-input" placeholder="أدخل كلمة المرور الجديدة" dir="ltr">
         </div>
@@ -640,27 +599,6 @@
         <button type="button" id="cancelChangePassBtn"
           class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
         <button type="button" id="saveChangePassBtn"
-          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">حفظ</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- QR DISPLAY MESSAGE MODAL -->
-  <div class="modal-overlay" id="qrMessageModalOverlay">
-    <div class="modal-box flex flex-col gap-3" style="max-width: 390px;">
-      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-base font-normal text-main">رسالة العرض</div>
-        <button type="button" id="closeQrMessageBtn" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
-      </div>
-      <div>
-        <label class="block text-sm font-normal text-main mb-1" for="qrMessageInput">اكتب الرسالة التي تظهر في أعلى نافذة الباركود:</label>
-        <input type="text" id="qrMessageInput" class="field-input" placeholder="مثال: امسح الباركود لفتح الروابط">
-      </div>
-      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
-        <button type="button" id="cancelQrMessageBtn"
-          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
-        <button type="button" id="saveQrMessageBtn"
           class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-normal cursor-pointer">حفظ</button>
       </div>
     </div>
@@ -689,37 +627,6 @@
           class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء الأمر</button>
         <button type="button" id="privatePromptOkBtn" onclick="onPrivatePromptConfirm()"
           class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-bold cursor-pointer">موافق</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PRIVATE CATEGORY SETTINGS / SET PASSWORD MODAL -->
-  <div class="modal-overlay" id="privateSettingsModalOverlay" onclick="if (event.target === this) closePrivateSettingsModal();">
-    <div class="modal-box flex flex-col gap-3" style="max-width: 400px;">
-      <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-soft);">
-        <div class="text-base font-bold text-main">إعداد كلمة مرور قسم خاصة</div>
-        <button type="button" onclick="closePrivateSettingsModal()" aria-label="إغلاق"
-          class="w-8 h-8 rounded-full surface-sub border flex items-center justify-center text-xl font-normal text-main cursor-pointer">&times;</button>
-      </div>
-      <div class="flex items-center justify-between surface-sub border rounded-xl px-3.5 py-2.5">
-        <span class="text-sm font-bold text-main">تفعيل قفل قسم خاصة</span>
-        <input type="checkbox" id="privateLockEnabledCheckbox" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
-      </div>
-      <div class="flex flex-col gap-2.5" id="privatePwdFieldsBox">
-        <div>
-          <label class="block text-sm font-normal text-main mb-1" for="privateSettingsPwdInput">كلمة مرور قسم خاصة:</label>
-          <input type="password" id="privateSettingsPwdInput" class="field-input" placeholder="أدخل كلمة المرور" dir="ltr">
-        </div>
-        <div>
-          <label class="block text-sm font-normal text-main mb-1" for="privateSettingsConfirmInput">تأكيد كلمة المرور:</label>
-          <input type="password" id="privateSettingsConfirmInput" class="field-input" placeholder="أعد إدخال كلمة المرور" dir="ltr">
-        </div>
-      </div>
-      <div class="flex justify-end gap-2 pt-2 border-t" style="border-color: var(--border-soft);">
-        <button type="button" onclick="closePrivateSettingsModal()"
-          class="surface-sub border px-4 py-2 rounded-xl text-sm font-normal text-main cursor-pointer">إلغاء</button>
-        <button type="button" onclick="savePrivateCategorySettings()"
-          class="ios-pressable px-5 py-2 rounded-xl bg-neutral-950 text-amber-400 text-sm font-bold cursor-pointer">حفظ الإعدادات</button>
       </div>
     </div>
   </div>

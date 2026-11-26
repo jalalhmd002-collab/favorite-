@@ -8,25 +8,22 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUsxDpzb0Iv4
 
 // مفاتيح التخزين المحلي (LocalStorage & IndexedDB)
 const STORAGE_KEY_SITES = 'news_app_empty_sites_v7';
-const STORAGE_KEY_CATS = 'news_app_empty_cats_v7';
-const STORAGE_KEY_DELETED_CATS = 'news_app_deleted_builtin_cats_v7';
 const STORAGE_KEY_CURRENT_CAT = 'news_app_empty_current_cat_v7';
 const THEME_STORAGE_KEY = 'news_app_theme_v7';
 const STORAGE_KEY_QR_URL = 'news_app_qr_custom_url_v7';
 const STORAGE_KEY_ADMIN_PASS = 'news_app_admin_password_v7';
-const STORAGE_KEY_QR_MSG = 'news_app_qr_display_msg_v7';
 const STORAGE_KEY_ADMIN_STATE = 'news_app_admin_state_v7';
+const STORAGE_KEY_DEVICE_ID = 'news_app_device_id_v7';
 const DB_NAME = 'NewsAppEmptyStorage_v7';
 const DB_STORE = 'app_store';
 
 // المتغيرات العامة المشتركة لحالة التطبيق
 var activeSites = window.activeSites || [];
-var customCategories = window.customCategories || [];
-var deletedBuiltinCatIds = window.deletedBuiltinCatIds || [];
 var currentCategory = window.currentCategory || 'home';
 var savedSearchQuery = window.savedSearchQuery || '';
 var isAdminMode = false;
 var isAppInitialized = false;
+var hasFetchedCloud = false;
 
 // مؤقت المزامنة السحابية
 let cloudSyncTimer = null;
@@ -103,36 +100,6 @@ async function loadFromIndexedDB() {
 // ========================================================
 // التخزين عبر LOCALSTORAGE
 // ========================================================
-function loadDeletedBuiltinCats() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_DELETED_CATS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch (e) {}
-  return [];
-}
-
-function saveDeletedBuiltinCats() {
-  try { localStorage.setItem(STORAGE_KEY_DELETED_CATS, JSON.stringify(deletedBuiltinCatIds)); } catch (e) {}
-}
-
-function loadCustomCategories() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_CATS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch (e) {}
-  return [];
-}
-
-function saveCustomCategories() {
-  try { localStorage.setItem(STORAGE_KEY_CATS, JSON.stringify(customCategories)); } catch (e) {}
-}
-
 function saveCurrentCategory(catId) {
   currentCategory = catId || 'home';
   try { localStorage.setItem(STORAGE_KEY_CURRENT_CAT, currentCategory); } catch (e) {}
@@ -154,18 +121,15 @@ function loadSavedCategory() {
 function persistActiveSites(skipCloudSync = false) {
   if (!isAppInitialized || !Array.isArray(activeSites)) return;
   try { localStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(activeSites)); } catch (e) {}
-  saveCustomCategories();
   try { sessionStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(activeSites)); } catch (e) {}
-  saveToIndexedDB(activeSites, customCategories);
+  saveToIndexedDB(activeSites, []);
   if (typeof updateTriggerBar === 'function') updateTriggerBar();
-  if (!skipCloudSync && isAdminMode) {
+  if (!skipCloudSync) {
     scheduleCloudSync(true);
   }
 }
 
 async function loadActiveSites() {
-  customCategories = loadCustomCategories();
-  deletedBuiltinCatIds = loadDeletedBuiltinCats();
   let loaded = null;
 
   try {
@@ -178,12 +142,8 @@ async function loadActiveSites() {
 
   if (loaded === null) {
     const idbData = await loadFromIndexedDB();
-    if (idbData) {
-      if (Array.isArray(idbData.sites)) loaded = idbData.sites;
-      if (Array.isArray(idbData.cats) && idbData.cats.length > 0 && customCategories.length === 0) {
-        customCategories = idbData.cats;
-        saveCustomCategories();
-      }
+    if (idbData && Array.isArray(idbData.sites)) {
+      loaded = idbData.sites;
     }
   }
 
@@ -219,17 +179,87 @@ async function loadActiveSites() {
 }
 
 // ========================================================
-// المزامنة السحابية (GOOGLE APPS SCRIPT WEB APP)
+// معرف الجهاز التلقائي والمزامنة السحابية (GOOGLE APPS SCRIPT)
 // ========================================================
+function getOrCreateDeviceId() {
+  let id = '';
+  try { id = (localStorage.getItem(STORAGE_KEY_DEVICE_ID) || '').trim(); } catch (e) {}
+  if (!id) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    id = 'dev_' + code;
+    try { localStorage.setItem(STORAGE_KEY_DEVICE_ID, id); } catch (e) {}
+  }
+  return id;
+}
+
+function getEffectiveSyncDeviceId() {
+  return isAdminMode ? 'admin_master' : getOrCreateDeviceId();
+}
+
+function updateDeviceSyncUI() {
+  const el = document.getElementById('deviceSyncCodeText');
+  if (el) el.textContent = getOrCreateDeviceId();
+}
+
+function copyDeviceSyncCode() {
+  const code = getOrCreateDeviceId();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(() => {
+      if (typeof showToast === 'function') showToast('تم نسخ رمز الجهاز: ' + code, 'success');
+    }).catch(() => {
+      if (typeof showToast === 'function') showToast('رمز الجهاز: ' + code, 'info');
+    });
+  } else if (typeof showToast === 'function') {
+    showToast('رمز الجهاز: ' + code, 'info');
+  }
+}
+
+async function restoreFromOtherDeviceId() {
+  const inp = document.getElementById('restoreDeviceIdInput');
+  const targetId = inp ? inp.value.trim() : '';
+  if (!targetId) {
+    if (typeof showToast === 'function') showToast('يرجى إدخال رمز الجهاز المطلوب استعادته', 'error');
+    if (inp) inp.focus();
+    return;
+  }
+  try { localStorage.setItem(STORAGE_KEY_DEVICE_ID, targetId); } catch (e) {}
+  updateDeviceSyncUI();
+  if (inp) inp.value = '';
+  await fetchFromCloud(true);
+  if (typeof showToast === 'function') showToast('تم ربط الجهاز واستعادة الروابط بنجاح', 'success');
+}
+
+async function manualFetchFromCloud() {
+  const btn = document.getElementById('manualFetchCloudBtn');
+  const txt = document.getElementById('manualFetchCloudBtnText');
+  if (btn) btn.disabled = true;
+  if (txt) txt.textContent = 'جاري الجلب من السحابة...';
+  try {
+    const ok = await fetchFromCloud(true);
+    if (typeof showToast === 'function') {
+      showToast(ok ? 'تم جلب أحدث البيانات بنجاح' : 'تعذر الاتصال بالسحابة حالياً', ok ? 'success' : 'error');
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+    if (txt) txt.textContent = 'تحديث / جلب من السحابة';
+  }
+}
+
+window.copyDeviceSyncCode = copyDeviceSyncCode;
+window.restoreFromOtherDeviceId = restoreFromOtherDeviceId;
+window.manualFetchFromCloud = manualFetchFromCloud;
+
 async function syncToCloud(showNotify = true) {
   const url = (typeof GOOGLE_SCRIPT_URL === 'string') ? GOOGLE_SCRIPT_URL.trim() : '';
-  if (!url || !isAdminMode) return;
+  if (!url || !hasFetchedCloud) return;
   try {
     const payload = {
-      sites: activeSites,
-      categories: customCategories,
-      deletedBuiltinCats: deletedBuiltinCatIds,
-      qrMessage: (typeof getQrDisplayMessage === 'function') ? getQrDisplayMessage() : ''
+      deviceId: getEffectiveSyncDeviceId(),
+      sites: activeSites
     };
     await fetch(url, {
       method: 'POST',
@@ -245,65 +275,61 @@ async function syncToCloud(showNotify = true) {
 
 function scheduleCloudSync(showNotify = true) {
   const url = (typeof GOOGLE_SCRIPT_URL === 'string') ? GOOGLE_SCRIPT_URL.trim() : '';
-  if (!url || !isAdminMode) return;
+  if (!url || !hasFetchedCloud) return;
   if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
   cloudSyncTimer = setTimeout(() => {
     syncToCloud(showNotify);
   }, 150);
 }
 
-async function fetchFromCloud() {
+async function fetchFromCloud(isRestore = false) {
   const url = (typeof GOOGLE_SCRIPT_URL === 'string') ? GOOGLE_SCRIPT_URL.trim() : '';
   if (!url) return;
+  const devId = getEffectiveSyncDeviceId();
+  const sep = url.includes('?') ? '&' : '?';
+  const fetchUrl = `${url}${sep}deviceId=${encodeURIComponent(devId)}`;
   try {
-    const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-    if (!res.ok) return;
+    const res = await fetch(fetchUrl, { method: 'GET', cache: 'no-store' });
+    if (!res.ok) return false;
     const data = await res.json();
-    if (!data || data.ok === false) return;
+    if (!data || data.ok === false) return false;
 
-    if (Array.isArray(data.categories)) {
-      customCategories = data.categories;
-      saveCustomCategories();
-    }
-    if (Array.isArray(data.deletedBuiltinCats)) {
-      deletedBuiltinCatIds = data.deletedBuiltinCats;
-      saveDeletedBuiltinCats();
-    }
-    if (typeof data.qrMessage === 'string') {
-      try {
-        if (data.qrMessage.trim()) localStorage.setItem(STORAGE_KEY_QR_MSG, data.qrMessage.trim());
-        else localStorage.removeItem(STORAGE_KEY_QR_MSG);
-      } catch (e) {}
-      if (typeof updateQrDisplayMessageUI === 'function') updateQrDisplayMessageUI();
-    }
+    hasFetchedCloud = true;
+
     if (Array.isArray(data.sites)) {
-      activeSites = data.sites.map(item => ({
-        id: item.id || ('site_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
-        name: item.name || (typeof extractNameFromDomain === 'function' ? extractNameFromDomain(item.domain || item.url) : 'رابط'),
-        description: (item.description && String(item.description).trim()) ? String(item.description).trim() : '',
-        url: (typeof formatUrl === 'function' ? formatUrl(item.url) : item.url),
-        domain: item.domain || (typeof cleanDomain === 'function' ? cleanDomain(item.url) : ''),
-        category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'global', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
-        translate: Boolean(item.translate),
-        visits: Number(item.visits) || 0,
-        lastVisited: Number(item.lastVisited) || Date.now(),
-        isUserAdded: true,
-        isFavorite: Boolean(item.isFavorite),
-        isHidden: Boolean(item.isHidden)
-      }));
-      if (typeof sortActiveSites === 'function') sortActiveSites();
+      if (data.sites.length > 0 || isRestore) {
+        activeSites = data.sites.map(item => ({
+          id: item.id || ('site_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+          name: item.name || (typeof extractNameFromDomain === 'function' ? extractNameFromDomain(item.domain || item.url) : 'رابط'),
+          description: (item.description && String(item.description).trim()) ? String(item.description).trim() : '',
+          url: (typeof formatUrl === 'function' ? formatUrl(item.url) : item.url),
+          domain: item.domain || (typeof cleanDomain === 'function' ? cleanDomain(item.url) : ''),
+          category: (typeof normalizeSiteCategory === 'function' ? normalizeSiteCategory(item.category) : (['diverse', 'global', 'news', 'private', 'programs'].includes(item.category) ? item.category : 'diverse')),
+          translate: Boolean(item.translate),
+          visits: Number(item.visits) || 0,
+          lastVisited: Number(item.lastVisited) || Date.now(),
+          isUserAdded: true,
+          isFavorite: Boolean(item.isFavorite),
+          isHidden: Boolean(item.isHidden)
+        }));
+        if (typeof sortActiveSites === 'function') sortActiveSites();
+      }
     }
     persistActiveSites(true);
     if (typeof populateCategoryDropdowns === 'function') populateCategoryDropdowns();
     if (typeof updateTriggerBar === 'function') updateTriggerBar();
     if (typeof renderSites === 'function') renderSites();
-  } catch (err) {}
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
 
 // ========================================================
 // تصدير واستيراد النسخ الاحتياطية
 // ========================================================
 function openBackupModal() {
+  updateDeviceSyncUI();
   const bEl = document.getElementById('backupModalOverlay'); if (bEl) { bEl.classList.add('active'); }
   if (typeof pushOverlayToStack === 'function') pushOverlayToStack('backupModalOverlay');
 }
@@ -313,118 +339,10 @@ function closeBackupModal(fromPopState = false) {
   if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('backupModalOverlay', fromPopState);
 }
 
-function exportBackupData() {
-  try {
-    const backupObj = {
-      version: 7,
-      exportDate: new Date().toISOString(),
-      sites: activeSites,
-      categories: customCategories,
-      deletedBuiltinCats: deletedBuiltinCatIds
-    };
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupObj, null, 2));
-    const a = document.createElement('a');
-    a.href = dataStr;
-    a.download = `my_favorites_backup_${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    if (typeof showToast === 'function') showToast('تم تصدير النسخة الاحتياطية بنجاح', 'success');
-  } catch (e) {
-    if (typeof showToast === 'function') showToast('حدث خطأ أثناء تصدير النسخة', 'error');
-  }
-}
-
-function importBackupData(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      const importedSites = Array.isArray(imported) ? imported : (Array.isArray(imported.sites) ? imported.sites : null);
-      const importedCats = (imported && Array.isArray(imported.categories)) ? imported.categories : [];
-
-      if (!importedSites) {
-        if (typeof showToast === 'function') showToast('الملف لا يحتوي على بيانات روابط صالحة', 'error');
-        return;
-      }
-
-      importedCats.forEach(newCat => {
-        if (newCat && newCat.id && newCat.name) {
-          const existingCat = customCategories.find(c => c.id === newCat.id);
-          if (!existingCat) customCategories.push(newCat);
-        }
-      });
-      saveCustomCategories();
-
-      let addedCount = 0;
-      let updatedCount = 0;
-
-      importedSites.forEach(s => {
-        if (!s.url) return;
-        const fullUrl = (typeof formatUrl === 'function') ? formatUrl(s.url) : s.url;
-        const domain = (typeof cleanDomain === 'function') ? cleanDomain(fullUrl) : '';
-        const existingSite = activeSites.find(x => x.url === fullUrl);
-
-        if (existingSite) {
-          existingSite.name = s.name || existingSite.name;
-          existingSite.description = s.description !== undefined ? s.description : existingSite.description;
-          existingSite.category = s.category || existingSite.category;
-          existingSite.translate = Boolean(s.translate);
-          existingSite.isFavorite = Boolean(s.isFavorite !== undefined ? s.isFavorite : existingSite.isFavorite);
-          existingSite.isHidden = Boolean(s.isHidden !== undefined ? s.isHidden : existingSite.isHidden);
-          updatedCount++;
-        } else {
-          activeSites.unshift({
-            id: s.id || ('site_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
-            name: s.name || (typeof extractNameFromDomain === 'function' ? extractNameFromDomain(domain) : 'رابط جديد'),
-            description: s.description || '',
-            url: fullUrl,
-            domain: domain,
-            category: s.category || 'general',
-            translate: Boolean(s.translate),
-            visits: Number(s.visits) || 0,
-            lastVisited: Number(s.lastVisited) || Date.now(),
-            isUserAdded: true,
-            isFavorite: Boolean(s.isFavorite),
-            isHidden: Boolean(s.isHidden)
-          });
-          addedCount++;
-        }
-      });
-
-      if (typeof sortActiveSites === 'function') sortActiveSites();
-      persistActiveSites();
-      if (typeof populateCategoryDropdowns === 'function') populateCategoryDropdowns();
-      if (typeof updateTriggerBar === 'function') updateTriggerBar();
-      if (typeof renderSites === 'function') renderSites();
-      closeBackupModal();
-      if (typeof showToast === 'function') showToast(`تم الاستيراد: ${addedCount} جديد، ${updatedCount} تم تحديثه`, 'success');
-    } catch (err) {
-      if (typeof showToast === 'function') showToast('فشل قراءة الملف. يرجى التأكد من أنه ملف JSON صالح', 'error');
-    }
-  };
-  reader.readAsText(file);
-}
-
 // تهيئة أحداث النسخ الاحتياطي والمزامنة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-  ['exportBackupBtn', 'exportDataBtn'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.addEventListener('click', exportBackupData);
-  });
-
-  ['importBackupInput', 'importFileInput'].forEach(id => {
-    const input = document.getElementById(id);
-    if (input) {
-      input.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files[0]) {
-          importBackupData(e.target.files[0]);
-          e.target.value = '';
-        }
-      });
-    }
-  });
+  getOrCreateDeviceId();
+  updateDeviceSyncUI();
 
   const openBackupBtn = document.getElementById('brandDropdownBackupBtn');
   if (openBackupBtn) {
@@ -442,10 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const syncBtn = document.getElementById('syncCloudBtn');
   if (syncBtn) {
     syncBtn.addEventListener('click', () => {
-      if (!isAdminMode) {
-        if (typeof showToast === 'function') showToast('المزامنة اليدوية متاحة للمدير فقط', 'error');
-        return;
-      }
       syncToCloud(true);
     });
   }

@@ -3,7 +3,7 @@
    روابطي المفضلة - كاش وتصفح دون اتصال
    ========================================================================== */
 
-const CACHE_NAME = 'my-favorites-pwa-v4';
+const CACHE_NAME = 'my-favorites-pwa-v6';
 
 // الملفات الأساسية للتخزين المؤقت المسبق
 const PRECACHE_ASSETS = [
@@ -14,10 +14,8 @@ const PRECACHE_ASSETS = [
   './forms.js',
   './app.js',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './icon-app.svg',
-  './icon.svg'
+  './icon-192.png?v=4',
+  './icon-512.png?v=4'
 ];
 
 // تثبيت الـ Service Worker وتخزين الملفات مسبقاً

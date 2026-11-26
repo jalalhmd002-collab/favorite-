@@ -307,8 +307,9 @@ function getCategoryCounts() {
   const visibleSites = isAdminMode ? activeSites : activeSites.filter(s => !s.isHidden);
   counts.all = visibleSites.length;
   visibleSites.forEach(s => {
-    if (s.isFavorite) counts.favorites++;
     const cat = normalizeSiteCategory(s.category);
+    const isPrivateSite = cat === 'private' || s.category === 'خاصة';
+    if (s.isFavorite && !(isPrivateSite && isPrivateCategoryLocked())) counts.favorites++;
     counts[cat] = (counts[cat] || 0) + 1;
   });
   return counts;
@@ -334,18 +335,23 @@ function goHomeDashboard() {
   renderSites();
 }
 
-const PRIVATE_PWD_KEY = 'fav_private_category_password_v1';
 const PRIVATE_LOCK_ENABLED_KEY = 'fav_private_category_locked_v1';
 const PRIVATE_PROMPT_HIDDEN_KEY = 'fav_hide_private_prompt_v1';
 let isPrivateCategoryUnlocked = false;
+let pendingPrivateAction = 'open'; // 'open' | 'disable_lock'
 
-function getPrivateCategoryPassword() {
-  try { return localStorage.getItem(PRIVATE_PWD_KEY) || ''; } catch (e) { return ''; }
+function getUnifiedPassword() {
+  if (typeof getAdminPassword === 'function') return getAdminPassword();
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_ADMIN_PASS);
+    if (stored && stored.trim()) return stored;
+  } catch (e) {}
+  return '1234';
 }
 
 function isPrivateCategoryLocked() {
   try {
-    return localStorage.getItem(PRIVATE_LOCK_ENABLED_KEY) === '1' && Boolean(getPrivateCategoryPassword());
+    return localStorage.getItem(PRIVATE_LOCK_ENABLED_KEY) === '1';
   } catch (e) {
     return false;
   }
@@ -392,7 +398,11 @@ function onPrivatePromptConfirm() {
     try { localStorage.setItem(PRIVATE_PROMPT_HIDDEN_KEY, '1'); } catch (e) {}
   }
   closePrivatePromptModal();
-  openPrivateSettingsModal(true);
+  try { localStorage.setItem(PRIVATE_LOCK_ENABLED_KEY, '1'); } catch (e) {}
+  isPrivateCategoryUnlocked = true;
+  updatePrivateLockBadgeUI();
+  showToast('تم تفعيل قفل قسم خاصة بكلمة المرور', 'success');
+  proceedOpenPrivateCategory();
 }
 
 function onPrivatePromptCancel() {
@@ -404,73 +414,25 @@ function onPrivatePromptCancel() {
   proceedOpenPrivateCategory();
 }
 
-function openPrivateSettingsModal(forceEnable = false) {
-  const overlay = document.getElementById('privateSettingsModalOverlay');
-  const toggle = document.getElementById('privateLockEnabledCheckbox');
-  const pwdInp = document.getElementById('privateSettingsPwdInput');
-  const confInp = document.getElementById('privateSettingsConfirmInput');
-  if (toggle) toggle.checked = forceEnable ? true : isPrivateCategoryLocked();
-  if (pwdInp) pwdInp.value = '';
-  if (confInp) confInp.value = '';
-  if (overlay) {
-    overlay.classList.add('active');
-    if (typeof pushOverlayToStack === 'function') pushOverlayToStack('privateSettingsModalOverlay');
+function togglePrivateCategoryLock() {
+  if (!isPrivateCategoryLocked()) {
+    try { localStorage.setItem(PRIVATE_LOCK_ENABLED_KEY, '1'); } catch (e) {}
+    updatePrivateLockBadgeUI();
+    showToast('تم قفل قسم خاصة بكلمة المرور', 'success');
+    return;
   }
-  if (pwdInp) setTimeout(() => pwdInp.focus(), 60);
-}
-
-function closePrivateSettingsModal(fromPopState = false) {
-  const overlay = document.getElementById('privateSettingsModalOverlay');
-  if (overlay) {
-    overlay.classList.remove('active');
-    if (typeof removeOverlayFromStack === 'function') removeOverlayFromStack('privateSettingsModalOverlay', fromPopState);
-  }
-}
-
-function savePrivateCategorySettings() {
-  const toggle = document.getElementById('privateLockEnabledCheckbox');
-  const pwdInp = document.getElementById('privateSettingsPwdInput');
-  const confInp = document.getElementById('privateSettingsConfirmInput');
-  const enableLock = toggle ? toggle.checked : false;
-  const newPwd = pwdInp ? pwdInp.value.trim() : '';
-  const confirmPwd = confInp ? confInp.value.trim() : '';
-  const existingPwd = getPrivateCategoryPassword();
-
-  if (!enableLock) {
+  if (isAdminMode) {
     try { localStorage.setItem(PRIVATE_LOCK_ENABLED_KEY, '0'); } catch (e) {}
     isPrivateCategoryUnlocked = true;
     updatePrivateLockBadgeUI();
-    closePrivateSettingsModal();
-    showToast('تم إلغاء قفل قسم خاصة بنجاح', 'info');
+    showToast('تم إلغاء قفل قسم خاصة', 'info');
     return;
   }
-
-  if (!newPwd && !existingPwd) {
-    showToast('يرجى إدخال كلمة مرور لقسم خاصة', 'error');
-    if (pwdInp) pwdInp.focus();
-    return;
-  }
-  if (newPwd && newPwd !== confirmPwd) {
-    showToast('كلمتا المرور غير متطابقتين', 'error');
-    if (confInp) confInp.focus();
-    return;
-  }
-
-  try {
-    if (newPwd) localStorage.setItem(PRIVATE_PWD_KEY, newPwd);
-    localStorage.setItem(PRIVATE_LOCK_ENABLED_KEY, '1');
-  } catch (e) {}
-
-  isPrivateCategoryUnlocked = true;
-  updatePrivateLockBadgeUI();
-  closePrivateSettingsModal();
-  showToast('تم تفعيل حماية قسم خاصة بنجاح', 'success');
-  if (currentCategory === 'home') {
-    proceedOpenPrivateCategory();
-  }
+  openPrivateUnlockModal('disable_lock');
 }
 
-function openPrivateUnlockModal() {
+function openPrivateUnlockModal(actionMode = 'open') {
+  pendingPrivateAction = actionMode;
   const overlay = document.getElementById('privateUnlockModalOverlay');
   const inp = document.getElementById('privateUnlockInput');
   const err = document.getElementById('privateUnlockError');
@@ -484,6 +446,7 @@ function openPrivateUnlockModal() {
 }
 
 function closePrivateUnlockModal(fromPopState = false) {
+  pendingPrivateAction = 'open';
   const overlay = document.getElementById('privateUnlockModalOverlay');
   if (overlay) {
     overlay.classList.remove('active');
@@ -495,11 +458,19 @@ function submitPrivateUnlock() {
   const inp = document.getElementById('privateUnlockInput');
   const err = document.getElementById('privateUnlockError');
   const entered = inp ? inp.value : '';
-  if (entered === getPrivateCategoryPassword()) {
-    isPrivateCategoryUnlocked = true;
+  if (entered === getUnifiedPassword()) {
+    const mode = pendingPrivateAction;
     if (err) err.classList.add('hidden');
     closePrivateUnlockModal();
-    proceedOpenPrivateCategory();
+    if (mode === 'disable_lock') {
+      try { localStorage.setItem(PRIVATE_LOCK_ENABLED_KEY, '0'); } catch (e) {}
+      isPrivateCategoryUnlocked = true;
+      updatePrivateLockBadgeUI();
+      showToast('تم إلغاء قفل قسم خاصة بنجاح', 'info');
+    } else {
+      isPrivateCategoryUnlocked = true;
+      proceedOpenPrivateCategory();
+    }
   } else {
     if (err) err.classList.remove('hidden');
     showToast('كلمة المرور غير صحيحة', 'error');
@@ -507,9 +478,7 @@ function submitPrivateUnlock() {
   }
 }
 
-window.openPrivateSettingsModal = openPrivateSettingsModal;
-window.closePrivateSettingsModal = closePrivateSettingsModal;
-window.savePrivateCategorySettings = savePrivateCategorySettings;
+window.togglePrivateCategoryLock = togglePrivateCategoryLock;
 window.onPrivatePromptConfirm = onPrivatePromptConfirm;
 window.onPrivatePromptCancel = onPrivatePromptCancel;
 window.closePrivateUnlockModal = closePrivateUnlockModal;
@@ -517,9 +486,14 @@ window.submitPrivateUnlock = submitPrivateUnlock;
 
 function openCategoryDrillDown(catId) {
   if (catId === 'private') {
+    if (isAdminMode) {
+      isPrivateCategoryUnlocked = true;
+      proceedOpenPrivateCategory();
+      return;
+    }
     isPrivateCategoryUnlocked = false;
     if (isPrivateCategoryLocked()) {
-      openPrivateUnlockModal();
+      openPrivateUnlockModal('open');
       return;
     }
     let hidePrompt = false;
@@ -658,13 +632,22 @@ grid.innerHTML = '';
 
 const filteredSites = activeSites.filter(s => {
 if (!isAdminMode && s.isHidden) return false;
+const normCat = normalizeSiteCategory(s.category);
+const isPrivateSite = normCat === 'private' || s.category === 'خاصة';
+const isInUnlockedPrivateView = currentCategory === 'private' && (!isPrivateCategoryLocked() || isPrivateCategoryUnlocked);
+
 if (isSearching) {
-if (isPrivateCategoryLocked() && !isPrivateCategoryUnlocked && normalizeSiteCategory(s.category) === 'private') return false;
+if (isInUnlockedPrivateView) {
+if (!isPrivateSite) return false;
+} else {
+if (isPrivateSite) return false;
+}
 } else {
 if (currentCategory === 'favorites') {
 if (!s.isFavorite) return false;
+if (isPrivateSite && isPrivateCategoryLocked()) return false;
 } else if (currentCategory !== 'all' && currentCategory !== 'home') {
-if (normalizeSiteCategory(s.category) !== currentCategory) return false;
+if (normCat !== currentCategory) return false;
 }
 }
 if (!savedSearchQuery) return true;
@@ -805,7 +788,7 @@ persistActiveSites(true);
 setTimeout(() => renderSites(), 300);
 const targetUrl = formatUrl(site.url);
 const finalUrl = site.translate
-? `https://google.com${encodeURIComponent(targetUrl)}`
+? `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(targetUrl)}`
 : targetUrl;
 window.open(finalUrl, '_blank', 'noopener,noreferrer');
 }
@@ -908,7 +891,9 @@ closeBrandDropdown();
 });
 // شريط البحث وفلترة الروابط
 const debouncedMainSearch = debounce((query) => {
+if (currentCategory !== 'private') {
 isPrivateCategoryUnlocked = false;
+}
 savedSearchQuery = query.trim();
 renderSites();
 }, 150);

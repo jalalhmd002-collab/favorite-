@@ -58,14 +58,11 @@ function closeOverlayById(overlayId, fromPopState = false) {
   else if (overlayId === 'addCategoryModalOverlay') closeAddCategoryModal(fromPopState);
   else if (overlayId === 'backupModalOverlay') closeBackupModal(fromPopState);
   else if (overlayId === 'deleteModalOverlay') closeDeleteModal(fromPopState);
-  else if (overlayId === 'confirmResetModalOverlay') closeConfirmResetModal(fromPopState);
   else if (overlayId === 'pasteModalOverlay') closeManualPasteModal(fromPopState);
   else if (overlayId === 'qrModalOverlay') closeQrModal(fromPopState);
   else if (overlayId === 'adminLoginModalOverlay') closeAdminLoginModal(fromPopState);
   else if (overlayId === 'changePassModalOverlay') closeChangePassModal(fromPopState);
-  else if (overlayId === 'qrMessageModalOverlay') closeQrMessageModal(fromPopState);
   else if (overlayId === 'privatePromptModalOverlay' && typeof closePrivatePromptModal === 'function') closePrivatePromptModal(fromPopState);
-  else if (overlayId === 'privateSettingsModalOverlay' && typeof closePrivateSettingsModal === 'function') closePrivateSettingsModal(fromPopState);
   else if (overlayId === 'privateUnlockModalOverlay' && typeof closePrivateUnlockModal === 'function') closePrivateUnlockModal(fromPopState);
 }
 
@@ -258,25 +255,7 @@ function renderCurtainCategories() {
 }
 
 function deleteCategoryById(catId) {
-  const linkedCount = activeSites.filter(s => (s.category || 'general') === catId).length;
-  if (linkedCount > 0) {
-    showToast('عذراً، لا يمكن حذف هذا التصنيف لأنه يحتوي على روابط. انقل الروابط أو احذفها أولاً', 'error');
-    return;
-  }
-  customCategories = customCategories.filter(c => c.id !== catId);
-  if (BUILTIN_CATEGORIES.some(c => c.id === catId) && !deletedBuiltinCatIds.includes(catId)) {
-    deletedBuiltinCatIds.push(catId);
-    saveDeletedBuiltinCats();
-  }
-  if (currentCategory === catId) {
-    saveCurrentCategory('all');
-  }
-  persistActiveSites();
-  populateCategoryDropdowns();
-  renderCurtainCategories();
-  updateTriggerBar();
-  renderSites();
-  showToast('تم حذف التصنيف بنجاح', 'success');
+  showToast('التصنيفات الأساسية ثابتة ولا يمكن حذفها', 'info');
 }
 
 function createCatCard(id, name, icon, count, isDeletable = false) {
@@ -362,18 +341,8 @@ function saveNewCategory() {
     return;
   }
 
-  const newCatId = 'cat_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-  customCategories.unshift({ id: newCatId, name: catName, icon: catIcon });
-  saveCustomCategories();
-  saveCurrentCategory(newCatId);
-
-  populateCategoryDropdowns(newCatId);
-  renderCurtainCategories();
-  updateTriggerBar();
-  renderSites();
-
   closeAddCategoryModal();
-  showToast(`تمت إضافة التصنيف "${catName}" بنجاح`, 'success');
+  showToast('التصنيفات الأساسية ثابتة في اللوحة', 'info');
 }
 
 // ========================================================
@@ -612,16 +581,6 @@ function closeDeleteModal(fromPopState = false) {
   removeOverlayFromStack('deleteModalOverlay', fromPopState);
 }
 
-function openConfirmResetModal() {
-  safeSetClass('confirmResetModalOverlay', 'active', true);
-  pushOverlayToStack('confirmResetModalOverlay');
-}
-
-function closeConfirmResetModal(fromPopState = false) {
-  safeSetClass('confirmResetModalOverlay', 'active', false);
-  removeOverlayFromStack('confirmResetModalOverlay', fromPopState);
-}
-
 function confirmDelete() {
   const delIdInput = document.getElementById('deleteSiteId') || document.getElementById('deleteTargetSiteId');
   const id = delIdInput ? delIdInput.value : '';
@@ -702,6 +661,8 @@ function setAdminMode(enabled, silent = false) {
   isAdminMode = Boolean(enabled);
   try { localStorage.setItem(STORAGE_KEY_ADMIN_STATE, isAdminMode ? 'true' : 'false'); } catch (e) {}
   document.body.classList.toggle('admin-mode', isAdminMode);
+  const adminDot = document.getElementById('adminStatusDot');
+  if (adminDot) adminDot.style.display = isAdminMode ? 'inline-block' : 'none';
   renderSites();
   if (!silent) {
     showToast(
@@ -733,25 +694,43 @@ function closeAdminLoginModal(fromPopState = false) {
 }
 
 function openChangePassModal() {
+  const o = document.getElementById('changePassOldInput');
   const n = document.getElementById('changePassNewInput');
   const c = document.getElementById('changePassConfirmInput');
+  if (o) o.value = '';
   if (n) n.value = '';
   if (c) c.value = '';
   safeSetClass('changePassModalOverlay', 'active', true);
   pushOverlayToStack('changePassModalOverlay');
-  if (n) n.focus();
+  if (o) o.focus();
 }
 
 function closeChangePassModal(fromPopState = false) {
+  const o = document.getElementById('changePassOldInput');
+  const n = document.getElementById('changePassNewInput');
+  const c = document.getElementById('changePassConfirmInput');
+  if (o) o.value = '';
+  if (n) n.value = '';
+  if (c) c.value = '';
   safeSetClass('changePassModalOverlay', 'active', false);
   removeOverlayFromStack('changePassModalOverlay', fromPopState);
 }
 
 function saveNewAdminPassword() {
+  const o = document.getElementById('changePassOldInput');
   const n = document.getElementById('changePassNewInput');
   const c = document.getElementById('changePassConfirmInput');
+  const oldPass = o ? o.value : '';
   const newPass = n ? n.value.trim() : '';
   const confirmPass = c ? c.value.trim() : '';
+  if (!oldPass || oldPass !== getAdminPassword()) {
+    showToast('كلمة المرور القديمة غير صحيحة', 'error');
+    if (o) {
+      o.value = '';
+      o.focus();
+    }
+    return;
+  }
   if (!newPass) {
     showToast('يرجى إدخال كلمة المرور الجديدة', 'error');
     if (n) n.focus();
@@ -994,21 +973,6 @@ function renderQrCode(url) {
   const urlText = document.getElementById('qrCurrentUrlText') || document.getElementById('qrUrlText');
   if (!container) return;
   if (urlText) urlText.textContent = url;
-  try {
-    if (typeof qrcode === 'function') {
-      const qr = qrcode(0, 'M');
-      qr.addData(url);
-      qr.make();
-      container.innerHTML = qr.createSvgTag(6, 8);
-      const svg = container.querySelector('svg');
-      if (svg) {
-        svg.style.maxWidth = '100%';
-        svg.style.height = 'auto';
-        svg.style.borderRadius = '12px';
-      }
-      return;
-    }
-  } catch (e) {}
   container.innerHTML = MiniQR.toSvg(url, 240);
   const svg = container.querySelector('svg');
   if (svg) {
@@ -1035,59 +999,7 @@ function stopQrTimer() {
   }
 }
 
-function getQrDisplayMessage() {
-  try {
-    const msg = localStorage.getItem(STORAGE_KEY_QR_MSG);
-    if (msg && msg.trim()) return msg.trim();
-  } catch (e) {}
-  return '';
-}
-
-function updateQrDisplayMessageUI() {
-  const box = document.getElementById('qrDisplayMessageBox');
-  const textEl = document.getElementById('qrDisplayMessageText');
-  const input = document.getElementById('qrMessageInput');
-  const msg = getQrDisplayMessage();
-  if (input) input.value = msg;
-  if (box && textEl) {
-    if (msg) {
-      textEl.textContent = msg;
-      box.classList.remove('hidden');
-    } else {
-      box.classList.add('hidden');
-      textEl.textContent = '';
-    }
-  }
-}
-
-function openQrMessageModal() {
-  const input = document.getElementById('qrMessageInput');
-  if (input) input.value = getQrDisplayMessage();
-  safeSetClass('qrMessageModalOverlay', 'active', true);
-  pushOverlayToStack('qrMessageModalOverlay');
-  if (input) input.focus();
-}
-
-function closeQrMessageModal(fromPopState = false) {
-  safeSetClass('qrMessageModalOverlay', 'active', false);
-  removeOverlayFromStack('qrMessageModalOverlay', fromPopState);
-}
-
-function saveQrDisplayMessage() {
-  const input = document.getElementById('qrMessageInput');
-  const msg = input ? input.value.trim() : '';
-  try {
-    if (msg) localStorage.setItem(STORAGE_KEY_QR_MSG, msg);
-    else localStorage.removeItem(STORAGE_KEY_QR_MSG);
-  } catch (e) {}
-  updateQrDisplayMessageUI();
-  closeQrMessageModal();
-  scheduleCloudSync(true);
-  showToast('تم حفظ رسالة العرض بنجاح', 'success');
-}
-
 function openQrModal() {
-  updateQrDisplayMessageUI();
   renderQrCode(getEffectiveQrUrl());
   safeSetClass('qrModalOverlay', 'active', true);
   pushOverlayToStack('qrModalOverlay');
@@ -1251,36 +1163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Confirm Reset Modal
-  ['closeConfirmResetBtn', 'closeConfirmResetModalBtn', 'cancelConfirmResetBtn'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.addEventListener('click', () => closeConfirmResetModal());
-  });
-  const confirmResetBtn = document.getElementById('confirmResetBtn');
-  if (confirmResetBtn) {
-    confirmResetBtn.addEventListener('click', () => {
-      activeSites = [];
-      customCategories = [];
-      deletedBuiltinCatIds = [];
-      saveDeletedBuiltinCats();
-      saveCurrentCategory('all');
-      populateCategoryDropdowns();
-      persistActiveSites();
-      renderSites();
-      closeConfirmResetModal();
-      showToast('تم تفريغ قاعدة البيانات بالكامل', 'info');
-    });
-  }
-
-  // Reset defaults trigger in backup modal
-  const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
-  if (resetDefaultsBtn) {
-    resetDefaultsBtn.addEventListener('click', () => {
-      closeBackupModal();
-      openConfirmResetModal();
-    });
-  }
-
   // Paste Modal
   ['closePasteModalBtn', 'cancelPasteBtn'].forEach(id => {
     const btn = document.getElementById(id);
@@ -1332,27 +1214,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(ta);
         showToast('تم نسخ الرابط بنجاح', 'success');
       }
-    });
-  }
-
-  // QR Message Edit
-  ['editQrMessageBtn', 'brandDropdownQrMessageBtn'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.addEventListener('click', () => {
-      closeBrandDropdown();
-      openQrMessageModal();
-    });
-  });
-  ['closeQrMessageBtn', 'cancelQrMessageBtn'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.addEventListener('click', () => closeQrMessageModal());
-  });
-  const saveQrMsgBtn = document.getElementById('saveQrMessageBtn');
-  if (saveQrMsgBtn) saveQrMsgBtn.addEventListener('click', saveQrDisplayMessage);
-  const qrMsgOverlay = document.getElementById('qrMessageModalOverlay');
-  if (qrMsgOverlay) {
-    qrMsgOverlay.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeQrMessageModal();
     });
   }
 
